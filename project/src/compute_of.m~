@@ -2,7 +2,6 @@
 addpath("data/frames");
 addpath("data/raw");
 
-%% test how the opticalflow function is working and how the output looks like
 % i1 = imread("frame100.png");
 % i2 = ir("frame101.png");
 % 
@@ -20,12 +19,11 @@ addpath("data/raw");
 % % fi(g_flow.Magnitude);
 % % fi(b_flow.Magnitude);
 
-%% compute the optical flow of the first 100 frames, to test the cnn
-% structure in matlab
+
 vid_read = VideoReader("train.mp4");
-flow_func = opticalFlowFarneback("NeighborhoodSize",7);
+optical_flow = opticalFlowFarneback("NeighborhoodSize",7);
 count = 1;
-while hasFrame(vid_read) && count <= 100
+while hasFrame(vid_read) && count < 100
     frame = readFrame(vid_read);
     r_flow = estimateFlow(flow_func,frame(:,:,1));
     g_flow = estimateFlow(flow_func,frame(:,:,2));
@@ -34,7 +32,8 @@ while hasFrame(vid_read) && count <= 100
     temp(:,:,1) = r_flow.Magnitude;
     temp(:,:,2) = g_flow.Magnitude;
     temp(:,:,3) = b_flow.Magnitude;
-    imwrite(temp, sprintf("data/optical_flow/of_frame%i.png",count));
+    name = sprintf("of_frame%i.png",10)
+    imwrite(temp, "of_frame.png")
     count = count + 1
 end
 
