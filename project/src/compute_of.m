@@ -25,7 +25,7 @@ addpath("data/raw");
 vid_read = VideoReader("train.mp4");
 flow_func = opticalFlowFarneback("NeighborhoodSize",7);
 count = 1;
-while hasFrame(vid_read) && count <= 100
+while hasFrame(vid_read) && count < 100
     frame = readFrame(vid_read);
     r_flow = estimateFlow(flow_func,frame(:,:,1));
     g_flow = estimateFlow(flow_func,frame(:,:,2));
