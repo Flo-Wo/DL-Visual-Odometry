@@ -95,6 +95,7 @@ def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path)
     # mean the complete error
     eval_loss_all = eval_loss/len(eval_dataset)
     print("The total evalutation loss is =",eval_loss_all)
+    print("now writing the output into a txt file:")
     write_txt_file(list_predicted_velocity,txt_path)
     return(list_predicted_velocity)  
         
