@@ -53,7 +53,9 @@ def sample_down_half(frame):
 
 
 def calc_of(curr_frame, prev_frame):
-    curr_frame, prev_frame = sample_down_half(curr_frame[:-40,:,:]), sample_down_half(prev_frame[:-40,:,:]) #
+    # do it like 
+    # https://www.geeksforgeeks.org/opencv-the-gunnar-farneback-optical-flow/
+    curr_frame, prev_frame = sample_down_half(curr_frame[:-40,:,:]), sample_down_half(prev_frame[:-40,:,:])
     # Create mask 
     hsv_mask = np.zeros_like(prev_frame) 
     # Make image saturation to a maximum value 

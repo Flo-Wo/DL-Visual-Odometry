@@ -70,6 +70,6 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
         
         
 if __name__ == "__main__":
-    train_tensor, eval_tensor = load_data("./data/tensorData/tensor_of_with_labels",0.8,10)
-    train_model(train_tensor, eval_tensor, 3, 1)
+    train_tensor, eval_tensor = load_data("./data/tensorData/tensor_of_with_labels",0.8,32)
+    train_model(train_tensor, eval_tensor, 3, 25)
     
