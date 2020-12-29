@@ -24,11 +24,11 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
     # add a learning rate scheduler, to reduce the learning rate after several
     # epochs, as we did in the MNIST exercise
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,\
-                factor=0.95,patience=2)
+                factor=0.9,patience=2)
     # according to https://pytorch.org/docs/stable/optim.html?highlight=optim#module-torch.optim
     # this reduces the lr by a factor of 0.1 if the relative decrease after 2
     # epochs is not bigger than the default threshold
-    print("Training process starts.")
+    print("training starts!")
     for epoch in range(num_epochs):
         print("epoch: ",epoch)
         ## training part ##
@@ -64,11 +64,12 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
                 eval_loss += loss.item()
         print("train loss =",train_loss)
         print("eval loss =",eval_loss)
-    torch.save(model.state_dict("./cnn/saved_models/current_model"))
+    # save the models weights and bias' to use it later
+    torch.save(model.state_dict(),"./cnn/savedmodels/currentmodel.pth")
     print("model saved!")        
         
         
 if __name__ == "__main__":
     train_tensor, eval_tensor = load_data("./data/tensorData/tensor_of_with_labels",0.8,10)
-    train_model(train_tensor, eval_tensor, 3, 5)
+    train_model(train_tensor, eval_tensor, 3, 1)
     
