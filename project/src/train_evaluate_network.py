@@ -62,8 +62,9 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
                 predicted_velocity = model(flow_stack)
                 loss = criterion(predicted_velocity,velocity_vector.float())
                 eval_loss += loss.item()
-        print("train loss =",train_loss)
-        print("eval loss =",eval_loss)
+        # mean the error to print correctly
+        print("train loss =",train_loss/len(train_dataset))
+        print("eval loss =",eval_loss/len(train_dataset))
         # use the scheduler and the mean error
         scheduler.step(train_loss/len(train_dataset))
     # save the models weights and bias' to use it later
@@ -79,6 +80,8 @@ def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path)
     # set model in evaluation mode
     model.eval()
     eval_loss = 0
+    print("evaluation starts!")
+    
     pass     
         
         
