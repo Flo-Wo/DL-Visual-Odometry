@@ -60,4 +60,6 @@ options = trainingOptions('sgdm', ...
 whos data_X_train
 
 % train network
+
+%% this line throws an error and we do not know how to solve it
 net = trainNetwork(train_dat, layers, options);
