@@ -30,7 +30,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
     # epochs is not bigger than the default threshold
     print("training starts!")
     for epoch in range(num_epochs):
-        print("epoch: ",epoch)
+        print("epoch: ",epoch+1)
         ## training part ##
         model.train()
         train_loss = 0
@@ -72,7 +72,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
     print("model saved!")   
 
 def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path):
-    list_predicted_veloc = []
+    list_predicted_velocity = []
     criterion = torch.nn.MSELoss()
     # build a new netork
     model = CNNFlowOnly(num_input_channels)
@@ -81,8 +81,16 @@ def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path)
     model.eval()
     eval_loss = 0
     print("evaluation starts!")
-    
-    pass     
+    for _,(flow_stack, velocity_vector) in enumerate(eval_dataset):
+        with torch.no_grad():
+            predicted_velocity = model(flow_stack)
+            loss = criterion(predicted_velocity,velocity_vector.float())
+            eval_loss += loss.item()
+            list_predicted_velocity.append(loss.item())
+    # mean the complete error
+    eval_loss_all = eval_loss/len(eval_dataset)
+    print("The total evalutation loss is =",eval_loss_all)
+    return(list_predicted_velocity)  
         
         
 if __name__ == "__main__":
