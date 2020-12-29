@@ -64,9 +64,22 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
                 eval_loss += loss.item()
         print("train loss =",train_loss)
         print("eval loss =",eval_loss)
+        # use the scheduler and the mean error
+        scheduler.step(train_loss/len(train_dataset))
     # save the models weights and bias' to use it later
     torch.save(model.state_dict(),"./cnn/savedmodels/currentmodel.pth")
-    print("model saved!")        
+    print("model saved!")   
+
+def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path):
+    list_predicted_veloc = []
+    criterion = torch.nn.MSELoss()
+    # build a new netork
+    model = CNNFlowOnly(num_input_channels)
+    torch.laod(model.state_dict(),"./cnn/savedmodels/currentmodel.pth")
+    # set model in evaluation mode
+    model.eval()
+    eval_loss = 0
+    pass     
         
         
 if __name__ == "__main__":
