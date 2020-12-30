@@ -60,6 +60,9 @@ class CNNsiamese(nn.Module):
     # implement forward function for the network, to take the flow and 
     # the image
     def forward(self,x,y):
+        # we use shared weight for feature extraction and add up the extracted
+        # flow and image features, before transforming them into the fully 
+        # connected layers
         x = self.conv1(x)
         y = self.conv1(y)
         

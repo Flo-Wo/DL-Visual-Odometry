@@ -16,6 +16,32 @@ import numpy as np
 # we use this file to laod the data into a torch dataloader, to efficiently
 # store the data set and split it into train and test data
 
+# override the Dataset class of pytorch to efficiently run the code
+# https://stanford.edu/~shervine/blog/pytorch-how-to-generate-data-parallel
+# using this technique
+
+# class Dataset(torch.utils.data.Dataset):
+#   'Characterizes a dataset for PyTorch'
+#   def __init__(self, list_IDs, labels):
+#         'Initialization'
+#         self.labels = labels
+#         self.list_IDs = list_IDs
+
+#   def __len__(self):
+#         'Denotes the total number of samples'
+#         return len(self.list_IDs)
+
+#   def __getitem__(self, index):
+#         'Generates one sample of data'
+#         # Select sample
+#         ID = self.list_IDs[index]
+
+#         # Load data and get label
+#         X = torch.load('data/' + ID + '.pt')
+#         y = self.labels[ID]
+
+#         return X, y
+
 
 # we use https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
 # to load the data
@@ -49,13 +75,15 @@ def load_images():
     cv2.destroyAllWindows()
     
 def sample_down_half(frame):
-    return(cv2.resize(frame,(320,220)))
+    return(cv2.resize(frame,(320,210)))
 
+def sample_down_half_second(frame):
+    return(cv2.resize(frame,(160,105)))
 
 def calc_of(curr_frame, prev_frame):
     # do it like 
     # https://www.geeksforgeeks.org/opencv-the-gunnar-farneback-optical-flow/
-    curr_frame, prev_frame = sample_down_half(curr_frame[:-40,:,:]), sample_down_half(prev_frame[:-40,:,:])
+    curr_frame, prev_frame = sample_down_half(curr_frame[:-60,:,:]), sample_down_half(prev_frame[:-60,:,:])
     # Create mask 
     hsv_mask = np.zeros_like(prev_frame) 
     # Make image saturation to a maximum value 
@@ -78,6 +106,7 @@ def calc_of(curr_frame, prev_frame):
     hsv_mask[:,:, 2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX) 
     # Convert to rgb 
     rgb_image = cv2.cvtColor(hsv_mask, cv2.COLOR_HSV2RGB) 
+    #rgb_image = sample_down_half_second(rgb_image)
     return(rgb_image)
     
 
@@ -92,7 +121,7 @@ def generate_and_save_torch_dataset(label_path,save_path):
         # transform image to a tensor and concat them
         rgb_flow_tensor = transforms.ToTensor()(rgb_flow).unsqueeze(0)
         #print(rgb_flow_tensor.shape)
-        if i == 1:
+        if i == 0:
             flow_stack = rgb_flow_tensor
         else:
             flow_stack = torch.cat([flow_stack,rgb_flow_tensor])
@@ -109,11 +138,11 @@ def generate_and_save_torch_dataset(label_path,save_path):
 
 
 
-if __name__ == "__main__":
-    dataset = generate_and_save_torch_dataset("./data/raw/train_label.txt","./data/tensorData/")
-    #load_data("./data/optical_flow", test_split_ratio=0.7, batch_size=40)
-# image = cv2.imread("./data/frames/frame999.png")
-# image2 = cv2.imread("./data/frames/frame1000.png")
-# res = calc_of(image,image2)
+# if __name__ == "__main__":
+#     dataset = generate_and_save_torch_dataset("./data/raw/train_label.txt","./data/tensorData/")
+#     #load_data("./data/optical_flow", test_split_ratio=0.7, batch_size=40)
+image = cv2.imread("./data/frames/frame2.png")
+image2 = cv2.imread("./data/frames/frame3.png")
+res = calc_of(image,image2)
 
-# cv2.imwrite("data/of7_without.png",res)
+cv2.imwrite("data/of8_without.png",res)

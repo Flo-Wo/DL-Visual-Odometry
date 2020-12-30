@@ -12,7 +12,7 @@ video = cv2.VideoCapture("data/raw/train.mp4")
 success,image = video.read()
 count = 1
 os.chdir("data/frames")
-while success:
+while success and count <=100:
     cv2.imwrite("frame%d.png" % count, image)     # save frame as png file      
     success,image = video.read()
     if count % 100 == 0:

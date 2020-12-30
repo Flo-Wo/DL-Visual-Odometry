@@ -66,11 +66,11 @@ class CNNFlowOnly(nn.Module):
         x = self.conv4(x)
         x = self.conv5(x)
         # here we need a reshape, to pass the tensor into a fc
-        # print("shape = ",x.shape)
+        print("shape = ",x.shape)
         # result: shape =  torch.Size([10, 64, 53, 73]), according to
         # https://discuss.pytorch.org/t/transition-from-conv2d-to-linear-layer-equations/93850/2
         # we need to reshape the output (flatten layer in matlab)
-        x = x.view(-1, 64*53*73)
+        x = x.view(-1, 64*20*33)
         x = self.fc1(x)
         x = self.fc2(x)
         x = self.fc3(x)
@@ -80,9 +80,9 @@ class CNNFlowOnly(nn.Module):
         # is, what we want)
         return(x.squeeze(1))
         
-# if __name__ == '__main__':
-#     test = CNNFlowOnly(3)
-#     x = torch.rand(10,3,480,640)
-#     res = test.forward(x)
-#     print(res)
+if __name__ == '__main__':
+    test = CNNFlowOnly(3)
+    x = torch.rand(10,3,220,320)
+    res = test.forward(x)
+    print(res)
         
