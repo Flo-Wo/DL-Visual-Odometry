@@ -37,7 +37,7 @@ class CNNFlowOnly(nn.Module):
         self.conv4 = conv_layer(48, 64, kernel_size=3, stride=1)
         self.conv5 = conv_layer(64, 64, kernel_size=3, stride=1)
         # now fully connected layers
-        self.fc1 = fc_layer(64*53*73, 100)
+        self.fc1 = fc_layer(64*6*13, 100)
         self.fc2 = fc_layer(100,50)
         self.fc3 = fc_layer(50,10)
         # no activation function in the last layer
@@ -59,6 +59,7 @@ class CNNFlowOnly(nn.Module):
     
     # implement forward function for the network
     def forward(self,x):
+        #print("shape = ",x.shape)
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
@@ -66,11 +67,11 @@ class CNNFlowOnly(nn.Module):
         x = self.conv4(x)
         x = self.conv5(x)
         # here we need a reshape, to pass the tensor into a fc
-        print("shape = ",x.shape)
+        #print("shape = ",x.shape)
         # result: shape =  torch.Size([10, 64, 53, 73]), according to
         # https://discuss.pytorch.org/t/transition-from-conv2d-to-linear-layer-equations/93850/2
         # we need to reshape the output (flatten layer in matlab)
-        x = x.view(-1, 64*20*33)
+        x = x.view(-1, 64*6*13)
         x = self.fc1(x)
         x = self.fc2(x)
         x = self.fc3(x)
@@ -80,9 +81,9 @@ class CNNFlowOnly(nn.Module):
         # is, what we want)
         return(x.squeeze(1))
         
-if __name__ == '__main__':
-    test = CNNFlowOnly(3)
-    x = torch.rand(10,3,220,320)
-    res = test.forward(x)
-    print(res)
+# if __name__ == '__main__':
+#     test = CNNFlowOnly(3)
+#     x = torch.rand(10,3,105,160)
+#     res = test.forward(x)
+#     print(res)
         

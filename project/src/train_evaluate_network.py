@@ -12,6 +12,8 @@ from cnn.cnn_flow_only import CNNFlowOnly
 
 from utils_save_load import load_data
 
+from utils_save_load import Dataset, generate_label_dict, generate_train_eval_dict
+
 def write_txt_file(data, path):
     # from https://stackoverflow.com/questions/33686747/save-a-list-to-a-txt-file
     with open(path, "w") as output:
@@ -45,7 +47,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
         # the flow fields and the velocity vectors, attention the enumerator
         # also returns an integer
         for _, (flow_stack, velocity_vector) in enumerate(train_dataset):
-            
+            flow_stack = flow_stack.squeeze(1)
             # according to https://stackoverflow.com/questions/48001598/why-do-we-need-to-call-zero-grad-in-pytorch
             # we need to set the gradient to zero first
             optimizer.zero_grad()
@@ -62,6 +64,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
         ## evaluation part ##
         model.eval()
         for _, (flow_stack, velocity_vector) in enumerate(eval_dataset):
+            flow_stack = flow_stack.squeeze(1)
             # do not use backpropagation here, as this is the validation data
             with torch.no_grad():
                 predicted_velocity = model(flow_stack)
@@ -101,6 +104,22 @@ def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path)
         
         
 if __name__ == "__main__":
-    train_tensor, eval_tensor = load_data("./data/tensorData/tensor_of_with_labels",0.8,32)
+    # Parameters
+    params = {'batch_size': 64,\
+          'shuffle': True}
+          #'num_workers': 6}
+    #max_epochs = 100
+    data_size = 20399
+    partition = generate_train_eval_dict(data_size, 0.8)
+    labels = generate_label_dict("./data/raw/train_label.txt",data_size)
+    #train_tensor, eval_tensor = load_data("./data/tensorData/tensor_of_with_labels",0.8,32)
+    
+    # Generators
+    training_set = Dataset(partition['train'], labels)
+    train_tensor = torch.utils.data.DataLoader(training_set, **params)
+    
+    validation_set = Dataset(partition['validation'], labels)
+    eval_tensor = torch.utils.data.DataLoader(validation_set, **params) 
+    
     train_model(train_tensor, eval_tensor, 3, 25)
     
