@@ -47,7 +47,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
         # the flow fields and the velocity vectors, attention the enumerator
         # also returns an integer
         for _, (flow_stack, velocity_vector) in enumerate(train_dataset):
-            flow_stack = flow_stack.squeeze(1)
+            #flow_stack = flow_stack.squeeze(1)
             # according to https://stackoverflow.com/questions/48001598/why-do-we-need-to-call-zero-grad-in-pytorch
             # we need to set the gradient to zero first
             optimizer.zero_grad()
@@ -64,7 +64,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
         ## evaluation part ##
         model.eval()
         for _, (flow_stack, velocity_vector) in enumerate(eval_dataset):
-            flow_stack = flow_stack.squeeze(1)
+            #flow_stack = flow_stack.squeeze(1)
             # do not use backpropagation here, as this is the validation data
             with torch.no_grad():
                 predicted_velocity = model(flow_stack)

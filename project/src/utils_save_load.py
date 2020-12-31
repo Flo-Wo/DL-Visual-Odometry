@@ -42,8 +42,10 @@ class Dataset(torch.utils.data.Dataset):
 
         return X, y
 
+#### CALCULATION AND SAVING OF THE OPTICAL FLOW #####
 
 def generate_flow_all(save_path):
+    print("saving of tensors!")
     # load images, transform to tensors and add the label
     for i, (prev_frame, curr_frame) in enumerate(load_images()):
         if i%100 == 0:
@@ -52,7 +54,7 @@ def generate_flow_all(save_path):
         rgb_flow = calc_of(curr_frame, prev_frame)
         #print(rgb_flow)
         # transform image to a tensor and concat them
-        rgb_flow_tensor = transforms.ToTensor()(rgb_flow).unsqueeze(0)
+        rgb_flow_tensor = transforms.ToTensor()(rgb_flow)#.unsqueeze(0)
         #print(rgb_flow_tensor.shape)
         torch.save(rgb_flow_tensor,save_path + "{:05d}.pt".format(i+1))
 
@@ -75,26 +77,24 @@ def generate_label_dict(label_path,data_size):
     for index in range(1,data_size+1):
         labels["{:05d}".format(index)] = labels_np_array[index]
     return(labels)
-        
-#### SECOND APPROACH
 
 
-# we use https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
-# to load the data
-def load_data(dataset_path, test_split_ratio, batch_size_own):
-    data = torch.load(dataset_path)
-    data_size = len(data)
-    # now do the splitting
-    all_indices = list(range(data_size))
-    split_index = int(np.floor(data_size*test_split_ratio))
-    train_indices = all_indices[:split_index]
-    test_indices = all_indices[split_index:]
-    train_data = Subset(data, train_indices)
-    test_data = Subset(data, test_indices)
-    # now create a torch data loader, to save the data efficiently
-    train_loader = DataLoader(train_data,batch_size=batch_size_own)
-    test_loader = DataLoader(test_data,batch_size=batch_size_own)
-    return(train_loader,test_loader)
+# # we use https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
+# # to load the data
+# def load_data(dataset_path, test_split_ratio, batch_size_own):
+#     data = torch.load(dataset_path)
+#     data_size = len(data)
+#     # now do the splitting
+#     all_indices = list(range(data_size))
+#     split_index = int(np.floor(data_size*test_split_ratio))
+#     train_indices = all_indices[:split_index]
+#     test_indices = all_indices[split_index:]
+#     train_data = Subset(data, train_indices)
+#     test_data = Subset(data, test_indices)
+#     # now create a torch data loader, to save the data efficiently
+#     train_loader = DataLoader(train_data,batch_size=batch_size_own)
+#     test_loader = DataLoader(test_data,batch_size=batch_size_own)
+#     return(train_loader,test_loader)
 
     
 
@@ -117,6 +117,7 @@ def sample_down_half(frame):
     return(cv2.resize(frame,(320,210)))
 
 def sample_down_half_second(frame):
+    # sample the image again down for half the size, after the of is calculated
     return(cv2.resize(frame,(160,105)))
 
 def calc_of(curr_frame, prev_frame):
@@ -149,43 +150,66 @@ def calc_of(curr_frame, prev_frame):
     return(rgb_image)
     
 
+#### SAVE THE IMAGES AS TENSORS ####
 
+def load_images_single():
+    # only load the single images, to sample them down and save them as tensors
+    # do it like 
+    # https://www.geeksforgeeks.org/opencv-the-gunnar-farneback-optical-flow/
+    video = cv2.VideoCapture("data/raw/train.mp4")
+    success,prev_frame = video.read()
+    while success:
+        success, curr_frame = video.read()
+        if success == False:
+            break
+        yield curr_frame
+    video.release()
+    cv2.destroyAllWindows()
     
-
-def generate_and_save_torch_dataset(label_path,save_path):
+def save_frames_as_tensors(save_path):
+    print("saving single frames!")
     # load images, transform to tensors and add the label
-    for i, (prev_frame, curr_frame) in enumerate(load_images()):
+    for i, frame in enumerate(load_images_single()):
         if i%100 == 0:
             print(i)
-        #filepath = flow_dataset_path + "/{:05d}_of.png".format(i)
-        rgb_flow = calc_of(curr_frame, prev_frame)
-        #print(rgb_flow)
-        # transform image to a tensor and concat them
-        rgb_flow_tensor = transforms.ToTensor()(rgb_flow).unsqueeze(0)
-        #print(rgb_flow_tensor.shape)
-        if i == 0:
-            flow_stack = rgb_flow_tensor
-        else:
-            flow_stack = torch.cat([flow_stack,rgb_flow_tensor])
-    # load txt file with labels
-    labels = np.loadtxt(label_path)
-    print(flow_stack.shape)
-    # we cant compute the optical flow for the first frame
-    dataset_all = TensorDataset(flow_stack,\
-                                 torch.from_numpy(labels[1:]).float())
-    save_path_name = save_path + "optical_flow_with_labels_tensor"
-    torch.save(dataset_all,save_path_name)
-    return(dataset_all)
+        frame = sample_down_half(frame[:-60,:,:])
+        frame = sample_down_half_second(frame)
+        frame = transforms.ToTensor()(frame)#.unsqueeze(0)
+        print(frame.shape)
+        torch.save(frame, save_path + "{:05d}.pt".format(i+1))
+            
+    
+
+# def generate_and_save_torch_dataset(label_path,save_path):
+#     # load images, transform to tensors and add the label
+#     for i, (prev_frame, curr_frame) in enumerate(load_images()):
+#         if i%100 == 0:
+#             print(i)
+#         #filepath = flow_dataset_path + "/{:05d}_of.png".format(i)
+#         rgb_flow = calc_of(curr_frame, prev_frame)
+#         #print(rgb_flow)
+#         # transform image to a tensor and concat them
+#         rgb_flow_tensor = transforms.ToTensor()(rgb_flow).unsqueeze(0)
+#         #print(rgb_flow_tensor.shape)
+#         if i == 0:
+#             flow_stack = rgb_flow_tensor
+#         else:
+#             flow_stack = torch.cat([flow_stack,rgb_flow_tensor])
+#     # load txt file with labels
+#     labels = np.loadtxt(label_path)
+#     print(flow_stack.shape)
+#     # we cant compute the optical flow for the first frame
+#     dataset_all = TensorDataset(flow_stack,\
+#                                  torch.from_numpy(labels[1:]).float())
+#     save_path_name = save_path + "optical_flow_with_labels_tensor"
+#     torch.save(dataset_all,save_path_name)
+#     return(dataset_all)
 
 
 
 
-# if __name__ == "__main__":
-#     generate_flow_all("./data/tensorData/of/")
-    #load_data("./data/optical_flow", test_split_ratio=0.7, batch_size=40)
-# image = cv2.imread("./data/frames/frame2.png")
-# image2 = cv2.imread("./data/frames/frame3.png")
-# res = calc_of(image,image2)
+if __name__ == "__main__":
+    generate_flow_all("./data/tensorData/of/")
+    save_frames_as_tensors("./data/tensorData/frames/")
 
-# cv2.imwrite("data/of8_without.png",res)
-labels = generate_label_dict("./data/raw/train_label.txt",20399)
+
