@@ -33,6 +33,10 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
     # this reduces the lr by a factor of 0.1 if the relative decrease after 2
     # epochs is not bigger than the default threshold
     print("training starts!")
+    train_loss_list = []
+    eval_loss_list = []
+    epoch_list = []
+    lr_list = []
     for epoch in range(num_epochs):
         print("epoch: ",epoch+1)
         ## training part ##
@@ -43,6 +47,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
         # train_dataset consists of batches of an torch data loader, including
         # the flow fields and the velocity vectors, attention the enumerator
         # also returns an integer
+        print("training...")
         for _, (flow_stack, velocity_vector) in enumerate(train_dataset):
             #flow_stack = flow_stack.squeeze(1)
             # according to https://stackoverflow.com/questions/48001598/why-do-we-need-to-call-zero-grad-in-pytorch
@@ -59,6 +64,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
             # this actually returns the loss value
             train_loss += loss.item()
         ## evaluation part ##
+        print("evaluation...")
         model.eval()
         for _, (flow_stack, velocity_vector) in enumerate(eval_dataset):
             #flow_stack = flow_stack.squeeze(1)
@@ -70,21 +76,26 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
         # mean the error to print correctly
         print("train loss =",train_loss/len(train_dataset))
         print("eval loss =",eval_loss/len(eval_dataset))
+        train_loss_list.append(train_loss/len(train_dataset))
+        eval_loss_list.append(eval_loss/len(eval_dataset))
+        epoch_list.append(epoch+1)
+        lr_list.append(optimizer.param_groups[0]['lr'])
         # use the scheduler and the mean error
         scheduler.step(train_loss/len(train_dataset))
+        
     # save the models weights and bias' to use it later
     torch.save(model.state_dict(),"./cnn/savedmodels/currentmodel.pth")
-    print("model saved!")   
+    print("model saved!") 
+    return(train_loss_list, eval_loss_list, epoch_list,lr_list)
 
 def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path):
     list_predicted_velocity = []
     criterion = torch.nn.MSELoss()
     # build a new netork
     model = CNNFlowOnly(num_input_channels)
-    print("now loading the model")
+    # load like 
+    # https://stackoverflow.com/questions/49941426/attributeerror-collections-ordereddict-object-has-no-attribute-eval
     model.load_state_dict(torch.load("./cnn/savedmodels/currentmodel.pth"))
-    #torch.load(model.state_dict(),"./cnn/savedmodels/currentmodel.pth")
-    print("loaded")
     # set model in evaluation mode
     model.eval()
     eval_loss = 0
@@ -104,36 +115,17 @@ def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path)
         
   
         
-## TRAINING PART ######
-# if __name__ == "__main__":
-#     # Parameters
-#     params = {'batch_size': 64,\
-#           'shuffle': True}
-#           #'num_workers': 6}
-#     #max_epochs = 100
-#     data_size = 20399
-#     partition = generate_train_eval_dict(data_size, 0.8)
-#     labels = generate_label_dict("./data/raw/train_label.txt",data_size)
-#     #train_tensor, eval_tensor = load_data("./data/tensorData/tensor_of_with_labels",0.8,32)
-    
-#     # Generators
-#     training_set = Dataset(partition['train'], labels)
-#     train_tensor = torch.utils.data.DataLoader(training_set, **params)
-    
-#     validation_set = Dataset(partition['validation'], labels)
-#     eval_tensor = torch.utils.data.DataLoader(validation_set, **params) 
-    
-#     train_model(train_tensor, eval_tensor, 3, 25)
-   
-
-#### EVALUATION PART ####
+##### TRAINING PART #####
 if __name__ == "__main__":
-    #params = {'batch_size': 64,\
-    #          'shuffle': False}
-    params = {}
+    # Parameters
+    params = {'batch_size': 64,\
+          'shuffle': True}
+          #'num_workers': 6}
+    #max_epochs = 100
     data_size = 20399
     partition = generate_train_eval_dict(data_size, 0.8)
-    labels = generate_label_dict("./data/raw/train_label.txt",data_size)     
+    labels = generate_label_dict("./data/raw/train_label.txt",data_size)
+    
     # Generators
     training_set = Dataset(partition['train'], labels)
     train_tensor = torch.utils.data.DataLoader(training_set, **params)
@@ -141,4 +133,23 @@ if __name__ == "__main__":
     validation_set = Dataset(partition['validation'], labels)
     eval_tensor = torch.utils.data.DataLoader(validation_set, **params) 
     
-    evaluate_data_and_write_txt_file(eval_tensor, 3, "results.txt")
+    train_loss_list, eval_loss_list, epoch_list,lr_list = \
+        train_model(train_tensor, eval_tensor, 3, 25)
+   
+
+# #### EVALUATION PART ####
+# if __name__ == "__main__":
+#     #params = {'batch_size': 64,\
+#     #          'shuffle': False}
+#     params = {}
+#     data_size = 20399
+#     partition = generate_train_eval_dict(data_size, 0.8)
+#     labels = generate_label_dict("./data/raw/train_label.txt",data_size)     
+#     # Generators
+#     training_set = Dataset(partition['train'], labels)
+#     train_tensor = torch.utils.data.DataLoader(training_set, **params)
+    
+#     validation_set = Dataset(partition['validation'], labels)
+#     eval_tensor = torch.utils.data.DataLoader(validation_set, **params) 
+    
+#     evaluate_data_and_write_txt_file(eval_tensor, 3, "results.txt")

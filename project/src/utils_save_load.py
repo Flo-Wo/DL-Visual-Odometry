@@ -42,6 +42,33 @@ class Dataset(torch.utils.data.Dataset):
 
         return X, y
 
+class Dataset_of_frames(torch.utils.data.Dataset):
+    # class to return mini batches to the siamese network
+    # here X1 is the optical flow frame and X2 is the downsampled, but 
+    # raw frame, y is the label
+    # we can decide here, how we want to pass this into the network
+    # (siamese or linear combination)
+    'Characterizes a dataset for PyTorch'
+    def __init__(self, list_IDs, labels):
+          'Initialization with two dicts'
+          self.labels = labels
+          self.list_IDs = list_IDs
+    
+    def __len__(self):
+          'Denotes the total number of samples'
+          return len(self.list_IDs)
+    
+    def __getitem__(self, index):
+          'Generates one sample of data'
+          # Select sample
+          ID = self.list_IDs[index]
+    
+          # Load data and get label
+          X1 = torch.load('data/tensorData/of/' + str(ID) + '.pt')
+          X2 = torch.load("data/tensorData/frames" + str(ID) + ".pt")
+          y = self.labels[ID]
+    
+          return X1, X2, y
 
 #### SAVE THE IMAGES AS TENSORS ####
 
@@ -160,12 +187,8 @@ def calc_of(curr_frame, prev_frame):
     return(rgb_image)
     
 
-
-
-
-
-if __name__ == "__main__":
-    generate_flow_all("./data/tensorData/of/")
-    save_frames_as_tensors("./data/tensorData/frames/")
+# if __name__ == "__main__":
+#     generate_flow_all("./data/tensorData/of/")
+#     save_frames_as_tensors("./data/tensorData/frames/")
 
 
