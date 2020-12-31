@@ -9,9 +9,6 @@ Created on Tue Dec 29 10:19:53 2020
 
 import torch
 from cnn.cnn_flow_only import CNNFlowOnly
-
-from utils_save_load import load_data
-
 from utils_save_load import Dataset, generate_label_dict, generate_train_eval_dict
 
 def write_txt_file(data, path):
@@ -72,7 +69,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
                 eval_loss += loss.item()
         # mean the error to print correctly
         print("train loss =",train_loss/len(train_dataset))
-        print("eval loss =",eval_loss/len(train_dataset))
+        print("eval loss =",eval_loss/len(eval_dataset))
         # use the scheduler and the mean error
         scheduler.step(train_loss/len(train_dataset))
     # save the models weights and bias' to use it later
@@ -84,7 +81,10 @@ def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path)
     criterion = torch.nn.MSELoss()
     # build a new netork
     model = CNNFlowOnly(num_input_channels)
-    torch.laod(model.state_dict(),"./cnn/savedmodels/currentmodel.pth")
+    print("now loading the model")
+    model.load_state_dict(torch.load("./cnn/savedmodels/currentmodel.pth"))
+    #torch.load(model.state_dict(),"./cnn/savedmodels/currentmodel.pth")
+    print("loaded")
     # set model in evaluation mode
     model.eval()
     eval_loss = 0
@@ -102,18 +102,38 @@ def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path)
     write_txt_file(list_predicted_velocity,txt_path)
     return(list_predicted_velocity)  
         
+  
         
+## TRAINING PART ######
+# if __name__ == "__main__":
+#     # Parameters
+#     params = {'batch_size': 64,\
+#           'shuffle': True}
+#           #'num_workers': 6}
+#     #max_epochs = 100
+#     data_size = 20399
+#     partition = generate_train_eval_dict(data_size, 0.8)
+#     labels = generate_label_dict("./data/raw/train_label.txt",data_size)
+#     #train_tensor, eval_tensor = load_data("./data/tensorData/tensor_of_with_labels",0.8,32)
+    
+#     # Generators
+#     training_set = Dataset(partition['train'], labels)
+#     train_tensor = torch.utils.data.DataLoader(training_set, **params)
+    
+#     validation_set = Dataset(partition['validation'], labels)
+#     eval_tensor = torch.utils.data.DataLoader(validation_set, **params) 
+    
+#     train_model(train_tensor, eval_tensor, 3, 25)
+   
+
+#### EVALUATION PART ####
 if __name__ == "__main__":
-    # Parameters
-    params = {'batch_size': 64,\
-          'shuffle': True}
-          #'num_workers': 6}
-    #max_epochs = 100
+    #params = {'batch_size': 64,\
+    #          'shuffle': False}
+    params = {}
     data_size = 20399
     partition = generate_train_eval_dict(data_size, 0.8)
-    labels = generate_label_dict("./data/raw/train_label.txt",data_size)
-    #train_tensor, eval_tensor = load_data("./data/tensorData/tensor_of_with_labels",0.8,32)
-    
+    labels = generate_label_dict("./data/raw/train_label.txt",data_size)     
     # Generators
     training_set = Dataset(partition['train'], labels)
     train_tensor = torch.utils.data.DataLoader(training_set, **params)
@@ -121,5 +141,4 @@ if __name__ == "__main__":
     validation_set = Dataset(partition['validation'], labels)
     eval_tensor = torch.utils.data.DataLoader(validation_set, **params) 
     
-    train_model(train_tensor, eval_tensor, 3, 25)
-    
+    evaluate_data_and_write_txt_file(eval_tensor, 3, "results.txt")
