@@ -38,11 +38,30 @@ deep learning, computer vision, velocity prediction, dense optical flow
  
 
 \section{Data collection, analysis and preprocessing}
-For our data base, we used the comma ai speedchallenge\footnote{https://github.com/commaai/speedchallenge} data set. This data
-base provides two dashcam videos: a trainings video, (20400 frames, shoot at 20 frames per second) including 
+For our data set, we used the comma ai speedchallenge\footnote{https://github.com/commaai/speedchallenge} data base. This data
+set provides two dashcam videos: a training video, (20400 frames, shoot at 20 frames per second) including 
 ground truths and a testing video (10798 frames, shoot at 20 frames per second) without labels, which they use for applications 
 to check how well a submitted model is able to generalize.
+\subsection{Data analysis}
+As we only have access to the labels of the test video frames, we decided to split the data by the 80/20 principle into 
+training and testing subsets. Here we did not shuffle the data randomly, as we needed to always have two consecutive frames, to 
+be able to calculate the optical flow and we wanted to test our model on unseen data, to measure how good our model is able to
+generalize.
 
+To analyse the velocity distribution in the two subsets, we rounded down the given velocities and plotted the distribution in
+a histogram in figure REFERENCE MISSING.
+
+As 
+
+\subsection{Preprocessing}
+Each of the provided frames has a size of $(640,480,3)$ pixels. Due to computational limitations, we decided to cut off the last 60 pixels from the lower border, to remove a black frame inside the car, which did not have any effect on the optical flow. Furthermore, we cut the frame size in half and calculated the optical flow using the Farneback pyramid REFERENCE TO THE PAPER MISSING method with the following parameters
+
+\begin{align*}
+\text{EQUATION WITH MISSING PARAMETERS}
+\end{align*}
+
+To decrease the training duration, we halved the size of the optical flow image again, resulting in a resolution of
+$(160,105,3)$ pixels per frame. The preprocessing pipeline is shown in figure REFERENCE MISSING
 
 \section{Method selection and architecture}
 
