@@ -11,7 +11,7 @@ import torch.nn as nn
 
 # this way we can easily change the activation function for the whole network
 def activ_func():
-    return(nn.ReLU())
+    return(nn.LeakyReLU())
 
 # additional arguments default values are taken directly from pytorch
 def conv_layer(num_in_channels, num_out_channels,kernel_size,stride=1,padding=0,dilation=1):

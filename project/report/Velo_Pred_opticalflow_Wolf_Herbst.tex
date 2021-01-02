@@ -36,7 +36,9 @@ deep learning, computer vision, velocity prediction, dense optical flow
 \end{IEEEkeywords}
 
 \section{Introduction}
-\subsection*{Aim of the project}
+Here are some motivational words need
+\subsection{Aim of the project}
+Here we need to clarify the aim of the project
  
 
 \section{Data collection, analysis and preprocessing}
@@ -44,16 +46,16 @@ For our data set, we used the comma ai speedchallenge\footnote{https://github.co
 set provides two dashcam videos: a training video, (20400 frames, shoot at 20 frames per second) including 
 ground truths and a testing video (10798 frames, shoot at 20 frames per second) without labels, which they use for applications 
 to check how well a submitted model is able to generalize.
+As we only have access to the labels of the test video frames, we decided to split the provided train data by the 80/20 principle into 
+training and testing subsets. Here we did not shuffle the data randomly, as we needed to always have two consecutive frames to 
+calculate the optical flow. We initially used a hard cut off after 80$\%$ of the frames, as we wanted to test our model on unseen data, 
+to measure how good our model is able to generalize. We will analyse will analyse this naive approach later, when we take a closer look
+at the results.
 \subsection{Data analysis}
-As we only have access to the labels of the test video frames, we decided to split the data by the 80/20 principle into 
-training and testing subsets. Here we did not shuffle the data randomly, as we needed to always have two consecutive frames, to 
-be able to calculate the optical flow and we wanted to test our model on unseen data, to measure how good our model is able to
-generalize.
+To analyse the velocity distribution in the two subsets, we plotted the velocity per time distribution in REFERENCE MISSING
 
-To analyse the velocity distribution in the two subsets, we rounded down the given velocities and plotted the distribution in
-a histogram in figure REFERENCE MISSING.
-
-Write down, what we expect from this distribution and mention how important brightness is (to possibly explain bad result).
+Write down, what we expect from this distribution and mention how important brightness is (to possibly explain bad result). Keep the 
+point, that in the end the car is in the city, will in the first part on the highway (reason why our model performed so poorly).
 
 \subsection{Preprocessing}
 Each of the provided frames has a size of $(640,480,3)$ pixels. Due to computational limitations, we decided to cut off the last 60 pixels from the lower border, to remove a black frame inside the car, which did not have any effect on the optical flow. Furthermore, we cut the frame size in half and calculated the optical flow using the Farneback pyramid REFERENCE TO THE PAPER MISSING method with the following parameters (WHY DID WE CHOOSE THEM LIKE THAT)
@@ -81,6 +83,27 @@ we did the same down sampling with the frames.
 Explain, how we display the optical flow.
 
 \section{Method selection and architecture}
+The prediction of the vehicles speed is a non-linear regression task, the choice of a neural network is reasonable. Recent 
+architectures we discussed in the lecture (RESNET, GOOGLENET, etc.) have shown than using multiple stacked convolution layers
+combined with stacked dense layers, perform well on image classification tasks. Therefore the choice of a convolutional neural network
+is justified.
+
+As a base architecture we decided to give the model of https://arxiv.org/pdf/1604.07316v1.pdf a try. As the paper used it
+for self-driving cars, the model has enough complexity to handle a task like ours and with the amount of layers, we had a lot of
+possibilities, to fine-tune and improve the model.
+
+In a first approach, we tried the raw model, using different activation functions and we embedded residual layer and batch 
+normalization as improvements we discussed in the lecture, to speed up training and improve the performance. We tried the following
+activation functions
+
+\begin{align*}
+\mathrm{ReLu}: \mathbb{R} \to \mathbb{R}, x \mapsto \max\{0,x\}
+\end{align*}
+
+relatively low number of epochs, as the model always seemed to overfit, because we have a relatively complex model for not a lot of
+data frames
+
+
 
 \section{Results and comparison}
 

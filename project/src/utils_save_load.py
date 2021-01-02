@@ -65,7 +65,7 @@ class Dataset_of_frames(torch.utils.data.Dataset):
     
           # Load data and get label
           X1 = torch.load('data/tensorData/of/' + str(ID) + '.pt')
-          X2 = torch.load("data/tensorData/frames" + str(ID) + ".pt")
+          X2 = torch.load("data/tensorData/frames/" + str(ID) + ".pt")
           y = self.labels[ID]
     
           return X1, X2, y

@@ -87,7 +87,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
         scheduler.step(train_loss/len(train_dataset))
         
     # save the models weights and bias' to use it later
-    torch.save(model.state_dict(),"./cnn/savedmodels/currentmodel.pth")
+    torch.save(model.state_dict(),"./cnn/savedmodels/LeakyReLU.pth")
     print("model saved!") 
     return(train_loss_list, eval_loss_list, epoch_list,lr_list)
 
@@ -137,7 +137,7 @@ if __name__ == "__main__":
     eval_tensor = torch.utils.data.DataLoader(validation_set, **params) 
     
     train_loss_list, eval_loss_list, epoch_list,lr_list = \
-        train_model(train_tensor, eval_tensor, 3, 15)
+        train_model(train_tensor, eval_tensor, 3, 8)
    
 
 # #### EVALUATION PART ####
