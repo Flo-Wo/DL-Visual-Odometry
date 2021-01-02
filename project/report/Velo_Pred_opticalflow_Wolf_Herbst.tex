@@ -5,13 +5,14 @@
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
+\usepackage{subfig}
 \usepackage{textcomp}
 \usepackage{xcolor}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Predicting a cars velocity using dashcam footage and dense optical flow}
+\title{Predicting a vehicles velocity using dashcam footage and dense optical flow}
 
 \author{\IEEEauthorblockN{Florian Wolf}
 \IEEEauthorblockA{\textit{Department of Mathematics and Statistics, University Konstanz}\\
@@ -51,17 +52,38 @@ generalize.
 To analyse the velocity distribution in the two subsets, we rounded down the given velocities and plotted the distribution in
 a histogram in figure REFERENCE MISSING.
 
-As 
+Write down, what we expect from this distribution and mention how important brightness is (to possibly explain bad result).
 
 \subsection{Preprocessing}
-Each of the provided frames has a size of $(640,480,3)$ pixels. Due to computational limitations, we decided to cut off the last 60 pixels from the lower border, to remove a black frame inside the car, which did not have any effect on the optical flow. Furthermore, we cut the frame size in half and calculated the optical flow using the Farneback pyramid REFERENCE TO THE PAPER MISSING method with the following parameters
-
+Each of the provided frames has a size of $(640,480,3)$ pixels. Due to computational limitations, we decided to cut off the last 60 pixels from the lower border, to remove a black frame inside the car, which did not have any effect on the optical flow. Furthermore, we cut the frame size in half and calculated the optical flow using the Farneback pyramid REFERENCE TO THE PAPER MISSING method with the following parameters (WHY DID WE CHOOSE THEM LIKE THAT)
 \begin{align*}
-\text{EQUATION WITH MISSING PARAMETERS}
+\text{pyramid levels} &:= 3\\
+\text{pyramid scaling} &:= 0.5\\
+\text{window size} &:= 6\\
+\text{pixel neighborhood size} &:= 5\\
+\text{SD of the gaussian filter} &:= 1.1
 \end{align*}
-
 To decrease the training duration, we halved the size of the optical flow image again, resulting in a resolution of
-$(160,105,3)$ pixels per frame. The preprocessing pipeline is shown in figure REFERENCE MISSING
+$(160,105,3)$ pixels per frame. As we used a window size of $6$, a comparison between the original optical flow and the down 
+sampled one lead to the result, that we do not loose a lot information. The preprocessing pipeline is shown in figure 
+REFERENCE MISSING. As we later on wanted to see if the model performs better using the dashcam frames as additional material, 
+we did the same down sampling with the frames.
+
+\begin{figure}
+\centering
+  \subfloat[Original frame]{\label{figur:1}\includegraphics[width=.35\columnwidth]{./imgs/frame2_original.png}} \hspace{0.1cm}
+  \subfloat[Frame after initial down sampling]{\label{figur:2}\includegraphics[width=.35\columnwidth]{./imgs/frame2_cut_sampled.png}}\\
+  \subfloat[Optical Flow field, already down sampled]{\label{figur:3}\includegraphics[width=0.6\columnwidth]{./imgs/frame2_flow_field.png}}
+  \label{figur}\caption{Preprocessing of the video frames.}
+\end{figure}
+
+%\begin{figure}[h!]
+%\centering
+%\includegraphics[width=0.7\columnwidth]{./imgs/frame2_original.png}
+%\includegraphics[width=0.7\columnwidth]{./imgs/frame2_cut_sampled.png}
+%\includegraphics[width=0.7\columnwidth]{./imgs/frame2_flow_field.png}
+%\end{figure}
+Explain, how we show the optical flow.
 
 \section{Method selection and architecture}
 

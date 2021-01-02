@@ -24,11 +24,14 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
     # as this is used to evaluate our results in the initial challenge
     criterion = torch.nn.MSELoss()
     # starting with adam, later on maybe switching to SGD
-    optimizer = torch.optim.Adam(model.parameters(),lr=1e-4)
+    optimizer = torch.optim.Adam(model.parameters(),lr=1e-3)
     # add a learning rate scheduler, to reduce the learning rate after several
     # epochs, as we did in the MNIST exercise
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,\
-                factor=0.9,patience=2)
+    #scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,\
+    #            factor=0.9,patience=2)
+    # reduce learning rate each epoch by 10%
+    lr_lambda = lambda epoch: 0.9
+    scheduler = torch.optim.lr_scheduler.MultiplicativeLR(optimizer, lr_lambda, last_epoch=-1, verbose=True)
     # according to https://pytorch.org/docs/stable/optim.html?highlight=optim#module-torch.optim
     # this reduces the lr by a factor of 0.1 if the relative decrease after 2
     # epochs is not bigger than the default threshold
@@ -47,7 +50,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
         # train_dataset consists of batches of an torch data loader, including
         # the flow fields and the velocity vectors, attention the enumerator
         # also returns an integer
-        print("training...")
+        # print("training...")
         for _, (flow_stack, velocity_vector) in enumerate(train_dataset):
             #flow_stack = flow_stack.squeeze(1)
             # according to https://stackoverflow.com/questions/48001598/why-do-we-need-to-call-zero-grad-in-pytorch
@@ -64,7 +67,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
             # this actually returns the loss value
             train_loss += loss.item()
         ## evaluation part ##
-        print("evaluation...")
+        # print("evaluation...")
         model.eval()
         for _, (flow_stack, velocity_vector) in enumerate(eval_dataset):
             #flow_stack = flow_stack.squeeze(1)
@@ -81,7 +84,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
         epoch_list.append(epoch+1)
         lr_list.append(optimizer.param_groups[0]['lr'])
         # use the scheduler and the mean error
-        scheduler.step(train_loss/len(train_dataset))
+        scheduler.step()
         
     # save the models weights and bias' to use it later
     torch.save(model.state_dict(),"./cnn/savedmodels/currentmodel.pth")
@@ -95,7 +98,7 @@ def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path)
     model = CNNFlowOnly(num_input_channels)
     # load like 
     # https://stackoverflow.com/questions/49941426/attributeerror-collections-ordereddict-object-has-no-attribute-eval
-    model.load_state_dict(torch.load("./cnn/savedmodels/currentmodel.pth"))
+    model.load_state_dict(torch.load("./cnn/savedmodels/ReLU25EpochsBatchNormNoResidual.pth"))
     # set model in evaluation mode
     model.eval()
     eval_loss = 0

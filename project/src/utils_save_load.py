@@ -187,8 +187,15 @@ def calc_of(curr_frame, prev_frame):
     return(rgb_image)
     
 
-# if __name__ == "__main__":
-#     generate_flow_all("./data/tensorData/of/")
-#     save_frames_as_tensors("./data/tensorData/frames/")
+if __name__ == "__main__":
+    i1 = cv2.imread("./data/frames/frame1.png")
+    i2 = cv2.imread("./data/frames/frame2.png")
+    i2_cut_down = sample_down_half(i2[:-60,:,:])
+    flow_field = calc_of(i1, i2)
+    cv2.imwrite("../report/imgs/frame2_original.png",i2)
+    cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
+    cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
+    # generate_flow_all("./data/tensorData/of/")
+    # save_frames_as_tensors("./data/tensorData/frames/")
 
 
