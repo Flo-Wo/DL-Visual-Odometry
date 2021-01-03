@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Dec 29 10:36:35 2020
+Created on Sun Jan 03.01.2021
 
-@author: florianwolf
+@author: franzherbst
 """
 
 import torch
