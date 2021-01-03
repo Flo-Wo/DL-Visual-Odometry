@@ -9,6 +9,7 @@ Created on Tue Dec 29 10:19:53 2020
 
 import torch
 from cnn.cnn_flow_only import CNNFlowOnly
+from cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
 from utils_save_load import Dataset, generate_label_dict, generate_train_eval_dict
 from tqdm import tqdm
 import logging
@@ -34,7 +35,7 @@ def write_txt_file(data, path):
 
 def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs, log_filename):
     # create model
-    model = CNNFlowOnly(num_input_channels)
+    model = CNNFlowOnlyWithPooling(num_input_channels)
     # create loss function and create optimizer object, we use the MSE Loss,
     # as this is used to evaluate our results in the initial challenge
     criterion = torch.nn.MSELoss()
@@ -106,7 +107,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs, log_
         scheduler.step(train_loss/len(train_dataset))
         
     # save the models weights and bias' to use it later
-    torch.save(model.state_dict(),"./cnn/savedmodels/ReLU8EpochsBatchNormNoPooling.pth")
+    torch.save(model.state_dict(),"./cnn/savedmodels/LeakyReLU8EpochsBatchNormAvgPoolingWithDropOut.pth")
     print("model saved!")
 
 def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path):
@@ -154,7 +155,7 @@ if __name__ == "__main__":
     validation_set = Dataset(partition['validation'], labels)
     eval_tensor = torch.utils.data.DataLoader(validation_set, **params) 
     
-    train_model(train_tensor, eval_tensor, 3, 8, "ReLU8EpochsBatchNormNoPooling")
+    train_model(train_tensor, eval_tensor, 3, 8, "LeakyReLU8EpochsBatchNormAvgPoolingWithDropOut")
    
 
 # #### EVALUATION PART ####

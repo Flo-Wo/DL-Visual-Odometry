@@ -11,8 +11,8 @@ import torch.nn as nn
 
 # this way we can easily change the activation function for the whole network
 def activ_func():
-    #return(nn.LeakyReLU())
-    return(nn.ReLU())
+    return(nn.LeakyReLU())
+    #return(nn.ReLU())
 # additional arguments default values are taken directly from pytorch
 def conv_layer(num_in_channels, num_out_channels,kernel_size,stride=1,padding=0,dilation=1):
     return nn.Sequential(\
@@ -25,13 +25,14 @@ def fc_layer(num_input_channels, num_output_channels):
         activ_func())
 
 def pooling(kernel_size_own,stride_own,padding_own):
-    return(nn.MaxPool2d(kernel_size=kernel_size_own,stride=stride_own,padding=padding_own))
+    # return(nn.MaxPool2d(kernel_size=kernel_size_own,stride=stride_own,padding=padding_own))
+    return(nn.AvgPool2d(kernel_size=kernel_size_own,stride=stride_own,padding=padding_own))
 
 
-class CNNFlowOnly(nn.Module):
+class CNNFlowOnlyWithPooling(nn.Module):
     def __init__(self,num_input_channels):
         # call super method to create instance of the network class
-        super(CNNFlowOnly,self).__init__()
+        super(CNNFlowOnlyWithPooling,self).__init__()
         self.bn1 = nn.BatchNorm2d(num_input_channels)
         self.conv1 = conv_layer(num_input_channels, 24, kernel_size=5, stride=2)
         self.conv2 = conv_layer(24, 36, kernel_size=5, stride=2)
@@ -86,7 +87,7 @@ class CNNFlowOnly(nn.Module):
         x = self.conv5(x)
         x = self.pool2(x)
         # here we need a reshape, to pass the tensor into a fc
-        print("shape = ",x.shape)
+        #print("shape = ",x.shape)
         # result: shape =  torch.Size([10, 64, 53, 73]), according to
         # https://discuss.pytorch.org/t/transition-from-conv2d-to-linear-layer-equations/93850/2
         # we need to reshape the output (flatten layer in matlab)
@@ -100,10 +101,10 @@ class CNNFlowOnly(nn.Module):
         # is, what we want)
         return(x.squeeze(1))
         
-if __name__ == '__main__':
-    test = CNNFlowOnly(3)
-    x = torch.rand(10,3,105,160)
-    #x = torch.load("../data/tensorData/frames/00001.pt")
-    res = test.forward(x)
-    print(res)
+# if __name__ == '__main__':
+#     test = CNNFlowOnlyWithPooling(3)
+#     x = torch.rand(10,3,105,160)
+#     #x = torch.load("../data/tensorData/frames/00001.pt")
+#     res = test.forward(x)
+#     print(res)
         
