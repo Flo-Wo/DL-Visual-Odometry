@@ -11,7 +11,6 @@ from torch.utils.data import Dataset, DataLoader, Subset, TensorDataset
 from torchvision import datasets,transforms
 import cv2
 import numpy as np
-import tqdm as tqdm
 
 
 # we use this file to laod the data into a torch dataloader, to efficiently
@@ -20,6 +19,13 @@ import tqdm as tqdm
 # override the Dataset class of pytorch to efficiently run the code
 # https://stanford.edu/~shervine/blog/pytorch-how-to-generate-data-parallel
 # using this technique
+
+path_tensor_opt_fl = "data/tensorData/of/"
+path_tensor_frames = "data/tensorData/frames/"
+
+#class Dataset_OpFl(torch.utils.data.Dataset):
+
+
 
 class Dataset(torch.utils.data.Dataset):
   'Characterizes a dataset for PyTorch'
@@ -90,9 +96,9 @@ def load_images_single():
 def save_frames_as_tensors(save_path):
     print("saving single frames!")
     # load images, transform to tensors and add the label
-    for i, frame in enumerate(tqdm(load_images_single(), "Frames as Tensors")):
-        #if i%100 == 0:
-        #    print(i)
+    for i, frame in enumerate(load_images_single()):
+        if i%100 == 0:
+            print(i)
         frame = sample_down_half(frame[:-60,:,:])
         frame = sample_down_half_second(frame)
         frame = transforms.ToTensor()(frame)#.unsqueeze(0)
@@ -104,9 +110,9 @@ def save_frames_as_tensors(save_path):
 def generate_flow_all(save_path):
     print("saving of tensors!")
     # load images, transform to tensors and add the label
-    for i, (prev_frame, curr_frame) in enumerate(tqdm(load_images(), "Flow as Tensors")):
-        #if i%100 == 0:
-        #    print(i)
+    for i, (prev_frame, curr_frame) in enumerate(load_images()):
+        if i%100 == 0:
+            print(i)
         #filepath = flow_dataset_path + "/{:05d}_of.png".format(i)
         rgb_flow = calc_of(curr_frame, prev_frame)
         #print(rgb_flow)
