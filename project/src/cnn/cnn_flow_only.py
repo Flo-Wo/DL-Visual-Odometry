@@ -11,8 +11,8 @@ import torch.nn as nn
 
 # this way we can easily change the activation function for the whole network
 def activ_func():
-    return(nn.LeakyReLU())
-
+    #return(nn.LeakyReLU())
+    return(nn.ReLU())
 # additional arguments default values are taken directly from pytorch
 def conv_layer(num_in_channels, num_out_channels,kernel_size,stride=1,padding=0,dilation=1):
     return nn.Sequential(\
@@ -29,8 +29,9 @@ class CNNFlowOnly(nn.Module):
     def __init__(self,num_input_channels):
         # call super method to create instance of the network class
         super(CNNFlowOnly,self).__init__()
+        self.bn1 = nn.BatchNorm2d(num_input_channels)
         self.conv1 = conv_layer(num_input_channels, 24, kernel_size=5, stride=2)
-        self.bn1 = nn.BatchNorm2d(24)
+        
         self.conv2 = conv_layer(24, 36, kernel_size=5, stride=2)
         #self.bn2 = nn.BatchNorm2d(36)
         self.conv3 = conv_layer(36, 48, kernel_size=5, stride=2)
@@ -68,8 +69,8 @@ class CNNFlowOnly(nn.Module):
     # implement forward function for the network
     def forward(self,x):
         #print("shape = ",x.shape)
-        x = self.conv1(x)
         x = self.bn1(x)
+        x = self.conv1(x)
         x = self.conv2(x)
         #x = self.bn2(x)
         x = self.conv3(x)
