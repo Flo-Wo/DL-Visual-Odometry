@@ -11,7 +11,7 @@ from torch.utils.data import Dataset, DataLoader, Subset, TensorDataset
 from torchvision import datasets,transforms
 import cv2
 import numpy as np
-import tqdm as tqdm
+from tqdm import tqdm
 
 
 # we use this file to laod the data into a torch dataloader, to efficiently
