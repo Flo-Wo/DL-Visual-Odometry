@@ -101,7 +101,7 @@ class CNNsiamese(nn.Module):
         # now we add the features together as proposed in 
         # https://arxiv.org/pdf/2010.09925.pdf and in
         # https://www.mathworks.com/help/deeplearning/ug/train-a-siamese-network-to-compare-images.html,
-        z = x + y
+        z = x + 0.3 * y
 
         z = self.fc1(z)
         z = self.fc2(z)

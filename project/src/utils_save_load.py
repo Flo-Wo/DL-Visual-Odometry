@@ -64,8 +64,8 @@ class Dataset_of_frames(torch.utils.data.Dataset):
           ID = self.list_IDs[index]
     
           # Load data and get label
-          X1 = torch.load('data/tensorData/of/' + str(ID) + '.pt')
-          X2 = torch.load("data/tensorData/frames/" + str(ID) + ".pt")
+          X1 = torch.load('data/tensorData/of/' + "{:05d}.pt".format(ID))
+          X2 = torch.load("data/tensorData/frames/" + "{:05d}.pt".format(ID))
           y = self.labels[ID]
     
           return X1, X2, y
@@ -128,11 +128,12 @@ def generate_train_eval_dict(data_size, test_split_ratio):
 
 def generate_train_eval_dict_new_splitting(data_size, test_split_ratio):
     # we have 20399 images and of frames, we split them and create a dict
-    data_size= 20399
     ratio_percent = int(test_split_ratio * 100)
-    all_indices = list(range(1,data_size +1))
+    all_indices = list(range(1, data_size + 1))
+
     train_indices = []
     test_indices = []
+
     for index in range(0,int(data_size/100)+1):
         if index == int(data_size/100)+1:
             train_indices.extend(all_indices[100*index:100*index + ratio_percent])
@@ -140,8 +141,7 @@ def generate_train_eval_dict_new_splitting(data_size, test_split_ratio):
         else:
             train_indices.extend(all_indices[100*index:100*index + ratio_percent])
             test_indices.extend(all_indices[100*index + ratio_percent:(index+1)*100])
-    partition = {'train' : train_indices,\
-                 'validation' : test_indices}
+    partition = {'train' : train_indices, 'validation' : test_indices}
     return(partition)
 
 
@@ -151,7 +151,8 @@ def generate_label_dict(label_path,data_size):
     labels_np_array = np.loadtxt(label_path)
     labels = {}
     for index in range(1,data_size+1):
-        labels["{:05d}".format(index)] = labels_np_array[index]
+        #labels["{:05d}".format(index)] = labels_np_array[index]
+        labels[index] = labels_np_array[index]
     return(labels)
 
 

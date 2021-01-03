@@ -10,7 +10,8 @@ import torch
 import logging, coloredlogs
 #from cnn.cnn_flow_only import CNNFlowOnly
 from project.src.cnn.cnn_siamese_frames_flow import CNNsiamese
-from utils_save_load import Dataset_of_frames, generate_label_dict, generate_train_eval_dict
+from utils_save_load import Dataset_of_frames, generate_label_dict, generate_train_eval_dict, \
+    generate_train_eval_dict_new_splitting
 from tqdm import tqdm
 
 coloredlogs.install()
@@ -135,9 +136,12 @@ if __name__ == "__main__":
     # 'num_workers': 6}
     # max_epochs = 100
     data_size = 20399
-    partition = generate_train_eval_dict(data_size, 0.8)
+    partition = generate_train_eval_dict_new_splitting(data_size, 0.8)
+
     labels = generate_label_dict("./data/raw/train_label.txt", data_size)
 
+    #print(labels)
+    #exit(0)
     # Generators
     training_set = Dataset_of_frames(partition['train'], labels)
     train_tensor = torch.utils.data.DataLoader(training_set, **params)
