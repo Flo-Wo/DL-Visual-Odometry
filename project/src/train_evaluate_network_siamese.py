@@ -9,7 +9,7 @@ Created on Tue Dec 29 10:19:53 2020
 import torch
 import logging, coloredlogs
 #from cnn.cnn_flow_only import CNNFlowOnly
-from project.src.cnn.cnn_siamese_frames_flow import CNNsiamese
+from cnn.cnn_siamese_frames_flow import CNNsiamese
 from utils_save_load import Dataset_of_frames, generate_label_dict, generate_train_eval_dict, \
     generate_train_eval_dict_new_splitting
 from tqdm import tqdm
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     eval_tensor = torch.utils.data.DataLoader(validation_set, **params)
 
     train_loss_list, eval_loss_list, epoch_list, lr_list = \
-        train_model(train_tensor, eval_tensor, 3, 8)
+        train_model(train_tensor, eval_tensor, 3, 20)
 
 # #### EVALUATION PART ####
 # if __name__ == "__main__":
