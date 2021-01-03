@@ -25,8 +25,8 @@ def fc_layer(num_input_channels, num_output_channels):
         activ_func())
 
 def pooling(kernel_size_own,stride_own,padding_own):
-    # return(nn.MaxPool2d(kernel_size=kernel_size_own,stride=stride_own,padding=padding_own))
-    return(nn.AvgPool2d(kernel_size=kernel_size_own,stride=stride_own,padding=padding_own))
+    return(nn.MaxPool2d(kernel_size=kernel_size_own,stride=stride_own,padding=padding_own))
+    # return(nn.AvgPool2d(kernel_size=kernel_size_own,stride=stride_own,padding=padding_own))
 
 
 class CNNFlowOnlyWithPooling(nn.Module):

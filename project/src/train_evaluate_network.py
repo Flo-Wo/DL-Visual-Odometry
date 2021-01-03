@@ -107,7 +107,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs, log_
         scheduler.step(train_loss/len(train_dataset))
         
     # save the models weights and bias' to use it later
-    torch.save(model.state_dict(),"./cnn/savedmodels/LeakyReLU8EpochsBatchNormAvgPoolingWithDropOut.pth")
+    torch.save(model.state_dict(),"./cnn/savedmodels/LeakyReLU8EpochsBatchNormMaxPoolingWithDropOut.pth")
     print("model saved!")
 
 def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path):
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     validation_set = Dataset(partition['validation'], labels)
     eval_tensor = torch.utils.data.DataLoader(validation_set, **params) 
     
-    train_model(train_tensor, eval_tensor, 3, 8, "LeakyReLU8EpochsBatchNormAvgPoolingWithDropOut")
+    train_model(train_tensor, eval_tensor, 3, 8, "LeakyReLU8EpochsBatchNormMaxPoolingWithDropOut")
    
 
 # #### EVALUATION PART ####
