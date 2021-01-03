@@ -90,12 +90,23 @@ architectures we discussed in the lecture (RESNET, GOOGLENET, etc.) have shown t
 combined with stacked dense layers, perform well on image classification tasks. Therefore the choice of a convolutional neural network
 is justified.
 
+\subsection{Initial Network/prototype}
+
 As a base architecture we decided to give the model of https://arxiv.org/pdf/1604.07316v1.pdf a try. As the paper used it
 for self-driving cars, the model has enough complexity to handle a task like ours and with the amount of layers, we had a lot of
 possibilities, to fine-tune and improve the model.
 
-In a first approach, we tried the raw model, using different activation functions and batch 
-normalization as improvements we discussed in the lecture, to speed up training and improve the performance. As proposed in the lecture
+In a first approach, we tried the raw model gaining an MSE of around 18-20 on testing and under 3 on training.
+
+\subsection*{First fine tuning, modifications}
+
+Then we used using different activation functions and batch 
+normalization as improvements we discussed in the lecture, to speed up training and improve the performance.
+
+We also used a drop out layer according to https://jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf to prevent/reduce 
+overfitting
+
+As proposed in the lecture
 we used
 \begin{align*}
 \mathrm{ReLu}: \mathbb{R} \to \mathbb{R}_0^+, x \mapsto \max\{0,x\}
