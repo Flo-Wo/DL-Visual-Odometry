@@ -94,7 +94,7 @@ As a base architecture we decided to give the model of https://arxiv.org/pdf/160
 for self-driving cars, the model has enough complexity to handle a task like ours and with the amount of layers, we had a lot of
 possibilities, to fine-tune and improve the model.
 
-In a first approach, we tried the raw model, using different activation functions and we embedded residual layer and batch 
+In a first approach, we tried the raw model, using different activation functions and batch 
 normalization as improvements we discussed in the lecture, to speed up training and improve the performance. As proposed in the lecture
 we used
 \begin{align*}
@@ -102,6 +102,8 @@ we used
 \end{align*}
 as the initial activation function. We used batch normalization according to https://arxiv.org/pdf/1502.03167.pdf, to speed up the 
 training process. Using the ReLU function and XX epochs for training, we achieved a MSE of around 12, running the code multiple times, to ensure this result holds. This result was not really promising, so we wanted to improve the error firstly modifying the model.
+
+MSE OF WHAT --> TABULAR
 
 To solve the problem of dead neurons\footnote{As one can clearly see in the defintion of the ReLU 
 function, neurons with a value below zero cannot participate in the learning process.} of the ReLU function, we 
@@ -114,6 +116,27 @@ c \cdot x, x <0
 \end{align*}
 with a parameter $c = 0.01$. Using again batch normalization, we achieved an error of around 10.
 
+We identified three possible reasons for our poor results:
+\begin{enumerate}
+\item[(i)] Too complex model, as the paper used it for autonomous driving or we put too little information into the model.
+\item[(ii)] Problems with different brightnesses in the frames (lack of generality), which leads to unstable calculations in the 
+optical flow, as the optical flow is quite sensitive to brightness. (Explain how in the train part the sky is quite dark and in the 
+city (end) the sky is bright)
+\item[(iii)] Too naive/ambigous splitting of the data into train and testing set, as both datasets seem to represent totally different
+scenarios in the road traffic.
+\end{enumerate}
+We came up with the following approaches to solve these problems
+\begin{enumerate}
+\item[(i)] Simplify the model by using Pooling (we will try average and max pooling), to get more compression and we tried on the
+other hand to feed in more information into the model, by using a linear combination of the optical flow and the raw frames itself, and
+we tried using a siamese network, to put simultaneously the of and raw frames into the convolutional layers.
+\item[(ii)] We wanted to try adding some additional noise into the frames before calculating the optical flow, to make the calculation
+more robust against brightness changes. As intentionally adding 
+noise to a frame is quite atypical in computer vision, this idea looked quite interesting.
+\item[(iii)] Use another splitting. To get a better ratio between highway and city driving scenarios, we decided to split the data into
+blocks of 100 frames and take the first 80 for training and the last 20 for testing. Therefore our model should have seen some city
+driving.
+\end{enumerate}
 ASSUMPTION TRAINING ERROR UNDER 3 IS EXTREMLY GOOD, to avoid overfit
 
 MAYBE PROVIDE TABULAR WITH TRAIN AND TEST ERROR
