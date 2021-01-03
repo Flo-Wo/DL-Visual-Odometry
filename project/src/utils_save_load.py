@@ -126,6 +126,25 @@ def generate_train_eval_dict(data_size, test_split_ratio):
                  'validation' : test_indices}
     return(partition)
 
+def generate_train_eval_dict_new_splitting(data_size, test_split_ratio):
+    # we have 20399 images and of frames, we split them and create a dict
+    data_size= 20399
+    ratio_percent = int(test_split_ratio * 100)
+    all_indices = list(range(1,data_size +1))
+    train_indices = []
+    test_indices = []
+    for index in range(0,int(data_size/100)+1):
+        if index == int(data_size/100)+1:
+            train_indices.extend(all_indices[100*index:100*index + ratio_percent])
+            test_indices.extend(all_indices[100*index + ratio_percent:])
+        else:
+            train_indices.extend(all_indices[100*index:100*index + ratio_percent])
+            test_indices.extend(all_indices[100*index + ratio_percent:(index+1)*100])
+    partition = {'train' : train_indices,\
+                 'validation' : test_indices}
+    return(partition)
+
+
 def generate_label_dict(label_path,data_size):
     # these are all labels in a txt, we want to write them into a dict and
     # ignore the first value
