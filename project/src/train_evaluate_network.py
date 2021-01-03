@@ -14,6 +14,9 @@ from tqdm import tqdm
 import logging
 
 
+## we follow https://dev.to/rmcomplexity/introduction-to-python-logging-4p3o
+# for the logger files
+
 # setup logging
 logging.basicConfig(
     level=logging.INFO,
@@ -48,12 +51,11 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs, log_
     # this reduces the lr by a factor of 0.1 if the relative decrease after 2
     # epochs is not bigger than the default threshold
     print("training starts!")
-
+    # create logger
+    logger = logging.getLogger("train_logger")
+    logger.addHandler(logging.FileHandler(f'./cnn/train_logs/{log_filename}.log', mode='w'))
 
     for epoch in range(num_epochs):
-        # create logger
-        logger = logging.getLogger("train_logger")
-        logger.addHandler(logging.FileHandler(f'./cnn/train_logs/{log_filename}.log', mode='w'))
         print("epoch: ",epoch+1)
         ## training part ##
         model.train()
@@ -89,9 +91,10 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs, log_
                 predicted_velocity = model(flow_stack)
                 loss = criterion(predicted_velocity,velocity_vector.float())
                 eval_loss += loss.item()
-        # mean the error to print correctly
-        print("train loss =",train_loss/len(train_dataset))
-        print("eval loss =",eval_loss/len(eval_dataset))
+        # mean the error to print correctly, not needed anymore, as we have now
+        # a logger
+        #print("train loss =",train_loss/len(train_dataset))
+        #print("eval loss =",eval_loss/len(eval_dataset))
         
         # create logger dict, to save the data
         log_dict = {"epoch": epoch+1,
@@ -103,9 +106,8 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs, log_
         scheduler.step(train_loss/len(train_dataset))
         
     # save the models weights and bias' to use it later
-    torch.save(model.state_dict(),"./cnn/savedmodels/LeakyReLU.pth")
-    print("model saved!") 
-    return(train_loss_list, eval_loss_list, epoch_list,lr_list)
+    torch.save(model.state_dict(),"./cnn/savedmodels/LeakyReLU8EpochsBatchNormNoPooling.pth")
+    print("model saved!")
 
 def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path):
     list_predicted_velocity = []
@@ -152,8 +154,7 @@ if __name__ == "__main__":
     validation_set = Dataset(partition['validation'], labels)
     eval_tensor = torch.utils.data.DataLoader(validation_set, **params) 
     
-    train_loss_list, eval_loss_list, epoch_list,lr_list = \
-        train_model(train_tensor, eval_tensor, 3, 8, "LeakyReLU")
+    train_model(train_tensor, eval_tensor, 3, 8, "LeakyReLU8EpochsBatchNormNoPooling")
    
 
 # #### EVALUATION PART ####
