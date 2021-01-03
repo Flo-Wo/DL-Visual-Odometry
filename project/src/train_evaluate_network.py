@@ -11,6 +11,17 @@ import torch
 from cnn.cnn_flow_only import CNNFlowOnly
 from utils_save_load import Dataset, generate_label_dict, generate_train_eval_dict
 from tqdm import tqdm
+import logging
+
+
+# setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(message)s',
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
 
 def write_txt_file(data, path):
     # from https://stackoverflow.com/questions/33686747/save-a-list-to-a-txt-file
@@ -18,7 +29,7 @@ def write_txt_file(data, path):
         for line in data:
             output.write(f"{line}\n")
 
-def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
+def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs, log_filename):
     # create model
     model = CNNFlowOnly(num_input_channels)
     # create loss function and create optimizer object, we use the MSE Loss,
@@ -37,12 +48,12 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
     # this reduces the lr by a factor of 0.1 if the relative decrease after 2
     # epochs is not bigger than the default threshold
     print("training starts!")
-    train_loss_list = []
-    eval_loss_list = []
-    epoch_list = []
-    lr_list = []
+
 
     for epoch in range(num_epochs):
+        # create logger
+        logger = logging.getLogger("train_logger")
+        logger.addHandler(logging.FileHandler(f'./cnn/train_logs/{log_filename}.log', mode='w'))
         print("epoch: ",epoch+1)
         ## training part ##
         model.train()
@@ -81,10 +92,13 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
         # mean the error to print correctly
         print("train loss =",train_loss/len(train_dataset))
         print("eval loss =",eval_loss/len(eval_dataset))
-        train_loss_list.append(train_loss/len(train_dataset))
-        eval_loss_list.append(eval_loss/len(eval_dataset))
-        epoch_list.append(epoch+1)
-        lr_list.append(optimizer.param_groups[0]['lr'])
+        
+        # create logger dict, to save the data
+        log_dict = {"epoch": epoch+1,
+                "train_epoch_loss": train_loss/len(train_dataset),
+                "eval_epoch_loss": eval_loss/len(eval_dataset),
+                "lr": optimizer.param_groups[0]['lr']}
+        logger.info('%s', log_dict)
         # use the scheduler and the mean error
         scheduler.step(train_loss/len(train_dataset))
         
@@ -139,7 +153,7 @@ if __name__ == "__main__":
     eval_tensor = torch.utils.data.DataLoader(validation_set, **params) 
     
     train_loss_list, eval_loss_list, epoch_list,lr_list = \
-        train_model(train_tensor, eval_tensor, 3, 8)
+        train_model(train_tensor, eval_tensor, 3, 8, "LeakyReLU")
    
 
 # #### EVALUATION PART ####
