@@ -8,7 +8,9 @@ old_reports/
 books/
 exercises/
 data/
-
+venv/
+.idea/
+tryouts/
 
 # C extensions
 *.so
@@ -427,3 +429,5 @@ TSWLatexianTemp*
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
 
+/project/src/params_2020_12_28__18_59_52.mat
+/project/src/utils_save_load_2.py

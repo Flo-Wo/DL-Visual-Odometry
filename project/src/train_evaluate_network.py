@@ -10,6 +10,7 @@ Created on Tue Dec 29 10:19:53 2020
 import torch
 from cnn.cnn_flow_only import CNNFlowOnly
 from utils_save_load import Dataset, generate_label_dict, generate_train_eval_dict
+from tqdm import tqdm
 
 def write_txt_file(data, path):
     # from https://stackoverflow.com/questions/33686747/save-a-list-to-a-txt-file
@@ -40,6 +41,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
     eval_loss_list = []
     epoch_list = []
     lr_list = []
+
     for epoch in range(num_epochs):
         print("epoch: ",epoch+1)
         ## training part ##
@@ -51,7 +53,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
         # the flow fields and the velocity vectors, attention the enumerator
         # also returns an integer
         # print("training...")
-        for _, (flow_stack, velocity_vector) in enumerate(train_dataset):
+        for _, (flow_stack, velocity_vector) in enumerate(tqdm(train_dataset, "Train")):
             #flow_stack = flow_stack.squeeze(1)
             # according to https://stackoverflow.com/questions/48001598/why-do-we-need-to-call-zero-grad-in-pytorch
             # we need to set the gradient to zero first
@@ -69,7 +71,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs):
         ## evaluation part ##
         # print("evaluation...")
         model.eval()
-        for _, (flow_stack, velocity_vector) in enumerate(eval_dataset):
+        for _, (flow_stack, velocity_vector) in enumerate(tqdm(eval_dataset, "Evaluate")):
             #flow_stack = flow_stack.squeeze(1)
             # do not use backpropagation here, as this is the validation data
             with torch.no_grad():
