@@ -7,13 +7,13 @@ Created on Tue Dec 29 10:19:53 2020
 """
 
 import torch
-import logging
+import logging, coloredlogs
 #from cnn.cnn_flow_only import CNNFlowOnly
 from project.src.cnn.cnn_siamese_frames_flow import CNNsiamese
 from utils_save_load import Dataset_of_frames, generate_label_dict, generate_train_eval_dict
 from tqdm import tqdm
 
-
+coloredlogs.install()
 
 def write_txt_file(data, path):
     # from https://stackoverflow.com/questions/33686747/save-a-list-to-a-txt-file
