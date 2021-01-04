@@ -150,7 +150,7 @@ def load_single_images(video_path):
     """
     video = cv2.VideoCapture(video_path)
 
-    success, prev_frame = video.read()
+    success, curr_frame = video.read()
     while success:
         yield curr_frame
         success, curr_frame = video.read()
