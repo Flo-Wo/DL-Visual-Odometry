@@ -19,13 +19,14 @@ from matplotlib import pyplot as plt
 #from utils_save_load import Dataset_of_frames, generate_label_dict, generate_train_eval_dict, \
 #    generate_train_eval_dict_new_splitting
 
+from data_loader import DatasetOptFlo1Frames, generate_label_dict, generate_train_eval_dict, \
+    load_double_images, sample_down, cut_bottom, picture_bottom_offset, picture_opt_fl_size, picture_final_size, \
+    calculate_opt_flow
+
 
 # #############################################################
 # LOGGING INITIALISATION
 # #############################################################
-from project.src.data_loader import DatasetOptFlo1Frames, generate_label_dict, generate_train_eval_dict, \
-    load_double_images, sample_down, cut_bottom, picture_bottom_offset, picture_opt_fl_size, picture_final_size, \
-    calculate_opt_flow
 
 coloredlogs.install()
 logging.basicConfig(level=logging.DEBUG)
@@ -40,7 +41,7 @@ path_labels = "./data/raw/train_label.txt"
 network_save_file = "./cnn/savedmodels/LeakyReLU_SIAMESE_2"
 
 test_split_ratio = 0.8
-block_size = 6800
+block_size = 3400
 
 dataLoader_params = {'batch_size': 64, 'shuffle': True}
 
