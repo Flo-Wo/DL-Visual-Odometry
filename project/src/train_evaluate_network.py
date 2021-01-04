@@ -143,7 +143,6 @@ if __name__ == "__main__":
     params = {'batch_size': 64,\
           'shuffle': True}
           #'num_workers': 6}
-    #max_epochs = 100
     data_size = 20399
     partition = generate_train_eval_dict(data_size, 0.8)
     labels = generate_label_dict("./data/raw/train_label.txt",data_size)

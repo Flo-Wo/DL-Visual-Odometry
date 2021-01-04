@@ -91,6 +91,9 @@ class CNNFlowOnlyWithPooling(nn.Module):
         # result: shape =  torch.Size([10, 64, 53, 73]), according to
         # https://discuss.pytorch.org/t/transition-from-conv2d-to-linear-layer-equations/93850/2
         # we need to reshape the output (flatten layer in matlab)
+        
+        # here we can clearly see how the poolings layers reduce the number of
+        # output neurons after the convolutional layers
         x = x.view(-1, 64*1*3)
         x = self.fc1(x)
         x = self.fc2(x)
