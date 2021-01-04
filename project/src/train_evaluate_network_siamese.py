@@ -9,8 +9,9 @@ Created on Tue Dec 29 10:19:53 2020
 import torch
 import logging, coloredlogs
 #from cnn.cnn_flow_only import CNNFlowOnly
-from project.src.cnn.cnn_siamese_frames_flow import CNNsiamese
-from utils_save_load import Dataset_of_frames, generate_label_dict, generate_train_eval_dict
+from cnn.cnn_siamese_frames_flow import CNNsiamese
+from utils_save_load import Dataset_of_frames, generate_label_dict, generate_train_eval_dict, \
+    generate_train_eval_dict_new_splitting
 from tqdm import tqdm
 
 coloredlogs.install()
@@ -135,9 +136,12 @@ if __name__ == "__main__":
     # 'num_workers': 6}
     # max_epochs = 100
     data_size = 20399
-    partition = generate_train_eval_dict(data_size, 0.8)
+    partition = generate_train_eval_dict_new_splitting(data_size, 0.8)
+
     labels = generate_label_dict("./data/raw/train_label.txt", data_size)
 
+    #print(labels)
+    #exit(0)
     # Generators
     training_set = Dataset_of_frames(partition['train'], labels)
     train_tensor = torch.utils.data.DataLoader(training_set, **params)
@@ -146,7 +150,7 @@ if __name__ == "__main__":
     eval_tensor = torch.utils.data.DataLoader(validation_set, **params)
 
     train_loss_list, eval_loss_list, epoch_list, lr_list = \
-        train_model(train_tensor, eval_tensor, 3, 8)
+        train_model(train_tensor, eval_tensor, 3, 20)
 
 # #### EVALUATION PART ####
 # if __name__ == "__main__":
