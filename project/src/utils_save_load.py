@@ -140,6 +140,8 @@ def generate_train_eval_dict_new_splitting(data_size, test_split_ratio):
         else:
             train_indices.extend(all_indices[100*index:100*index + ratio_percent])
             test_indices.extend(all_indices[100*index + ratio_percent:(index+1)*100])
+    train_indices = ["{:05d}".format(x) for x in train_indices]
+    train_indices = ["{:05d}".format(x) for x in test_indices]
     partition = {'train' : train_indices,\
                  'validation' : test_indices}
     return(partition)
