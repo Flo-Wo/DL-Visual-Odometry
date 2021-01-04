@@ -309,8 +309,8 @@ def generate_train_eval_dict(data_size, test_split_ratio, block_size=100, offset
 
     all_indices = np.linspace(1, data_size, data_size, dtype=int)
     test_index = (all_indices - offset) % block_size < test_block
-    train_indices = [*all_indices[~test_index]]
-    test_indices = [*all_indices[test_index]]
+    train_indices = [*all_indices[test_index]]
+    test_indices = [*all_indices[~test_index]]
 
     partition = {'train': train_indices, 'validation': test_indices}
     return partition

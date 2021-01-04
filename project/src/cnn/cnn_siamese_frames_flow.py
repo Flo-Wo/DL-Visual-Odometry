@@ -27,10 +27,10 @@ def fc_layer(num_input_channels, num_output_channels):
 
 
 # same architecture as the flow only cnn, but the forward function is different
-class CNNsiamese(nn.Module):
+class CnnSiamese(nn.Module):
     def __init__(self, num_input_channels):
         # call super method to create instance of the network class
-        super(CNNsiamese, self).__init__()
+        super(CnnSiamese, self).__init__()
         self.conv1 = conv_layer(num_input_channels, 24, kernel_size=5, stride=2)
         self.conv2 = conv_layer(24, 36, kernel_size=5, stride=2)
         self.conv3 = conv_layer(36, 48, kernel_size=5, stride=2)
