@@ -8,6 +8,7 @@ Created on Tue Dec 29 10:19:53 2020
 
 import logging, coloredlogs
 
+import cv2
 import numpy as np
 from torchvision.transforms import transforms
 from tqdm import tqdm
@@ -159,8 +160,8 @@ def process_video(path_video, model_file, num_input_channels, save_to):
         prev_frame = sample_down(cut_bottom(prev_frame, picture_bottom_offset), picture_opt_fl_size)
 
         # SAVE FRAME
-        frame = sample_down(curr_frame, picture_final_size)
-        frame = transforms.ToTensor()(frame)
+        org_frame = sample_down(curr_frame, picture_final_size)
+        frame = transforms.ToTensor()(org_frame)
         frame = frame.unsqueeze(0)
         # SAVE FLOW
         rgb_flow = calculate_opt_flow(curr_frame, prev_frame)
@@ -179,26 +180,59 @@ def process_video(path_video, model_file, num_input_channels, save_to):
     plt.show()
     np.savetxt(save_to, velocities)
 
+def writeVelocityVideo():
+    #https://www.geeksforgeeks.org/python-opencv-write-text-on-video/
+    cap = cv2.VideoCapture('data/raw/test.mp4')
 
-#velocities = np.genfromtxt("data/raw/train_predicts.txt")
+    while not (cv2.waitKey(1) & 0xFF == ord('q')):
+        # Capture frames in the video
+        ret, frame = cap.read()
+
+        # describe the type of font
+        # to be used.
+        font = cv2.FONT_HERSHEY_SIMPLEX
+
+        # Use putText() method for
+        # inserting text on video
+        cv2.putText(frame,
+                    'TEXT ON VIDEO',
+                    (50, 50),
+                    font, 1,
+                    (0, 255, 255),
+                    2,
+                    cv2.LINE_4)
+
+        # Display the resulting frame
+        cv2.imshow('video', frame)
+
+        # creating 'q' as the quit
+        # button for the video
+
+    # release the cap object
+    cap.release()
+    # close all windows
+    cv2.destroyAllWindows()
+
+
+velocities = np.genfromtxt("data/raw/train_predicts.txt")
 
 #kernel_size = 100
 #kernel = np.ones(kernel_size) / kernel_size
 #data_convolved_10 = np.convolve(velocities, kernel, mode='same')
 
-#data_convolved_10 = np.genfromtxt("data/raw/train_label.txt")
+data_convolved_10 = np.genfromtxt("data/raw/train_label.txt")
 
-#plt.plot(velocities, ".")
-#plt.plot(data_convolved_10, "-")
-#plt.show()
+plt.plot(velocities, ".")
+plt.plot(data_convolved_10, "-")
+plt.show()
 
 #velocities = np.genfromtxt("data/raw/test_predicts.txt")
 #plt.plot(velocities, ".")
 #plt.show()
-#process_video("data/raw/train.mp4", "./cnn/savedmodels/LeakyReLU_SIAMESE.pth", 3, "data/raw/train_predicts.txt")
+process_video("data/raw/train.mp4", "./cnn/savedmodels/LeakyReLU_SIAMESE.pth", 3, "data/raw/train_predicts.txt")
 
-train_tensor, eval_tensor = configure_data_loader(path_labels, data_size, test_split_ratio, block_size, dataLoader_params)
-train_loss_list, eval_loss_list, epoch_list, lr_list = train_model(train_tensor, eval_tensor, 3, 20, network_save_file)
+#train_tensor, eval_tensor = configure_data_loader(path_labels, data_size, test_split_ratio, block_size, dataLoader_params)
+#train_loss_list, eval_loss_list, epoch_list, lr_list = train_model(train_tensor, eval_tensor, 3, 20, network_save_file)
 
 
 
