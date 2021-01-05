@@ -36,8 +36,8 @@ class CnnSiamese(nn.Module):
         self.conv3 = conv_layer(36, 48, kernel_size=5, stride=2)
         # randomly pick some channels/feature maps and zero them out
         self.drop = nn.Dropout2d(p=0.5)
-        self.conv4 = conv_layer(48, 64, kernel_size=3, stride=1)
-        self.conv5 = conv_layer(64, 64, kernel_size=3, stride=1)
+        self.conv4 = conv_layer(48, 24, kernel_size=3, stride=1)
+        self.conv5 = conv_layer(24, 3, kernel_size=3, stride=1)
         # now fully connected layers
         self.fc1 = fc_layer(64 * 6 * 13, 100)
         #self.fc1 = fc_layer(319488, 100)
@@ -65,26 +65,25 @@ class CnnSiamese(nn.Module):
         # we use shared weight for feature extraction and add up the extracted
         # flow and image features, before transforming them into the fully 
         # connected layers
-        logging.debug("shape = ", x.shape)
         x = self.conv1(x)
         y = self.conv1(y)
-        logging.debug("shape = ", x.shape)
+
         x = self.conv2(x)
         y = self.conv2(y)
-        logging.debug("shape = ", x.shape)
+
         x = self.conv3(x)
         y = self.conv3(y)
-        logging.debug("shape = ", x.shape)
+
         x = self.drop(x)
         y = self.drop(y)
-        logging.debug("shape = ", x.shape)
+
         x = self.conv4(x)
         y = self.conv4(y)
-        logging.debug("shape = ", x.shape)
+
         x = self.conv5(x)
         y = self.conv5(y)
-        logging.debug("shape = ", x.shape)
-        exit(0)
+
+
 
         # here we need a reshape, to pass the tensor into a fc
         logging.debug("shape = ", x.shape)
