@@ -33,19 +33,19 @@ class CnnSiamese(nn.Module):
         super(CnnSiamese, self).__init__()
         self.conv1f = conv_layer(num_input_channels, 24, kernel_size=5, stride=2)
         self.conv2f = conv_layer(24, 36, kernel_size=5, stride=2)
-        self.conv3f = conv_layer(36, 48, kernel_size=5, stride=2)
+        self.conv3f = conv_layer(36, 36, kernel_size=5, stride=2)
         # randomly pick some channels/feature maps and zero them out
         self.dropf = nn.Dropout2d(p=0.5)
-        self.conv4f = conv_layer(48, 64, kernel_size=3, stride=1)
-        self.conv5f = conv_layer(64, 64, kernel_size=3, stride=1)
+        self.conv4f = conv_layer(36, 36, kernel_size=3, stride=1)
+        #self.conv5f = conv_layer(64, 64, kernel_size=3, stride=1)
 
         self.conv1o = conv_layer(num_input_channels, 24, kernel_size=5, stride=2)
         self.conv2o = conv_layer(24, 36, kernel_size=5, stride=2)
-        self.conv3o = conv_layer(36, 48, kernel_size=5, stride=2)
+        self.conv3o = conv_layer(36, 36, kernel_size=5, stride=2)
         # randomly pick some channels/feature maps and zero them out
         self.dropo = nn.Dropout2d(p=0.5)
-        self.conv4o = conv_layer(48, 64, kernel_size=3, stride=1)
-        self.conv5o = conv_layer(64, 64, kernel_size=3, stride=1)
+        self.conv4o = conv_layer(36, 36, kernel_size=3, stride=1)
+        #self.conv5o = conv_layer(64, 64, kernel_size=3, stride=1)
 
         # now fully connected layers
         self.fc1 = fc_layer(64 * 6 * 13, 100)
@@ -94,10 +94,12 @@ class CnnSiamese(nn.Module):
         y = self.conv4f(y)
         o = self.conv4o(o)
 
-        x = self.conv5f(x)
-        y = self.conv5f(y)
-        o = self.conv5o(o)
+        #x = self.conv5f(x)
+        #y = self.conv5f(y)
+        #o = self.conv5o(o)
 
+        print(o.shape)
+        exit(0)
 
         # here we need a reshape, to pass the tensor into a fc
         #logging.debug("shape = ", x.shape)
