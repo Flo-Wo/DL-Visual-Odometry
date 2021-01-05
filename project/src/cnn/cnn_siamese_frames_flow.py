@@ -65,26 +65,24 @@ class CnnSiamese(nn.Module):
         # we use shared weight for feature extraction and add up the extracted
         # flow and image features, before transforming them into the fully 
         # connected layers
-        logging.debug("shape = ", x.shape)
+
         x = self.conv1(x)
         y = self.conv1(y)
-        logging.debug("shape = ", x.shape)
+
         x = self.conv2(x)
         y = self.conv2(y)
-        logging.debug("shape = ", x.shape)
+
         x = self.conv3(x)
         y = self.conv3(y)
-        logging.debug("shape = ", x.shape)
+
         x = self.drop(x)
         y = self.drop(y)
-        logging.debug("shape = ", x.shape)
+
         x = self.conv4(x)
         y = self.conv4(y)
-        logging.debug("shape = ", x.shape)
+
         x = self.conv5(x)
         y = self.conv5(y)
-        logging.debug("shape = ", x.shape)
-        exit(0)
 
         # here we need a reshape, to pass the tensor into a fc
         logging.debug("shape = ", x.shape)

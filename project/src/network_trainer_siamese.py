@@ -13,13 +13,13 @@ from torchvision.transforms import transforms
 from tqdm import tqdm
 import torch
 #from cnn.cnn_flow_only import CNNFlowOnly
-from cnn.cnn_siamese_frames_flow import CnnSiamese
+from cnn.cnn_siamese_frames_flow_2try import CnnSiamese
 #from data_loader import *
 from matplotlib import pyplot as plt
 #from utils_save_load import Dataset_of_frames, generate_label_dict, generate_train_eval_dict, \
 #    generate_train_eval_dict_new_splitting
 
-from data_loader import DatasetOptFlo1Frames, generate_label_dict, generate_train_eval_dict, \
+from data_loader import DatasetOptFlo2Frames, generate_label_dict, generate_train_eval_dict, \
     load_double_images, sample_down, cut_bottom, picture_bottom_offset, picture_opt_fl_size, picture_final_size, \
     calculate_opt_flow
 
@@ -45,6 +45,8 @@ block_size = 3400
 
 dataLoader_params = {'batch_size': 64, 'shuffle': True}
 
+model_class = DatasetOptFlo2Frames
+network_class = CnnSiamese
 
 # #############################################################
 # Configure Data Loaders
@@ -54,8 +56,8 @@ def configure_data_loader(labels_path, size, tsr, bs, dl_params):
     labels = generate_label_dict(labels_path, size)
     partitions = generate_train_eval_dict(size, tsr, bs, offset=0)
 
-    training_set = DatasetOptFlo1Frames(partitions['train'], labels)
-    validation_set = DatasetOptFlo1Frames(partitions['validation'], labels)
+    training_set = model_class(partitions['train'], labels)
+    validation_set = model_class(partitions['validation'], labels)
 
     train_tensor = torch.utils.data.DataLoader(training_set, **dl_params)
     eval_tensor = torch.utils.data.DataLoader(validation_set, **dl_params)
@@ -65,7 +67,7 @@ def configure_data_loader(labels_path, size, tsr, bs, dl_params):
 
 def train_model(train_dataset, eval_dataset, num_input_channels, num_epochs, save_file):
     # create model
-    model = CnnSiamese(num_input_channels)
+    model = network_class(num_input_channels)
     # create loss function and create optimizer object, we use the MSE Loss,
     # as this is used to evaluate our results in the initial challenge
     criterion = torch.nn.MSELoss()
@@ -95,12 +97,14 @@ def train_model(train_dataset, eval_dataset, num_input_channels, num_epochs, sav
         # the flow fields and the velocity vectors, attention the enumerator
         # also returns an integer
         # print("training...")
-        for _, (flow_stack, normal_stack, velocity_vector) in enumerate(tqdm(train_dataset, "Train")):
+        #for _, (flow_stack, normal_stack, velocity_vector) in enumerate(tqdm(train_dataset, "Train")):
+        for _, (*a, velocity_vector) in enumerate(tqdm(train_dataset, "Train")):
             # flow_stack = flow_stack.squeeze(1)
             # according to https://stackoverflow.com/questions/48001598/why-do-we-need-to-call-zero-grad-in-pytorch
             # we need to set the gradient to zero first
             optimizer.zero_grad()
-            predicted_velocity = model(flow_stack, normal_stack)
+            #predicted_velocity = model(flow_stack, normal_stack)
+            predicted_velocity = model(*a)
             loss = criterion(predicted_velocity, velocity_vector.float())
             # print(loss)
             # print(loss.item())
@@ -113,11 +117,13 @@ def train_model(train_dataset, eval_dataset, num_input_channels, num_epochs, sav
         ## evaluation part ##
         # print("evaluation...")
         model.eval()
-        for _, (flow_stack, normal_stack, velocity_vector) in enumerate(tqdm(eval_dataset, "Evaluate")):
+        for _, (*a, velocity_vector) in enumerate(tqdm(eval_dataset, "Evaluate")):
+        #for _, (flow_stack, normal_stack, velocity_vector) in enumerate(tqdm(eval_dataset, "Evaluate")):
             # flow_stack = flow_stack.squeeze(1)
             # do not use backpropagation here, as this is the validation data
             with torch.no_grad():
-                predicted_velocity = model(flow_stack, normal_stack)
+                #predicted_velocity = model(flow_stack, normal_stack)
+                predicted_velocity = model(*a)
                 loss = criterion(predicted_velocity, velocity_vector.float())
                 eval_loss += loss.item()
         # mean the error to print correctly
@@ -140,7 +146,7 @@ def train_model(train_dataset, eval_dataset, num_input_channels, num_epochs, sav
 
 def process_video(path_video, model_file, num_input_channels, save_to):
     # build a new network
-    model = CnnSiamese(num_input_channels)
+    model = network_class(num_input_channels)
     # load like
     # https://stackoverflow.com/questions/49941426/attributeerror-collections-ordereddict-object-has-no-attribute-eval
     model.load_state_dict(torch.load(model_file))
