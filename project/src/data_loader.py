@@ -150,7 +150,7 @@ def load_single_images(video_path):
     """
     video = cv2.VideoCapture(video_path)
 
-    success, prev_frame = video.read()
+    success, curr_frame = video.read()
     while success:
         yield curr_frame
         success, curr_frame = video.read()
@@ -335,5 +335,5 @@ if __name__ == "__main__":
     #    cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
     #    cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
     # save_flow_as_tensors(path_tensor_opt_fl, path_raw_video)
-    # save_frames_as_tensors(path_tensor_frames, path_raw_video)
-    save_both(path_tensor_frames, path_tensor_opt_fl, path_raw_video)
+    save_frames_as_tensors(path_tensor_frames, path_raw_video)
+    #save_both(path_tensor_frames, path_tensor_opt_fl, path_raw_video)
