@@ -222,8 +222,6 @@ def calc_of(curr_frame, prev_frame):
 
 def overlay_speed_error_on_video(video_path, predicted_velocity_path,frame_limit=None,\
                                  velocity_path=None):
-    # source: https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_gui/py_video_display/py_video_display.html#saving-a-video
-    
     if velocity_path is not None:
         label = True
         actual_velocity = np.loadtxt(velocity_path)
@@ -268,8 +266,7 @@ def put_velo_error_on_frame(frame, prediction, **kwargs):
     line_offset = 30
     right_offset = 8
     
-    
-    # check, whether the real velocity is given
+    # check, whether the real velocity is given, or not, via varargs
     if "velocity" in kwargs:
         velocity = kwargs["velocity"]
         error = np.abs(velocity-prediction)
