@@ -46,9 +46,9 @@ deep learning, computer vision, visual odometry, dense optical flow, siamese net
 \end{IEEEkeywords}
 
 \section{Introduction}
-Here are some motivational words need
+Here are some motivational words needed
 \subsection{Aim of the project}
-Here we need to clarify the aim of the project
+Here we need to clarify the aim of the project and the levels of measurement
 
 ASSUMPTIONS ON MEASUREMENT OF THE RESULTS
 
@@ -176,7 +176,7 @@ blocks of 100 frames and take the first 80 for training and the last 20 for test
 driving.
 \end{enumerate}
 
-\subsection{Pooling layers, initial splitting}
+\subsection{Pooling layers with initial splitting}
 The implementation of pooling layers helped a lot, as now the loss on the train and test data seem to decrease 
 nearly equally. Our results on the initial splitting are shown in \cref{tab:ResultsInitialSplitting}. We gave the network
 with max pooling a try with 15 epochs, as the loss on the train and test set was decreasing in a pretty stable manner. Using this
@@ -197,7 +197,7 @@ Max pooling (15 epochs) & - & - & \textbf{3.22} & \textbf{9.63} \\
 Average pooling & 7.70 & 11.40 & 6.08 & 13.09\\
 \bottomrule
 \end{tabular}
-\caption{MSE results of the initial network using pooling layers and the $\mathrm{leakyReLU}$ activation function.}
+\caption{MSE results of the network using pooling and dropout layers, different activation functions and the initial splitting.}
 \label{tab:ResultsInitialSplitting}
 \end{table}
 \subsection{New splitting and siamese network}
