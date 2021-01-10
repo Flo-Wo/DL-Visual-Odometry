@@ -19,6 +19,6 @@ number_of_velo = len(velocity_vector)
 time = np.arange(1,number_of_velo+1)
 
 plt.plot(time, velocity_vector,"b-")
-plt.xlabel("time [s]")
+plt.xlabel("frame number")
 plt.ylabel("velocity [m/s]")
 plt.show()

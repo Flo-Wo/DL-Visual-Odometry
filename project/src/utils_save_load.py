@@ -220,28 +220,87 @@ def calc_of(curr_frame, prev_frame):
 # Create Overlay and create Video
 # #############################################################
 
-def overlay_speed_on_video(video_path, velocity_path, predicted_velocity_path,\
-                           frame_limit):
-    # function to return a video, which now has the real velocity, the 
-    # predicted and the absolute difference as labels inside the frames
-    # of the original video
-    actual_velocity = np.loadtxt(velocity_path)
+def overlay_speed_error_on_video(video_path, predicted_velocity_path,frame_limit=None,\
+                                 velocity_path=None):
+    # source: https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_gui/py_video_display/py_video_display.html#saving-a-video
+    
+    if velocity_path is not None:
+        label = True
+        actual_velocity = np.loadtxt(velocity_path)
+    else:
+        label = False
     predicted_velocity = np.loadtxt(predicted_velocity_path)
     # load the original video
     video_original = cv2.VideoCapture(video_path)
-    video_label = cv2.VideoWriter()
+    video_label = cv2.VideoWriter("./data/demos/results_siamese_test.mp4",\
+                                  0x7634706d, 20, (640, 480))
     
-    # write real velocity into the frame
-    #frame_labeled = cv2.putText()
+    if frame_limit is None:
+        frame_limit = len(predicted_velocity)
     
-    # write predicted velocity into the frame
+    success,frame = video_original.read()
+    count = 0
+    while success and count < frame_limit-1:
+        if count >= 1:
+            if label:
+                frame_labeled = put_velo_error_on_frame(frame, actual_velocity[count],\
+                                              predicted_velocity[count])
+            else:
+                frame_labeled = put_velo_on_frame(frame, predicted_velocity[count])
+            video_label.write(frame_labeled)
+            success,frame = video_original.read()
+            if count % 100 == 0:
+                print('Frame: ', count)
+        count += 1
+    video_label.release()
+    video_original.release()
+    cv2.destroyAllWindows()
+
+def put_velo_error_on_frame(frame, velocity, prediction):
+    # set some constants for the overlay
+    error = np.abs(velocity-prediction)
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    velo_color = (25, 255, 25)
+    pred_color = (255, 25, 25)
+    err_color = (25,25,255)
+    fontScale = 1.1
+    thickness = 2
+    upper_offset = 40
+    line_offset = 30
+    right_offset = 8
+    velo_position = (right_offset,upper_offset)
+    pred_position = (right_offset,upper_offset + line_offset)
+    err_position = (right_offset,upper_offset + 2*line_offset)
     
-    #abs_diff = np.abs(velocity - predicted_velocity)
+    velo = "speed (m/s): " + "{:2.3f}".format(velocity)
+    pred = "pred (m/s): " + "{:2.3f}".format(prediction)
+    err = "abs. error: " + "{:2.3f}".format(error)
     
-    # write absolute difference into the frame
+    frame_labeled = cv2.putText(frame,velo,velo_position,font,fontScale,\
+                                velo_color,thickness)
+    frame_labeled = cv2.putText(frame,pred,pred_position,font,fontScale,\
+                                pred_color,thickness)
+    frame_labeled = cv2.putText(frame_labeled,err,err_position,font,fontScale,\
+                                err_color,thickness)
+    return(frame_labeled)
+
+def put_velo_on_frame(frame,prediction):
+    # set some constants for the overlay
+    font = cv2.FONT_HERSHEY_SIMPLEX
+
+    pred_color = (255, 25, 25)
+    fontScale = 1.1
+    thickness = 2
+    upper_offset = 40
+    right_offset = 8
+    pred_position = (right_offset,upper_offset)
     
-    
-    pass
+    pred = "pred (m/s): " + "{:2.3f}".format(prediction)
+
+    frame_labeled = cv2.putText(frame,pred,pred_position,font,fontScale,\
+                                pred_color,thickness)
+
+    return(frame_labeled)
 
 
     
@@ -256,5 +315,14 @@ if __name__ == "__main__":
     # cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
     # generate_flow_all("./data/tensorData/of/")
     # save_frames_as_tensors("./data/tensorData/frames/")
+    # frame = cv2.imread("./data/frames/frame1.png")
+    # frame_label = put_velo_on_frame(frame,20,10)
+    # cv2.imwrite("./test.png",frame_label)
+    # overlay_speed_error_on_video("./data/raw/train.mp4",\
+    #                              "./data/predicts/train_predicts_siamese.txt",\
+    #                             20399,\
+    #                             "./data/raw/train_label.txt")
+    overlay_speed_error_on_video("./data/raw/test.mp4",\
+                                 "./data/predicts/test_predicts_siamese.txt")
     pass
 
