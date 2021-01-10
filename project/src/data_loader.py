@@ -62,6 +62,10 @@ class DatasetOptFlo(torch.utils.data.Dataset):
 
         return x, y
 
+    @classmethod
+    def get_images(cls, prev_frame, curr_frame, opt_flow):
+        return opt_flow
+
 
 class DatasetFrames(torch.utils.data.Dataset):
     'Characterizes a dataset for PyTorch'
@@ -86,6 +90,10 @@ class DatasetFrames(torch.utils.data.Dataset):
         y = (self.labels[ID] + self.labels[ID - 1]) / 2
 
         return X1, X2, y
+
+    @classmethod
+    def get_images(cls, prev_frame, curr_frame, opt_flow):
+        return prev_frame, curr_frame
 
 
 class DatasetOptFlo1Frames(torch.utils.data.Dataset):
@@ -112,6 +120,10 @@ class DatasetOptFlo1Frames(torch.utils.data.Dataset):
 
         return F, X, y
 
+    @classmethod
+    def get_images(cls, prev_frame, curr_frame, opt_flow):
+        return curr_frame, opt_flow
+
 
 class DatasetOptFlo2Frames(torch.utils.data.Dataset):
     'Characterizes a dataset for PyTorch'
@@ -137,6 +149,10 @@ class DatasetOptFlo2Frames(torch.utils.data.Dataset):
         y = (self.labels[ID] + self.labels[ID - 1]) / 2
 
         return F1, F2, X, y
+
+    @classmethod
+    def get_images(cls, prev_frame, curr_frame, opt_flow):
+        return prev_frame, curr_frame, opt_flow
 
 
 # #############################################################

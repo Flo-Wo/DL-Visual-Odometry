@@ -13,21 +13,21 @@ import numpy as np
 from torchvision.transforms import transforms
 from tqdm import tqdm
 import torch
-#from cnn.cnn_flow_only import CNNFlowOnly
+# from cnn.cnn_flow_only import CNNFlowOnly
 from cnn.cnn_siamese_frames_flow_2try import CnnSiamese
-#from data_loader import *
+# from data_loader import *
 from matplotlib import pyplot as plt
-#from utils_save_load import Dataset_of_frames, generate_label_dict, generate_train_eval_dict, \
+# from utils_save_load import Dataset_of_frames, generate_label_dict, generate_train_eval_dict, \
 #    generate_train_eval_dict_new_splitting
 
 from data_loader import DatasetOptFlo2Frames, generate_label_dict, generate_train_eval_dict, \
     load_double_images, sample_down, cut_bottom, picture_bottom_offset, picture_opt_fl_size, picture_final_size, \
-    calculate_opt_flow
-
+    calculate_opt_flow, DatasetOptFlo
 
 # #############################################################
 # LOGGING INITIALISATION
 # #############################################################
+from project.src.cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
 
 coloredlogs.install()
 logging.basicConfig(level=logging.DEBUG)
@@ -46,8 +46,12 @@ block_size = 3400
 
 dataLoader_params = {'batch_size': 64, 'shuffle': True}
 
-model_class = DatasetOptFlo2Frames
-network_class = CnnSiamese
+#model_class = DatasetOptFlo2Frames
+#network_class = CnnSiamese
+
+model_class = DatasetOptFlo
+network_class = CNNFlowOnlyWithPooling
+
 
 # #############################################################
 # Configure Data Loaders
@@ -98,13 +102,13 @@ def train_model(train_dataset, eval_dataset, num_input_channels, num_epochs, sav
         # the flow fields and the velocity vectors, attention the enumerator
         # also returns an integer
         # print("training...")
-        #for _, (flow_stack, normal_stack, velocity_vector) in enumerate(tqdm(train_dataset, "Train")):
+        # for _, (flow_stack, normal_stack, velocity_vector) in enumerate(tqdm(train_dataset, "Train")):
         for _, (*a, velocity_vector) in enumerate(tqdm(train_dataset, "Train")):
             # flow_stack = flow_stack.squeeze(1)
             # according to https://stackoverflow.com/questions/48001598/why-do-we-need-to-call-zero-grad-in-pytorch
             # we need to set the gradient to zero first
             optimizer.zero_grad()
-            #predicted_velocity = model(flow_stack, normal_stack)
+            # predicted_velocity = model(flow_stack, normal_stack)
             predicted_velocity = model(*a)
             loss = criterion(predicted_velocity, velocity_vector.float())
             # print(loss)
@@ -119,11 +123,11 @@ def train_model(train_dataset, eval_dataset, num_input_channels, num_epochs, sav
         # print("evaluation...")
         model.eval()
         for _, (*a, velocity_vector) in enumerate(tqdm(eval_dataset, "Evaluate")):
-        #for _, (flow_stack, normal_stack, velocity_vector) in enumerate(tqdm(eval_dataset, "Evaluate")):
+            # for _, (flow_stack, normal_stack, velocity_vector) in enumerate(tqdm(eval_dataset, "Evaluate")):
             # flow_stack = flow_stack.squeeze(1)
             # do not use backpropagation here, as this is the validation data
             with torch.no_grad():
-                #predicted_velocity = model(flow_stack, normal_stack)
+                # predicted_velocity = model(flow_stack, normal_stack)
                 predicted_velocity = model(*a)
                 loss = criterion(predicted_velocity, velocity_vector.float())
                 eval_loss += loss.item()
@@ -153,86 +157,56 @@ def process_video(path_video, model_file, num_input_channels, save_to):
     model.load_state_dict(torch.load(model_file))
     model.eval()
 
-    velocities = np.array([])
+    vels = np.array([])
 
     for _, (prev_frame, curr_frame) in enumerate(tqdm(load_double_images(path_video), "Process Video")):
         curr_frame = sample_down(cut_bottom(curr_frame, picture_bottom_offset), picture_opt_fl_size)
         prev_frame = sample_down(cut_bottom(prev_frame, picture_bottom_offset), picture_opt_fl_size)
 
-        # SAVE FRAME
-        org_frame = sample_down(curr_frame, picture_final_size)
-        frame = transforms.ToTensor()(org_frame)
-        frame = frame.unsqueeze(0)
-        # SAVE FLOW
+        # FLOW
         rgb_flow = calculate_opt_flow(curr_frame, prev_frame)
         # transform image to a tensor and concat them
         rgb_flow_tensor = transforms.ToTensor()(rgb_flow)  # .unsqueeze(0)
         rgb_flow_tensor = rgb_flow_tensor.unsqueeze(0)
 
-        logging.debug(frame.size())
-        logging.debug(rgb_flow_tensor.size())
+        # FRAME
+        curr_frame = sample_down(curr_frame, picture_final_size)
+        curr_frame = transforms.ToTensor()(curr_frame)
+        curr_frame = curr_frame.unsqueeze(0)
+        prev_frame = sample_down(prev_frame, picture_final_size)
+        prev_frame = transforms.ToTensor()(prev_frame)
+        prev_frame = prev_frame.unsqueeze(0)
+
+        #logging.debug(frame.size())
+        #logging.debug(rgb_flow_tensor.size())
 
         with torch.no_grad():
-            predicted_velocity = model(rgb_flow_tensor, frame)
-            velocities = np.append(velocities, predicted_velocity)
+            # predicted_velocity = model(rgb_flow_tensor, frame)
+            predicted_velocity = model(model_class.get_images(prev_frame, curr_frame, rgb_flow_tensor))
+            vels = np.append(vels, predicted_velocity)
 
-    plt.plot(velocities)
+    plt.plot(vels)
     plt.show()
-    np.savetxt(save_to, velocities)
-
-def writeVelocityVideo():
-    #https://www.geeksforgeeks.org/python-opencv-write-text-on-video/
-    cap = cv2.VideoCapture('data/raw/test.mp4')
-
-    while not (cv2.waitKey(1) & 0xFF == ord('q')):
-        # Capture frames in the video
-        ret, frame = cap.read()
-
-        # describe the type of font
-        # to be used.
-        font = cv2.FONT_HERSHEY_SIMPLEX
-
-        # Use putText() method for
-        # inserting text on video
-        cv2.putText(frame,
-                    'TEXT ON VIDEO',
-                    (50, 50),
-                    font, 1,
-                    (0, 255, 255),
-                    2,
-                    cv2.LINE_4)
-
-        # Display the resulting frame
-        cv2.imshow('video', frame)
-
-        # creating 'q' as the quit
-        # button for the video
-
-    # release the cap object
-    cap.release()
-    # close all windows
-    cv2.destroyAllWindows()
+    np.savetxt(save_to, vels)
 
 
-velocities = np.genfromtxt("data/raw/train_predicts.txt")
+#velocities = np.genfromtxt("data/raw/train_predicts.txt")
 
-#kernel_size = 100
-#kernel = np.ones(kernel_size) / kernel_size
-#data_convolved_10 = np.convolve(velocities, kernel, mode='same')
+# kernel_size = 100
+# kernel = np.ones(kernel_size) / kernel_size
+# data_convolved_10 = np.convolve(velocities, kernel, mode='same')
 
-data_convolved_10 = np.genfromtxt("data/raw/train_label.txt")
+#data_convolved_10 = np.genfromtxt("data/raw/train_label.txt")
 
-plt.plot(velocities, ".")
-plt.plot(data_convolved_10, "-")
-plt.show()
-
-#velocities = np.genfromtxt("data/raw/test_predicts.txt")
 #plt.plot(velocities, ".")
+#plt.plot(data_convolved_10, "-")
 #plt.show()
-process_video("data/raw/train.mp4", "./cnn/savedmodels/LeakyReLU_SIAMESE.pth", 3, "data/raw/train_predicts.txt")
 
-#train_tensor, eval_tensor = configure_data_loader(path_labels, data_size, test_split_ratio, block_size, dataLoader_params)
-#train_loss_list, eval_loss_list, epoch_list, lr_list = train_model(train_tensor, eval_tensor, 3, 20, network_save_file)
+# velocities = np.genfromtxt("data/raw/test_predicts.txt")
+# plt.plot(velocities, ".")
+# plt.show()
+process_video("data/raw/test.mp4", "./cnn/savedmodels/ReLU15EpochsBatchNormMSE13NoResidual.pth", 3,
+              "data/raw/test_predicts_2.txt")
 
-
-
+# train_tensor, eval_tensor = configure_data_loader(path_labels, data_size, test_split_ratio, block_size, dataLoader_params)
+# train_loss_list, eval_loss_list, epoch_list, lr_list = train_model(train_tensor, eval_tensor, 3, 20, network_save_file)
