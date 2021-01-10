@@ -7,8 +7,8 @@ Created on Tue Dec 29 10:36:35 2020
 """
 
 import torch
-from torch.utils.data import Dataset, DataLoader, Subset, TensorDataset
-from torchvision import datasets,transforms
+#from torch.utils.data import Dataset, DataLoader, Subset, TensorDataset
+from torchvision import transforms
 import cv2
 import numpy as np
 from tqdm import tqdm
@@ -142,7 +142,11 @@ def generate_train_eval_dict_new_splitting(data_size, test_split_ratio):
         else:
             train_indices.extend(all_indices[100*index:100*index + ratio_percent])
             test_indices.extend(all_indices[100*index + ratio_percent:(index+1)*100])
-    partition = {'train' : train_indices, 'validation' : test_indices}
+
+    train_indices = ["{:05d}".format(x) for x in train_indices]
+    train_indices = ["{:05d}".format(x) for x in test_indices]
+    partition = {'train' : train_indices,\
+                 'validation' : test_indices}
     return(partition)
 
 
@@ -207,17 +211,108 @@ def calc_of(curr_frame, prev_frame):
     rgb_image = cv2.cvtColor(hsv_mask, cv2.COLOR_HSV2RGB) 
     rgb_image = sample_down_half_second(rgb_image)
     return(rgb_image)
+
+
+
+
+
+# #############################################################
+# Create Overlay and create Video
+# #############################################################
+
+def overlay_speed_error_on_video(video_path, predicted_velocity_path,frame_limit=None,\
+                                 velocity_path=None):
+    if velocity_path is not None:
+        label = True
+        actual_velocity = np.loadtxt(velocity_path)
+    else:
+        label = False
+    predicted_velocity = np.loadtxt(predicted_velocity_path)
+    # load the original video
+    video_original = cv2.VideoCapture(video_path)
+    video_label = cv2.VideoWriter("./data/demos/results_siamese_test.mp4",\
+                                  0x7634706d, 20, (640, 480))
+    
+    if frame_limit is None:
+        frame_limit = len(predicted_velocity)
+    
+    success,frame = video_original.read()
+    count = 0
+    while success and count < frame_limit-1:
+        if count >= 1:
+            if label:
+                frame_labeled = put_velo_error_on_frame(frame, predicted_velocity[count],\
+                                                        velocity=actual_velocity[count])
+            else:
+                frame_labeled = put_velo_error_on_frame(frame, predicted_velocity[count])
+            video_label.write(frame_labeled)
+            success,frame = video_original.read()
+            if count % 100 == 0:
+                print('Frame: ', count)
+        count += 1
+    video_label.release()
+    video_original.release()
+    cv2.destroyAllWindows()
+
+def put_velo_error_on_frame(frame, prediction, **kwargs):
+    # set some important constants
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    velo_color = (25, 255, 25)
+    pred_color = (255, 25, 25)
+    err_color = (25,25,255)
+    fontScale = 1.1
+    thickness = 2
+    upper_offset = 40
+    line_offset = 30
+    right_offset = 8
+    
+    # check, whether the real velocity is given, or not, via varargs
+    if "velocity" in kwargs:
+        velocity = kwargs["velocity"]
+        error = np.abs(velocity-prediction)
+        velo_position = (right_offset,upper_offset)
+        pred_position = (right_offset,upper_offset + line_offset)
+        err_position = (right_offset,upper_offset + 2*line_offset)
+        pred = "pred (m/s): " + "{:2.3f}".format(prediction)
+        velo = "speed (m/s): " + "{:2.3f}".format(velocity)
+        
+        frame_labeled = cv2.putText(frame,velo,velo_position,font,fontScale,\
+                                 velo_color,thickness)
+        err = "abs. error: " + "{:2.3f}".format(error)
+        frame_labeled = cv2.putText(frame_labeled,err,err_position,font,fontScale,\
+                                 err_color,thickness)
+        
+        frame_labeled = cv2.putText(frame,pred,pred_position,font,fontScale,\
+                                    pred_color,thickness)
+    else:
+        pred_position = (right_offset,upper_offset)
+        pred = "pred (m/s): " + "{:2.3f}".format(prediction)
+        frame_labeled = cv2.putText(frame,pred,pred_position,font,fontScale,\
+                                    pred_color,thickness)
+    return(frame_labeled)
+
+
+
     
 
 if __name__ == "__main__":
-#    i1 = cv2.imread("./data/frames/frame1.png")
-#    i2 = cv2.imread("./data/frames/frame2.png")
-#    i2_cut_down = sample_down_half(i2[:-60,:,:])
-#    flow_field = calc_of(i1, i2)
-#    cv2.imwrite("../report/imgs/frame2_original.png",i2)
-#    cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
-#    cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
-    generate_flow_all("./data/tensorData/of/")
-    save_frames_as_tensors("./data/tensorData/frames/")
-
+    # i1 = cv2.imread("./data/frames/frame1.png")
+    # i2 = cv2.imread("./data/frames/frame2.png")
+    # i2_cut_down = sample_down_half(i2[:-60,:,:])
+    # flow_field = calc_of(i1, i2)
+    # cv2.imwrite("../report/imgs/frame2_original.png",i2)
+    # cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
+    # cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
+    # generate_flow_all("./data/tensorData/of/")
+    # save_frames_as_tensors("./data/tensorData/frames/")
+    frame = cv2.imread("./data/frames/frame1.png")
+    frame_label = put_velo_error_on_frame(frame,20,velocity=20)
+    cv2.imwrite("./test.png",frame_label)
+    # overlay_speed_error_on_video("./data/raw/train.mp4",\
+    #                              "./data/predicts/train_predicts_siamese.txt",\
+    #                             20399,\
+    #                             "./data/raw/train_label.txt")
+    # overlay_speed_error_on_video("./data/raw/test.mp4",\
+    #                              "./data/predicts/test_predicts_siamese.txt")
+    pass
 
