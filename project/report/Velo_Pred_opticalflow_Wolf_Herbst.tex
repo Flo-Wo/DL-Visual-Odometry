@@ -125,6 +125,8 @@ As an initial architecture we decided to give the model of https://arxiv.org/pdf
 for self-driving cars, the model has enough complexity to handle a task like ours and with the amount of layers, we had a lot of
 possibilities to fine-tune and improve the model.
 
+HERE SHOULD BE AN IMAGE OF THE NETWORK
+
 In a first approach, we tried the raw model gaining an MSE of around 18-20 on testing and under 3 on training. One can clearly see,
 that the model really overfits the train dataset.
 
@@ -140,7 +142,8 @@ testing set. We ran the
 code multiple times, to ensure this result holds. This result was not really promising, so we wanted to decrease the error by 
 modifying the model even more.
 
-As we still had a lot of issues with overfits, we decided to include a dropout layer, according to https://jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf.
+As we still had a lot of issues with overfits, we decided to include a dropout layer, according to https://jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf. We tried different numbers and positions for dropout layers, but using one layer with a dropout 
+probability of $p=0.5$ after the third concolutional layer seemed to work best.
 
 To solve the problem of dead neurons\footnote{As one can clearly see in the defintion of the ReLU 
 function, neurons with a value below zero cannot participate in the learning process.} of the ReLU function, we 
@@ -177,6 +180,14 @@ driving.
 \end{enumerate}
 
 \subsection{Pooling layers with initial splitting}
+We added two generic pooling layers to the network. One after the second convolutional layer and the second one before the fully
+connected layers start. We tested maximum and average pooling with the following parameters
+\begin{align*}
+\text{kernel size} &:= 2\times 2\\
+\text{stride} &:= 2\\
+\text{padding} &:= 1\\
+\text{dilatation} &:= \text{None}
+\end{align*}
 The implementation of pooling layers helped a lot, as now the loss on the train and test data seem to decrease 
 nearly equally. Our results on the initial splitting are shown in \cref{tab:ResultsInitialSplitting}. We gave the network
 with max pooling a try with 15 epochs, as the loss on the train and test set was decreasing in a pretty stable manner. Using this
@@ -204,10 +215,10 @@ Average pooling & 7.70 & 11.40 & 6.08 & 13.09\\
 
 \subsection{Augmented brightness}
 
-\section{New Approach using siamese network}
+\section{New Approach using siamese network for two consecutive frames}
 
 
-\section{Results and comparison}
+\section{Error analysis and results}
 
 \section{Further work}
 
