@@ -39,12 +39,13 @@ class CnnSiamese(nn.Module):
         self.conv4 = conv_layer(48, 64, kernel_size=3, stride=1)
         self.conv5 = conv_layer(64, 64, kernel_size=3, stride=1)
         # now fully connected layers
-        self.fc1 = fc_layer(64 * 6 * 13, 100)
-        #self.fc1 = fc_layer(319488, 100)
-        self.fc2 = fc_layer(100, 50)
-        self.fc3 = fc_layer(50, 10)
+        self.fc1 = fc_layer(2 * 64 * 6 * 13, 200)
+        # self.fc1 = fc_layer(319488, 100)
+        self.fc2 = fc_layer(200, 100)
+        self.fc3 = fc_layer(100, 50)
         # no activation function in the last layer
-        self.fc4 = nn.Linear(10, 1)
+        self.fc4 = fc_layer(50, 10)
+        self.fc5 = nn.Linear(10, 1)
         # init weights and bias' for the convolution layer
         # for the linear layers, pytorch chooses a uniform distribution for
         # w and b, which should be fine
@@ -61,37 +62,50 @@ class CnnSiamese(nn.Module):
 
     # implement forward function for the network, to take the flow and 
     # the image
-    def forward(self, x, y):
+    def forward(self, x, y, o):
         # we use shared weight for feature extraction and add up the extracted
         # flow and image features, before transforming them into the fully 
         # connected layers
-
         x = self.conv1(x)
         y = self.conv1(y)
+        o = self.conv1(o)
 
         x = self.conv2(x)
         y = self.conv2(y)
+        o = self.conv2(o)
 
         x = self.conv3(x)
         y = self.conv3(y)
+        o = self.conv3(o)
 
         x = self.drop(x)
         y = self.drop(y)
+        o = self.drop(o)
 
         x = self.conv4(x)
         y = self.conv4(y)
+        o = self.conv4(o)
 
         x = self.conv5(x)
         y = self.conv5(y)
+        o = self.conv5(o)
+
+        #print(o.shape)
+        #exit(0)
 
         # here we need a reshape, to pass the tensor into a fc
-        logging.debug("shape = ", x.shape)
-        logging.debug("shape = ", y.shape)
+        #logging.debug("shape = ", x.shape)
+        #logging.debug("shape = ", y.shape)
         # result: shape =  torch.Size([10, 64, 53, 73]), according to
         # https://discuss.pytorch.org/t/transition-from-conv2d-to-linear-layer-equations/93850/2
         # we need to reshape the output (flatten layer in matlab)
+        #x = x.view(-1, 64 * 6 * 13)
+        #y = y.view(-1, 64 * 6 * 13)
+        #o = o.view(-1, 64 * 6 * 13)
+
         x = x.view(-1, 64 * 6 * 13)
         y = y.view(-1, 64 * 6 * 13)
+        o = o.view(-1, 64 * 6 * 13)
 
         #x = x.view(-1, 319488)
         #y = y.view(-1, 319488)
@@ -99,12 +113,13 @@ class CnnSiamese(nn.Module):
         # now we add the features together as proposed in 
         # https://arxiv.org/pdf/2010.09925.pdf and in
         # https://www.mathworks.com/help/deeplearning/ug/train-a-siamese-network-to-compare-images.html,
-        z = x + 0.3 * y
+        z = torch.cat((0.3 * x + 0.7 * o , 0.3 * y + 0.7 * o), 1)
 
         z = self.fc1(z)
         z = self.fc2(z)
         z = self.fc3(z)
         z = self.fc4(z)
+        z = self.fc5(z)
         # remove all dimensions with size 1, so we get a tensor of the form
         # batchSize x 1 (in particular a scalar for each input image, which
         # is, what we want)

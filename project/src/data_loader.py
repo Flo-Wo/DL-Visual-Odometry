@@ -62,6 +62,10 @@ class DatasetOptFlo(torch.utils.data.Dataset):
 
         return x, y
 
+    @classmethod
+    def get_images(cls, prev_frame, curr_frame, opt_flow):
+        return opt_flow
+
 
 class DatasetFrames(torch.utils.data.Dataset):
     'Characterizes a dataset for PyTorch'
@@ -86,6 +90,10 @@ class DatasetFrames(torch.utils.data.Dataset):
         y = (self.labels[ID] + self.labels[ID - 1]) / 2
 
         return X1, X2, y
+
+    @classmethod
+    def get_images(cls, prev_frame, curr_frame, opt_flow):
+        return prev_frame, curr_frame
 
 
 class DatasetOptFlo1Frames(torch.utils.data.Dataset):
@@ -112,6 +120,10 @@ class DatasetOptFlo1Frames(torch.utils.data.Dataset):
 
         return F, X, y
 
+    @classmethod
+    def get_images(cls, prev_frame, curr_frame, opt_flow):
+        return curr_frame, opt_flow
+
 
 class DatasetOptFlo2Frames(torch.utils.data.Dataset):
     'Characterizes a dataset for PyTorch'
@@ -137,6 +149,10 @@ class DatasetOptFlo2Frames(torch.utils.data.Dataset):
         y = (self.labels[ID] + self.labels[ID - 1]) / 2
 
         return F1, F2, X, y
+
+    @classmethod
+    def get_images(cls, prev_frame, curr_frame, opt_flow):
+        return prev_frame, curr_frame, opt_flow
 
 
 # #############################################################
@@ -309,8 +325,8 @@ def generate_train_eval_dict(data_size, test_split_ratio, block_size=100, offset
 
     all_indices = np.linspace(1, data_size, data_size, dtype=int)
     test_index = (all_indices - offset) % block_size < test_block
-    train_indices = [*all_indices[~test_index]]
-    test_indices = [*all_indices[test_index]]
+    train_indices = [*all_indices[test_index]]
+    test_indices = [*all_indices[~test_index]]
 
     partition = {'train': train_indices, 'validation': test_indices}
     return partition
@@ -335,5 +351,5 @@ if __name__ == "__main__":
     #    cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
     #    cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
     # save_flow_as_tensors(path_tensor_opt_fl, path_raw_video)
-    # save_frames_as_tensors(path_tensor_frames, path_raw_video)
+    #save_frames_as_tensors(path_tensor_frames, path_raw_video)
     save_both(path_tensor_frames, path_tensor_opt_fl, path_raw_video)
