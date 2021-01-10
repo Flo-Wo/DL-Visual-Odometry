@@ -244,9 +244,9 @@ def overlay_speed_error_on_video(video_path, predicted_velocity_path,frame_limit
         if count >= 1:
             if label:
                 frame_labeled = put_velo_error_on_frame(frame, predicted_velocity[count],\
-                                                        actual_velocity[count])
+                                                        velocity=actual_velocity[count])
             else:
-                frame_labeled = put_velo_on_frame(frame, predicted_velocity[count])
+                frame_labeled = put_velo_error_on_frame(frame, predicted_velocity[count])
             video_label.write(frame_labeled)
             success,frame = video_original.read()
             if count % 100 == 0:
