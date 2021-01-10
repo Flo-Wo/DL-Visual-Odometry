@@ -85,20 +85,27 @@ Each of the provided frames has a size of $(640,480,3)$ pixels. Due to computati
 \text{pixel neighborhood size} &:= 5\\
 \text{SD of the gaussian filter} &:= 1.1
 \end{align*}
-We choose three pyramid level, because we wanted the result to be more accurate. To decrease the training duration, we halved the size of the optical flow frames again, resulting in a resolution of
-$(160,105,3)$ pixels per frame. As we used a window size of $6$, a comparison between the original optical flow and the down 
-sampled one lead to the result, that we do not loose a lot of information. As we later on wanted to see if the model performs better 
-using the dashcam frames as additional material, we did the same down sampling with the frames.
+We choose three pyramid levels, because we wanted the calculations to be more accurate. To decrease the training duration, we halved 
+the size of the optical flow frames again, resulting in a resolution of
+$(160,105,3)$ pixels per frame. As we used a window size of six pixels, a comparison between the original optical flow and the down 
+sampled one lead to the result, that we do not loose a lot of information.
 
-\begin{figure}
-\centering
-  \subfloat[Original frame]{\label{figur:1}\includegraphics[width=.35\columnwidth]{./imgs/frame2_original.png}} \hspace{0.1cm}
-  \subfloat[Frame after down sampling]{\label{figur:2}\includegraphics[width=.35\columnwidth]{./imgs/frame2_cut_sampled.png}}\\
-  \subfloat[Optical flow field, already down sampled]{\label{figur:3}\includegraphics[width=0.7\columnwidth]{./imgs/frame2_flow_field.png}}
-  \label{figur}\caption{Preprocessing of the video frames.}
-\end{figure}
+The optical flow calculation returns the magnitude and
+the angle of the flow vectors, which we transformed into polar coordinates. To get an RGB image representing the
+optical flow of two consecutive frames, we normalized the magnitudes and put them into the third channel of the frame. The values
+of the second channel were all set to the value $255$. We then multiplied the angle with the factor $180/2\pi$ and set this value 
+for the first channel.
 
-Explain, how we display the optical flow.
+As we later on wanted to see, if the model performs 
+better using the dashcam frames as additional material, we did the same down sampling with the frames.
+
+%\begin{figure}
+%\centering
+%  \subfloat[Original frame]{\label{figur:1}\includegraphics[width=.35\columnwidth]{./imgs/frame2_original.png}} \hspace{0.1cm}
+%  \subfloat[Frame after down sampling]{\label{figur:2}\includegraphics[width=.35\columnwidth]{./imgs/frame2_cut_sampled.png}}\\
+%  \subfloat[Optical flow field, already down sampled]{\label{figur:3}\includegraphics[width=0.7\columnwidth]{./imgs/frame2_flow_field.png}}
+%  \label{figur}\caption{Preprocessing of the video frames.}
+%\end{figure}
 
 \section{Method selection and architecture}
 Used MSE as performance metric
