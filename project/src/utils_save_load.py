@@ -243,8 +243,8 @@ def overlay_speed_error_on_video(video_path, predicted_velocity_path,frame_limit
     while success and count < frame_limit-1:
         if count >= 1:
             if label:
-                frame_labeled = put_velo_error_on_frame(frame, actual_velocity[count],\
-                                              predicted_velocity[count])
+                frame_labeled = put_velo_error_on_frame(frame, predicted_velocity[count],\
+                                                        actual_velocity[count])
             else:
                 frame_labeled = put_velo_on_frame(frame, predicted_velocity[count])
             video_label.write(frame_labeled)
@@ -256,9 +256,8 @@ def overlay_speed_error_on_video(video_path, predicted_velocity_path,frame_limit
     video_original.release()
     cv2.destroyAllWindows()
 
-def put_velo_error_on_frame(frame, velocity, prediction):
-    # set some constants for the overlay
-    error = np.abs(velocity-prediction)
+def put_velo_error_on_frame(frame, prediction, **kwargs):
+    # set some important constants
     font = cv2.FONT_HERSHEY_SIMPLEX
     velo_color = (25, 255, 25)
     pred_color = (255, 25, 25)
@@ -268,39 +267,33 @@ def put_velo_error_on_frame(frame, velocity, prediction):
     upper_offset = 40
     line_offset = 30
     right_offset = 8
-    velo_position = (right_offset,upper_offset)
-    pred_position = (right_offset,upper_offset + line_offset)
-    err_position = (right_offset,upper_offset + 2*line_offset)
     
-    velo = "speed (m/s): " + "{:2.3f}".format(velocity)
-    pred = "pred (m/s): " + "{:2.3f}".format(prediction)
-    err = "abs. error: " + "{:2.3f}".format(error)
     
-    frame_labeled = cv2.putText(frame,velo,velo_position,font,fontScale,\
-                                velo_color,thickness)
-    frame_labeled = cv2.putText(frame,pred,pred_position,font,fontScale,\
-                                pred_color,thickness)
-    frame_labeled = cv2.putText(frame_labeled,err,err_position,font,fontScale,\
-                                err_color,thickness)
+    # check, whether the real velocity is given
+    if "velocity" in kwargs:
+        velocity = kwargs["velocity"]
+        error = np.abs(velocity-prediction)
+        velo_position = (right_offset,upper_offset)
+        pred_position = (right_offset,upper_offset + line_offset)
+        err_position = (right_offset,upper_offset + 2*line_offset)
+        pred = "pred (m/s): " + "{:2.3f}".format(prediction)
+        velo = "speed (m/s): " + "{:2.3f}".format(velocity)
+        
+        frame_labeled = cv2.putText(frame,velo,velo_position,font,fontScale,\
+                                 velo_color,thickness)
+        err = "abs. error: " + "{:2.3f}".format(error)
+        frame_labeled = cv2.putText(frame_labeled,err,err_position,font,fontScale,\
+                                 err_color,thickness)
+        
+        frame_labeled = cv2.putText(frame,pred,pred_position,font,fontScale,\
+                                    pred_color,thickness)
+    else:
+        pred_position = (right_offset,upper_offset)
+        pred = "pred (m/s): " + "{:2.3f}".format(prediction)
+        frame_labeled = cv2.putText(frame,pred,pred_position,font,fontScale,\
+                                    pred_color,thickness)
     return(frame_labeled)
 
-def put_velo_on_frame(frame,prediction):
-    # set some constants for the overlay
-    font = cv2.FONT_HERSHEY_SIMPLEX
-
-    pred_color = (255, 25, 25)
-    fontScale = 1.1
-    thickness = 2
-    upper_offset = 40
-    right_offset = 8
-    pred_position = (right_offset,upper_offset)
-    
-    pred = "pred (m/s): " + "{:2.3f}".format(prediction)
-
-    frame_labeled = cv2.putText(frame,pred,pred_position,font,fontScale,\
-                                pred_color,thickness)
-
-    return(frame_labeled)
 
 
     
@@ -315,14 +308,14 @@ if __name__ == "__main__":
     # cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
     # generate_flow_all("./data/tensorData/of/")
     # save_frames_as_tensors("./data/tensorData/frames/")
-    # frame = cv2.imread("./data/frames/frame1.png")
-    # frame_label = put_velo_on_frame(frame,20,10)
-    # cv2.imwrite("./test.png",frame_label)
+    frame = cv2.imread("./data/frames/frame1.png")
+    frame_label = put_velo_error_on_frame(frame,20,velocity=20)
+    cv2.imwrite("./test.png",frame_label)
     # overlay_speed_error_on_video("./data/raw/train.mp4",\
     #                              "./data/predicts/train_predicts_siamese.txt",\
     #                             20399,\
     #                             "./data/raw/train_label.txt")
-    overlay_speed_error_on_video("./data/raw/test.mp4",\
-                                 "./data/predicts/test_predicts_siamese.txt")
+    # overlay_speed_error_on_video("./data/raw/test.mp4",\
+    #                              "./data/predicts/test_predicts_siamese.txt")
     pass
 
