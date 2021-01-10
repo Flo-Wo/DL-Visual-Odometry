@@ -180,8 +180,11 @@ driving.
 \end{enumerate}
 
 \subsection{Pooling layers with initial splitting}
-We added two generic pooling layers to the network. One after the second convolutional layer and the second one before the fully
-connected layers start. We tested maximum and average pooling with the following parameters
+We added two generic pooling layers to the network to reduce the number of parameters of the model. One after the second 
+convolutional layer and the second one before the fully connected layers start\footnote{Indeed, the number of 
+parameters decreased from a total of 636.225 trainable parameters to 156.225. Therefore the number of parameters decreased by a 
+factor of 4. We calculated these numbers using the tool pytorch summary}.We tested maximum and average pooling with the following 
+parameters
 \begin{align*}
 \text{kernel size} &:= 2\times 2\\
 \text{stride} &:= 2\\
@@ -191,15 +194,14 @@ connected layers start. We tested maximum and average pooling with the following
 The implementation of pooling layers helped a lot, as now the loss on the train and test data seem to decrease 
 nearly equally. Our results on the initial splitting are shown in \cref{tab:ResultsInitialSplitting}. We gave the network
 with max pooling a try with 15 epochs, as the loss on the train and test set was decreasing in a pretty stable manner. Using this
-network, we achieved a MSE of under 10 on the test set, which is according to the companies guidelines a pretty good result.
-Especially, as we trained the model mostly on highway scenes and tested it only in city driving scenarios.
+network, we achieved for the first time a MSE of under 10 on the test set, which is according to the companies guideline a pretty 
+good result --- especially, as we trained the model mostly on highway scenes and tested it only in city driving scenarios.
 \begin{table}[!t]
 \normalsize
-\renewcommand{\arraystretch}{1.3}
 \centering
 \begin{tabular}{lcccc}
 \toprule
-\multirow{2}{*}{Initial splitting, dropout layer}  & \multicolumn{2}{c}{$\mathrm{ReLU}$} & \multicolumn{2}{c}{$\mathrm{leakyReLU}$} \\
+\multirow{2}{*}{Initial splitting, 8 epochs}  & \multicolumn{2}{c}{$\mathrm{ReLU}$} & \multicolumn{2}{c}{$\mathrm{leakyReLU}$} \\
  & Train & Test & Train & Test\\
 \midrule
 No pooling & 2.85 & 12.08 & 2.45 & 10.75 \\
@@ -208,7 +210,8 @@ Max pooling (15 epochs) & - & - & \textbf{3.22} & \textbf{9.63} \\
 Average pooling & 7.70 & 11.40 & 6.08 & 13.09\\
 \bottomrule
 \end{tabular}
-\caption{MSE results of the network using pooling and dropout layers, different activation functions and the initial splitting.}
+\caption{MSE results of the network using different pooling strategies, one dropout layers, two different activation functions and 
+the initial splitting. We trained each of the models for eight epochs.}
 \label{tab:ResultsInitialSplitting}
 \end{table}
 \subsection{New splitting and siamese network}
