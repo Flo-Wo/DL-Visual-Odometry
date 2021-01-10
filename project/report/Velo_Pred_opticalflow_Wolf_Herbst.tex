@@ -123,12 +123,10 @@ As a performance measure, we choose mean squared errors (MSE).
 
 As an initial architecture we decided to give the model of https://arxiv.org/pdf/1604.07316v1.pdf a try. As the group used it
 for self-driving cars, the model has enough complexity to handle a task like ours and with the amount of layers, we had a lot of
-possibilities to fine-tune and improve the model.
-
-HERE SHOULD BE AN IMAGE OF THE NETWORK
-
-In a first approach, we tried the raw model gaining an MSE of around 18-20 on testing and under 3 on training. One can clearly see,
-that the model really overfits the train dataset.
+possibilities to fine-tune and improve the model.\\
+\\HERE SHOULD BE AN IMAGE OF THE NETWORKS ARCHITECTURE\\
+\\In a first approach, we tried the raw model gaining an MSE of around 18-20 on testing and under 3 on training. One can clearly 
+see, that the model really overfits the train dataset.
 
 \section{Tuning of the model}
 To speed up the training we used batch normalization layers https://arxiv.org/pdf/1502.03167.pdf and we tested different activation functions, to improve the performance of the model. 
@@ -145,8 +143,8 @@ modifying the model even more.
 As we still had a lot of issues with overfits, we decided to include a dropout layer, according to https://jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf. We tried different numbers and positions for dropout layers, but using one layer with a dropout 
 probability of $p=0.5$ after the third concolutional layer seemed to work best.
 
-To solve the problem of dead neurons\footnote{As one can clearly see in the defintion of the ReLU 
-function, neurons with a value below zero cannot participate in the learning process.} of the ReLU function, we 
+To solve the problem of dead neurons\footnote{One can clearly see in the definition of the ReLU 
+function, that neurons with a value below zero cannot participate in the learning process.} of the ReLU function, we 
 tried the leakyReLU function
 \begin{align*}
 \mathrm{leakyReLU} : \mathbb{R} \to \mathbb{R}, x \mapsto \begin{cases}
@@ -154,7 +152,7 @@ x, x \geq 0\\
 c \cdot x, x <0
 \end{cases}
 \end{align*}
-with a parameter $c = 0.01$. Using the leakyReLU function, we achieved a MSE of around 11 on the testing set and under 3 on the 
+with a hyperparameter $c = 0.01$. Using the leakyReLU function, we achieved a MSE of around 11 on the testing set and under 3 on the 
 training set. All of the models were trained with only eight epochs, as we still had problems with overfits.
 
 We identified three possible reasons for our poor results:
