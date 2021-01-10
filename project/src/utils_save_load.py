@@ -211,17 +211,50 @@ def calc_of(curr_frame, prev_frame):
     rgb_image = cv2.cvtColor(hsv_mask, cv2.COLOR_HSV2RGB) 
     rgb_image = sample_down_half_second(rgb_image)
     return(rgb_image)
+
+
+
+
+
+# #############################################################
+# Create Overlay and create Video
+# #############################################################
+
+def overlay_speed_on_video(video_path, velocity_path, predicted_velocity_path,\
+                           frame_limit):
+    # function to return a video, which now has the real velocity, the 
+    # predicted and the absolute difference as labels inside the frames
+    # of the original video
+    actual_velocity = np.loadtxt(velocity_path)
+    predicted_velocity = np.loadtxt(predicted_velocity_path)
+    # load the original video
+    video_original = cv2.VideoCapture(video_path)
+    video_label = cv2.VideoWriter()
+    
+    # write real velocity into the frame
+    #frame_labeled = cv2.putText()
+    
+    # write predicted velocity into the frame
+    
+    #abs_diff = np.abs(velocity - predicted_velocity)
+    
+    # write absolute difference into the frame
+    
+    
+    pass
+
+
     
 
 if __name__ == "__main__":
-#    i1 = cv2.imread("./data/frames/frame1.png")
-#    i2 = cv2.imread("./data/frames/frame2.png")
-#    i2_cut_down = sample_down_half(i2[:-60,:,:])
-#    flow_field = calc_of(i1, i2)
-#    cv2.imwrite("../report/imgs/frame2_original.png",i2)
-#    cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
-#    cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
-    generate_flow_all("./data/tensorData/of/")
-    save_frames_as_tensors("./data/tensorData/frames/")
-
+    # i1 = cv2.imread("./data/frames/frame1.png")
+    # i2 = cv2.imread("./data/frames/frame2.png")
+    # i2_cut_down = sample_down_half(i2[:-60,:,:])
+    # flow_field = calc_of(i1, i2)
+    # cv2.imwrite("../report/imgs/frame2_original.png",i2)
+    # cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
+    # cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
+    # generate_flow_all("./data/tensorData/of/")
+    # save_frames_as_tensors("./data/tensorData/frames/")
+    pass
 

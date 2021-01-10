@@ -317,7 +317,7 @@ def generate_train_eval_dict(data_size, test_split_ratio, block_size=100, offset
 
 
 def generate_label_dict(label_path, data_size):
-    """generate a dictionary with all indexes and their speeds"""
+    """generate a dictionary with all indices and their velocities"""
     labels_np_array = np.loadtxt(label_path)
     labels = {}
     for index in range(0, data_size + 1):
