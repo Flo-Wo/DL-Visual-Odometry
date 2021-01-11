@@ -21,8 +21,8 @@ from data_loader import generate_label_dict, generate_train_eval_dict,\
 # #############################################################
 # LOGGING INITIALISATION
 # #############################################################
-from project.src.cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
-from project.src.cnn.cnn_flow_only import CNNFlowOnly
+from cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
+from cnn.cnn_flow_only import CNNFlowOnly
 
 coloredlogs.install()
 logging.basicConfig(level=logging.DEBUG)
@@ -48,7 +48,7 @@ class NetworkTrainer:
 
     def configure_data_loader(self, labels_path, tsr, bs, dl_params):
         labels = generate_label_dict(labels_path, self.data_size)
-        partitions = generate_train_eval_dict(self.data_size, tsr)
+        partitions = generate_train_eval_dict(self.data_size, tsr, bs, dl_params)
 
         training_set = self.loader_class(partitions['train'], labels)
         validation_set = self.loader_class(partitions['validation'], labels)
@@ -246,26 +246,28 @@ class NetworkTrainer:
 # #############################################################
 # IMPORTANT CONSTANTS
 # #############################################################
-path_labels = "./data/raw/train_label.txt"
-network_save_file = "./cnn/savedmodels/NewSplittingReLU10EpochsBatchNormNoPooling"
 
-test_split_ratio = 0.8
-block_size = 3400
-
-dataLoader_params = {'batch_size': 64, 'shuffle': True}
-
-nwt = NetworkTrainer(20399, DatasetOptFlo, CNNFlowOnly)
-
-
-tr_tensor, eval_tensor = nwt.configure_data_loader(path_labels, test_split_ratio, block_size, dataLoader_params)
-metadata = nwt.train_model(tr_tensor, eval_tensor, 3, 10, network_save_file)
-
-#nwt.plot_velocity_chart("data/raw/train_predicts.txt", label="Data Siamese", color="red")
-#nwt.plot_velocity_chart("data/raw/train_predicts_2.txt", label="Leaky Relu", color="orange", kernel_size=100)
-#nwt.plot_velocity_chart("data/raw/train_label.txt", label="Leaky Relu", color="green")
-
-#plt.legend()
-#plt.show()
-
-#nwt.process_video("data/raw/train.mp4", "./cnn/savedmodels/LeakyReLU15EpochsBatchNormMaxPoolingWithDropOut.pth", 3,
-#                  "data/raw/train_predicts_2")
+if __name__ == "__main__":
+    path_labels = "./data/raw/train_label.txt"
+    network_save_file = "./cnn/savedmodels/NewSplitting/ReLU10EpochsBatchNormNoPooling"
+    
+    test_split_ratio = 0.8
+    block_size = 3400
+    
+    dataLoader_params = {'batch_size': 64, 'shuffle': True}
+    
+    nwt = NetworkTrainer(20399, DatasetOptFlo, CNNFlowOnly)
+    
+    
+    tr_tensor, eval_tensor = nwt.configure_data_loader(path_labels, test_split_ratio, block_size, dataLoader_params)
+    metadata = nwt.train_model(tr_tensor, eval_tensor, 3, 10, network_save_file)
+    
+    #nwt.plot_velocity_chart("data/raw/train_predicts.txt", label="Data Siamese", color="red")
+    #nwt.plot_velocity_chart("data/raw/train_predicts_2.txt", label="Leaky Relu", color="orange", kernel_size=100)
+    #nwt.plot_velocity_chart("data/raw/train_label.txt", label="Leaky Relu", color="green")
+    
+    #plt.legend()
+    #plt.show()
+    
+    #nwt.process_video("data/raw/train.mp4", "./cnn/savedmodels/LeakyReLU15EpochsBatchNormMaxPoolingWithDropOut.pth", 3,
+    #                  "data/raw/train_predicts_2")
