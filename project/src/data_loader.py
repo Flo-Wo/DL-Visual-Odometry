@@ -321,7 +321,7 @@ def generate_train_eval_dict(data_size, test_split_ratio, new=True,\
     if new:
         return(generate_train_eval_dict_new_splitting(data_size, test_split_ratio))
     else:
-        generate_train_eval_dict_old(data_size, test_split_ratio, block_size, offset)
+        return(generate_train_eval_dict_old(data_size, test_split_ratio, block_size, offset))
 
 
 
