@@ -28,6 +28,14 @@ coloredlogs.install()
 logging.basicConfig(level=logging.DEBUG)
 
 
+# logging.basicConfig(
+#     level=logging.INFO,
+#     format='%(message)s',
+#     handlers=[
+#         logging.StreamHandler()
+#     ]
+# )
+
 class NetworkTrainer:
     data_size = 20399
 
@@ -76,7 +84,11 @@ class NetworkTrainer:
         # this reduces the lr by a factor of 0.1 if the relative decrease after 2
         # epochs is not bigger than the default threshold
         logging.debug("Begin Training")
-
+            
+        # create logger
+        logger = logging.getLogger("train_logger")
+        logger.addHandler(logging.FileHandler(f'./cnn/train_logs/{save_file}.log', mode='w'))
+        
         metadata = np.zeros([num_epochs, 4])
 
         for epoch in range(num_epochs):
@@ -125,12 +137,19 @@ class NetworkTrainer:
 
             metadata[epoch, :] = np.array([epoch, train_loss / len(train_dataset), eval_loss / len(eval_dataset),
                                            optimizer.param_groups[0]['lr']])
+            
+            # create logger dict, to save the data into a logger file
+            log_dict = {"epoch": epoch+1,
+                    "train_epoch_loss": train_loss/len(train_dataset),
+                    "eval_epoch_loss": eval_loss/len(eval_dataset),
+                    "lr": optimizer.param_groups[0]['lr']}
+            logger.info('%s', log_dict)
 
             # use the scheduler and the mean error
             scheduler.step(train_loss / len(train_dataset))
 
         # save the models weights and bias' to use it later
-        torch.save(model.state_dict(), save_file + ".pth")
+        torch.save(model.state_dict(), "./cnn/savedmodels/NewSplitting/" + save_file + ".pth")
         logging.debug("Model saved!")
         np.savetxt(save_file + "_METADATA.txt", metadata, delimiter=",")
 
@@ -249,7 +268,7 @@ class NetworkTrainer:
 
 if __name__ == "__main__":
     path_labels = "./data/raw/train_label.txt"
-    network_save_file = "./cnn/savedmodels/NewSplitting/ReLU10EpochsBatchNormNoPooling"
+    network_save_file = "ReLU10EpochsBatchNormNoPooling"
     
     test_split_ratio = 0.8
     block_size = 3400
