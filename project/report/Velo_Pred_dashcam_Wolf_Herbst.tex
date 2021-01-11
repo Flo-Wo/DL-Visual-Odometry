@@ -67,21 +67,13 @@ to measure how good our model is able to generalize. We will analyse this naive 
 at the results.
 \subsection{Data analysis}
 To analyse the velocity distribution in the two subsets, we plotted the velocity per frame curve in 
-\cref{fig:SpeedPerFrameDistribution}.
-
-\begin{figure}
-\centering
-\includegraphics[scale=0.6]{./imgs/plot_speed_time.eps}
-\caption{Distribution of the velocities of all frames in the training video.}
-\label{fig:SpeedPerFrameDistribution}
-\end{figure}
-
-The first have of the video mostly represents highway scenarios and the second half only consists of city driving scenes. 
-Therefore we did not expect our model to perform really well using the initial splitting, as the models is mostly trained in highway 
-road traffic scenarios.
+\cref{fig:SpeedPerFrameDistributionNewSplitting}. The first 80$\%$ of the video mostly represent highway scenarios 
+and the last 20$\%$ only consists of city driving scenes. 
+Therefore we did not expect our model to perform really well using the initial splitting, as the models trained and 
+tested on totally different road traffic scenarios.
 
 \subsection{Preprocessing}
-Each of the provided frames has a size of $(640,480,3)$ pixels. Due to computational limitations, we decided to cut off the last 60 pixels from the lower border, to remove a black frame inside the car, which did not have any effect on the optical flow. Furthermore, we cut the frame size in half and calculated the optical flow using the Farneback pyramid \cite{Farneback2003} method with the following parameters
+Each of the provided frames has a size of $(640,480,3)$ pixels. Due to computational limitations, we decided to cut off the last 60 pixels from the lower border, to remove a black frame inside the car, which did not have any effect on the optical flow. Furthermore, we cut the frame size in half and calculated the optical flow using the Farneback pyramid method \cite{Farneback2003} with the following parameters
 \begin{align*}
 \text{pyramid levels} &:= 3\\
 \text{pyramid scaling} &:= 0.5\\
@@ -181,7 +173,7 @@ driving.
 We added two generic pooling layers to the network to reduce the number of parameters of the model. One after the second 
 convolutional layer and the second one before the fully connected layers start\footnote{Indeed, the number of 
 parameters decreased from a total of 636.225 trainable parameters to 156.225. Therefore the number of parameters decreased by a 
-factor of 4. We calculated these numbers using the tool pytorch summary}.We tested maximum and average pooling with the following 
+factor of 4. We calculated these numbers using the tool pytorch summary.}.We tested maximum and average pooling with the following 
 parameters
 \begin{align*}
 \text{kernel size} &:= 2\times 2\\
@@ -213,7 +205,20 @@ the initial splitting. We trained each of the models for eight epochs.}
 \label{tab:ResultsInitialSplitting}
 \end{table}
 \subsection{New splitting and siamese network}
-
+We decided to take a closer look at the different road traffic scenarios in the video and segmented the 
+frames into three category. The first category
+consists of highway driving scenes (from minute 0:00 to minute 7:30), the second one contains frames of the car being
+in a stop and go scenario on the highway (from minute 7:31 to minute 15:00) and the third category consists of
+city driving scenes (from minute 15:01 to the end). We visualized the velocity distribution and the categories in 
+\cref{fig:SpeedPerFrameDistributionNewSplitting}. To be still able to test a model on unseen data, we again used 
+an 80/20 splitting, but now for each of the category blocks with a hard cut off (no random sampling before the 
+splitting).
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.6]{./imgs/plot_speed_time_new_splitting.eps}
+\caption{Distribution of the velocities of all frames in the training video including the three categories.}
+\label{fig:SpeedPerFrameDistributionNewSplitting}
+\end{figure}
 \subsection{Augmented brightness}
 
 \section{New Approach using siamese network for two consecutive frames without optical flow}
