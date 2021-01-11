@@ -21,4 +21,7 @@ time = np.arange(1,number_of_velo+1)
 plt.plot(time, velocity_vector,"k-")
 plt.xlabel("frame number")
 plt.ylabel("velocity [m/s]")
+plt.vlines(x = 8750, ymin = 0, ymax = max(velocity_vector), 
+           colors = 'gray')
+
 plt.show()
