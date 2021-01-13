@@ -151,7 +151,7 @@ class NetworkTrainer:
 
         vels = np.array([])
 
-        if (produce_video):
+        if produce_video:
             video_label = cv2.VideoWriter(save_to + ".mp4", 0x7634706d, 20, (640, 480))
 
         for count, (prev_frame, org_frame) in enumerate(tqdm(load_double_images(path_video), "Process Video")):
