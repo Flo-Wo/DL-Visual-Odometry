@@ -21,7 +21,7 @@ from data_loader import generate_label_dict, generate_train_eval_dict, \
 # #############################################################
 # LOGGING INITIALISATION
 # #############################################################
-from project.src.cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
+from cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
 
 coloredlogs.install()
 logging.basicConfig(level=logging.DEBUG)
