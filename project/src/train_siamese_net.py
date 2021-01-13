@@ -1,8 +1,8 @@
 import logging, coloredlogs
 
 from network_trainer import NetworkTrainer
-from project.src.cnn.cnn_siamese_frames_flow import CnnSiamese
-from project.src.data_loader import DatasetOptFlo1Frames
+from cnn.cnn_siamese_frames_flow import CnnSiamese
+from data_loader import DatasetOptFlo1Frames
 
 coloredlogs.install()
 logging.basicConfig(level=logging.DEBUG)
