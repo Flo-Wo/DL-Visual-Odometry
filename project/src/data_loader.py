@@ -376,8 +376,8 @@ def generate_train_eval_dict_new_splitting(data_size, test_split_ratio):
     
     trafficjam_end = int(np.size(trafficjam_indices)*test_split_ratio)
     
-    trafficjam_train = all_indices[:trafficjam_end]
-    trafficjam_test = all_indices[trafficjam_end:]
+    trafficjam_train = trafficjam_end[:trafficjam_end]
+    trafficjam_test = trafficjam_end[trafficjam_end:]
 
     # city scenes
     city_indices = all_indices[15000:]

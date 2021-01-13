@@ -21,7 +21,8 @@ from data_loader import generate_label_dict, generate_train_eval_dict, \
 # #############################################################
 # LOGGING INITIALISATION
 # #############################################################
-from project.src.cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
+from cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
+from cnn.cnn_flow_only import CNNFlowOnly
 
 logging.basicConfig(
     level=logging.INFO,
@@ -83,6 +84,10 @@ class NetworkTrainer:
         # this reduces the lr by a factor of 0.1 if the relative decrease after 2
         # epochs is not bigger than the default threshold
         logging.debug("Begin Training")
+        
+        # create logger
+        logger = logging.getLogger("train_logger")
+        logger.addHandler(logging.FileHandler(f'./cnn/train_logs/{save_file}.log', mode='w'))
 
         metadata = np.zeros([num_epochs, 4])
 
@@ -261,13 +266,8 @@ class NetworkTrainer:
 
 if __name__ == "__main__":
     path_labels = "./data/raw/train_label.txt"
-<<<<<<< HEAD
-    network_save_file = "leakyReLU5EpochsBatchNormMaxPooling"
-    
-=======
     network_save_file = "leakyReLU10EpochsBatchNormMaxPooling"
 
->>>>>>> 21d81dadfcfd2fc50617ff195f991a461f08a195
     test_split_ratio = 0.8
     block_size = 3400
 
@@ -277,13 +277,10 @@ if __name__ == "__main__":
 
 
     tr_tensor, eval_tensor = nwt.configure_data_loader(path_labels, test_split_ratio, block_size, dataLoader_params)
-<<<<<<< HEAD
     metadata = nwt.train_model(tr_tensor, eval_tensor, 3, 5, network_save_file)
-    
-=======
-    metadata = nwt.train_model(tr_tensor, eval_tensor, 3, 10, network_save_file)
 
->>>>>>> 21d81dadfcfd2fc50617ff195f991a461f08a195
+
+
     #nwt.plot_velocity_chart("data/raw/train_predicts.txt", label="Data Siamese", color="red")
     #nwt.plot_velocity_chart("data/raw/train_predicts_2.txt", label="Leaky Relu", color="orange", kernel_size=100)
     #nwt.plot_velocity_chart("data/raw/train_label.txt", label="Leaky Relu", color="green")
