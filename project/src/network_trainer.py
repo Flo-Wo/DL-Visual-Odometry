@@ -6,7 +6,7 @@ Created on Tue Dec 29 10:19:53 2020
 @author: florianwolf
 """
 
-import logging, coloredlogs
+import logging#, coloredlogs
 
 import cv2
 import numpy as np
@@ -76,8 +76,8 @@ class NetworkTrainer:
         criterion = torch.nn.MSELoss()
         # starting with adam, later on maybe switching to SGD
 
-        #optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
-        optimizer = torch.optim.ASGD(model.parameters(), lr=1e-4)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
+        #optimizer = torch.optim.ASGD(model.parameters(), lr=1e-4)
 
         # add a learning rate scheduler, to reduce the learning rate after several
         # epochs, as we did in the MNIST exercise
@@ -99,7 +99,7 @@ class NetworkTrainer:
         metadata = np.zeros([num_epochs, 4])
 
         for epoch in range(num_epochs):
-            logging.info("\nEpoch: " + str(epoch + 1))
+            print("\nEpoch: " + str(epoch + 1))
             ## training part ##
             model.train()
             train_loss = 0
@@ -150,7 +150,7 @@ class NetworkTrainer:
                     "train_epoch_loss": train_loss/len(train_dataset),
                     "eval_epoch_loss": eval_loss/len(eval_dataset),
                     "lr": optimizer.param_groups[0]['lr']}
-            logging.info('%s', log_dict)
+            logger.info('%s', log_dict)
             # use the scheduler and the mean error
             scheduler.step(train_loss / len(train_dataset))
 
@@ -180,11 +180,16 @@ class NetworkTrainer:
         vels = np.array([])
 
         if produce_video:
-            video_label = cv2.VideoWriter(save_to + ".mp4", 0x7634706d, 20, (640, 480))
+            video_label = cv2.VideoWriter(save_to + ".mp4", 0x7634706d,
+                                          20, (640, 480))
 
         for count, (prev_frame, org_frame) in enumerate(tqdm(load_double_images(path_video), "Process Video")):
-            curr_frame = sample_down(cut_bottom(org_frame, picture_bottom_offset), picture_opt_fl_size)
-            prev_frame = sample_down(cut_bottom(prev_frame, picture_bottom_offset), picture_opt_fl_size)
+            curr_frame = sample_down(cut_bottom(org_frame, 
+                                                picture_bottom_offset),
+                                     picture_opt_fl_size)
+            prev_frame = sample_down(cut_bottom(prev_frame,
+                                                picture_bottom_offset),
+                                     picture_opt_fl_size)
 
             # FLOW
             rgb_flow = calculate_opt_flow(curr_frame, prev_frame)
