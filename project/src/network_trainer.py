@@ -211,7 +211,7 @@ class NetworkTrainer:
             if produce_video:
                 if label:
                     frame_labeled = self.put_velocity_error_on_frame(org_frame, predicted_velocity,
-                                                                     velocity=theory_velocity[count])
+                                                        velocity=(theory_velocity[count] + theory_velocity[count+1])/2)
                 else:
                     frame_labeled = self.put_velocity_error_on_frame(org_frame, predicted_velocity)
                 video_label.write(frame_labeled)
