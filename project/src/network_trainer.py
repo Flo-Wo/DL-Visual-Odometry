@@ -23,8 +23,13 @@ from data_loader import generate_label_dict, generate_train_eval_dict, \
 # #############################################################
 from project.src.cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
 
-coloredlogs.install()
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(message)s',
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
 
 
 class NetworkTrainer:
@@ -122,12 +127,17 @@ class NetworkTrainer:
                     loss = criterion(predicted_velocity, velocity_vector.float())
                     eval_loss += loss.item()
             # mean the error to print correctly
-            logging.info("Training Loss: " + str(train_loss / len(train_dataset)))
-            logging.info("Eval Loss: " + str(eval_loss / len(eval_dataset)))
+            print("\nTraining Loss: " + str(train_loss / len(train_dataset)))
+            print("Eval Loss: " + str(eval_loss / len(eval_dataset)))
 
             metadata[epoch, :] = np.array([epoch, train_loss / len(train_dataset), eval_loss / len(eval_dataset),
                                            optimizer.param_groups[0]['lr']])
-
+            # create logger dict, to save the data into a logger file
+            log_dict = {"epoch": epoch+1,
+                    "train_epoch_loss": train_loss/len(train_dataset),
+                    "eval_epoch_loss": eval_loss/len(eval_dataset),
+                    "lr": optimizer.param_groups[0]['lr']}
+            logger.info('%s', log_dict)
             # use the scheduler and the mean error
             scheduler.step(train_loss / len(train_dataset))
 
