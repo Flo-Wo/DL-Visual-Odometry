@@ -12,7 +12,7 @@ if __name__ == "__main__":
     network_save_file = "leakyReLU_Siamese"
 
     test_split_ratio = 0.8
-    block_size = 3400
+    block_size = 100
 
     dataLoader_params = {'batch_size': 64, 'shuffle': True}
 

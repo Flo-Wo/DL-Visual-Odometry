@@ -99,7 +99,7 @@ class NetworkTrainer:
         metadata = np.zeros([num_epochs, 4])
 
         for epoch in range(num_epochs):
-            print("\nEpoch: " + str(epoch + 1))
+            logging.info("Epoch: " + str(epoch + 1))
             ## training part ##
             model.train()
             train_loss = 0
@@ -140,8 +140,8 @@ class NetworkTrainer:
                     loss = criterion(predicted_velocity, velocity_vector.float())
                     eval_loss += loss.item()
             # mean the error to print correctly
-            print("\nTraining Loss: " + str(train_loss / len(train_dataset)))
-            print("Eval Loss: " + str(eval_loss / len(eval_dataset)))
+            logging.info("Training Loss: " + str(train_loss / len(train_dataset)))
+            logging.info("Eval Loss: " + str(eval_loss / len(eval_dataset)))
 
             metadata[epoch, :] = np.array([epoch, train_loss / len(train_dataset), eval_loss / len(eval_dataset),
                                            optimizer.param_groups[0]['lr']])
@@ -158,7 +158,7 @@ class NetworkTrainer:
         save_path = "./cnn/savedmodels/NewSplitting/"
         torch.save(model.state_dict(), save_path + save_file + ".pth")
         logging.debug("Model saved!")
-        np.savetxt(save_file + "_METADATA.txt", metadata, delimiter=",")
+        np.savetxt(save_path + save_file + "_METADATA.txt", metadata, delimiter=",")
 
         return metadata
 

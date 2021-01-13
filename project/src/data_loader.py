@@ -58,8 +58,8 @@ class DatasetOptFlo(torch.utils.data.Dataset):
 
         # Load data and get label
         x = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(element_id))
-        y = (self.labels[element_id] + self.labels[element_id - 1]) / 2
-        #y = self.labels[element_id]
+        #y = (self.labels[element_id] + self.labels[element_id - 1]) / 2
+        y = self.labels[element_id]
 
         return x, y
 
@@ -118,6 +118,7 @@ class DatasetOptFlo1Frames(torch.utils.data.Dataset):
         F = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
         X = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(ID))
         y = (self.labels[ID] + self.labels[ID - 1]) / 2
+        #y = self.labels[ID]
 
         return F, X, y
 
@@ -322,18 +323,15 @@ def generate_train_eval_dict(data_size, test_split_ratio, new_split=True, \
     if new_split:
         return(generate_train_eval_dict_new_splitting(data_size, test_split_ratio))
     else:
-        return(generate_train_eval_dict_old(data_size, test_split_ratio, block_size, offset))
+        return(generate_train_eval_dict_old(data_size, test_split_ratio, block_size))
 
 
 
-def generate_train_eval_dict_old(data_size, test_split_ratio, block_size, offset):
-    if offset is None:
-        offset = np.random.random_integers(0, 50)
-
+def generate_train_eval_dict_old(data_size, test_split_ratio, block_size):
     test_block = block_size * test_split_ratio
 
     all_indices = np.linspace(1, data_size, data_size, dtype=int)
-    test_index = (all_indices - offset) % block_size < test_block
+    test_index = all_indices % block_size < test_block
     train_indices = [*all_indices[test_index]]
     test_indices = [*all_indices[~test_index]]
 
