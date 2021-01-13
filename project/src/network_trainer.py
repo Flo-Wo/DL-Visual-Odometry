@@ -6,7 +6,7 @@ Created on Tue Dec 29 10:19:53 2020
 @author: florianwolf
 """
 
-import logging, coloredlogs
+import logging#, coloredlogs
 
 import cv2
 import numpy as np
@@ -25,14 +25,14 @@ from cnn.cnn_flow_only import CNNFlowOnly
 # LOGGING INITIALISATION
 # #############################################################
 
-coloredlogs.install()
+#coloredlogs.install()
 
 #logging.basicConfig(level=logging.DEBUG)
 
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s %(message)s',
+    format='%(message)s',
     handlers=[
         logging.StreamHandler()
     ]
@@ -134,8 +134,8 @@ class NetworkTrainer:
                     loss = criterion(predicted_velocity, velocity_vector.float())
                     eval_loss += loss.item()
             # mean the error to print correctly
-            logging.info("Training Loss: " + str(train_loss / len(train_dataset)))
-            logging.info("Eval Loss: " + str(eval_loss / len(eval_dataset)))
+            print("\nTraining Loss: " + str(train_loss / len(train_dataset)))
+            print("\nEval Loss: " + str(eval_loss / len(eval_dataset)))
 
             metadata[epoch, :] = np.array([epoch, train_loss / len(train_dataset), eval_loss / len(eval_dataset),
                                            optimizer.param_groups[0]['lr']])
@@ -270,14 +270,14 @@ class NetworkTrainer:
 
 if __name__ == "__main__":
     path_labels = "./data/raw/train_label.txt"
-    network_save_file = "ReLU10EpochsBatchNormNoPooling"
+    network_save_file = "leakyReLU10EpochsBatchNormMaxPooling"
     
     test_split_ratio = 0.8
     block_size = 3400
     
     dataLoader_params = {'batch_size': 64, 'shuffle': True}
     
-    nwt = NetworkTrainer(20399, DatasetOptFlo, CNNFlowOnly)
+    nwt = NetworkTrainer(20399, DatasetOptFlo, CNNFlowOnlyWithPooling)
     
     
     tr_tensor, eval_tensor = nwt.configure_data_loader(path_labels, test_split_ratio, block_size, dataLoader_params)

@@ -207,12 +207,15 @@ the initial splitting. We trained each of the models for eight epochs.}
 \subsection{New splitting and siamese network}
 We decided to take a closer look at the different road traffic scenarios in the video and segmented the 
 frames into three category. The first category
-consists of highway driving scenes (from minute 0:00 to minute 7:30), the second one contains frames of the car being
-in a stop and go scenario on the highway (from minute 7:31 to minute 15:00) and the third category consists of
-city driving scenes (from minute 15:01 to the end). We visualized the velocity distribution and the categories in 
-\cref{fig:SpeedPerFrameDistributionNewSplitting}. To be still able to test a model on unseen data, we again used 
-an 80/20 splitting, but now for each of the category blocks with a hard cut off (no random sampling before the 
-splitting).
+consists of highway driving scenes (from minute 0:00 to minute 7:30), the second one contains frames of 
+the car being
+in a stop and go scenario on the highway (from minute 7:31 to minute 15:00) and the third category 
+consists of
+city driving scenes (from minute 15:01 to the end). We visualized the velocity distribution and the 
+categories in 
+\cref{fig:SpeedPerFrameDistributionNewSplitting}. 
+We shuffled the frames of each block randomly and used again the 80/20 rule to split each of the 
+category blocks into train and test data.
 \begin{figure}[h]
 \centering
 \includegraphics[scale=0.6]{./imgs/plot_speed_time_new_splitting.eps}
