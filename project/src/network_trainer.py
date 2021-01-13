@@ -288,7 +288,7 @@ class NetworkTrainer:
 if __name__ == "__main__":
     path_labels = "./data/raw/train_label.txt"
 
-    network_save_file = "leakyReLU10EpochsBatchNormMaxPooling"
+    network_save_file = "leakyReLU8EpochsBatchNormMaxPooling"
 
     test_split_ratio = 0.8
     block_size = 3400
@@ -300,7 +300,7 @@ if __name__ == "__main__":
 
     tr_tensor, eval_tensor = nwt.configure_data_loader(path_labels,
                             test_split_ratio, block_size, dataLoader_params)
-    metadata = nwt.train_model(tr_tensor, eval_tensor, 3, 5, network_save_file)
+    metadata = nwt.train_model(tr_tensor, eval_tensor, 3, 12, network_save_file)
 
     #nwt.plot_velocity_chart("data/raw/train_predicts.txt", label="Data Siamese", color="red")
     #nwt.plot_velocity_chart("data/raw/train_predicts_2.txt", label="Leaky Relu", color="orange", kernel_size=100)
