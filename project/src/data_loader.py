@@ -414,6 +414,6 @@ if __name__ == "__main__":
     #    cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
     # save_flow_as_tensors(path_tensor_opt_fl, path_raw_video)
     # save_frames_as_tensors(path_tensor_frames, path_raw_video)
-    # save_both(path_tensor_frames, path_tensor_opt_fl, path_raw_video)
-    partition = generate_train_eval_dict_new_splitting(20399,0.8)
+    save_both(path_tensor_frames, path_tensor_opt_fl, path_raw_video)
+    #partition = generate_train_eval_dict_new_splitting(20399,0.8)
     pass
