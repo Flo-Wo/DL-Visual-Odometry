@@ -105,9 +105,11 @@ class CNNFlowOnlyWithPooling(nn.Module):
         return(x.squeeze(1))
         
 # if __name__ == '__main__':
-#     test = CNNFlowOnlyWithPooling(3)
-#     x = torch.rand(10,3,105,160)
-#     #x = torch.load("../data/tensorData/frames/00001.pt")
-#     res = test.forward(x)
-#     print(res)
+#     model = CNNFlowOnlyWithPooling(3)
+#     from torchsummary import summary
+#     summary(model, (3,105,160))
+#     # x = torch.rand(10,3,105,160)
+#     # #x = torch.load("../data/tensorData/frames/00001.pt")
+#     # res = model.forward(x)
+#     # print(res)
         

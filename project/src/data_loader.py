@@ -316,8 +316,16 @@ def calculate_opt_flow(curr_frame, prev_frame):
 # #############################################################
 # TRAIN EVALUATION DICTIONARIES
 # #############################################################
+def generate_train_eval_dict(data_size, test_split_ratio, new=True,\
+                             block_size=100, offset=None):
+    if new:
+        return(generate_train_eval_dict_new_splitting(data_size, test_split_ratio))
+    else:
+        return(generate_train_eval_dict_old(data_size, test_split_ratio, block_size, offset))
 
-def generate_train_eval_dict(data_size, test_split_ratio, block_size=100, offset=None):
+
+
+def generate_train_eval_dict_old(data_size, test_split_ratio, block_size, offset):
     if offset is None:
         offset = np.random.random_integers(0, 50)
 
@@ -331,6 +339,58 @@ def generate_train_eval_dict(data_size, test_split_ratio, block_size=100, offset
     partition = {'train': train_indices, 'validation': test_indices}
     return partition
 
+
+def generate_train_eval_dict_new_splitting(data_size, test_split_ratio):
+    # function to do the new splitting according to Dr. Lins advice
+
+    # constants:
+    # Scene       | from minute to minute | frame to frame
+    # ------------------------------------------------------
+    # highway     | 0:00 to 7:00          | 0 to 8400
+    # stop&go     | 7:00 to 12:30         | 8401 to 15000
+    # city        | 12:30 to end          | 15001 to end
+    
+    # highway_end = int(np.floor(test_split_ratio*8400))
+    # trafficjam_end = int(np.floor(test_split_ratio*15000))
+    # last_split = int(np.floor(test_split_ratio*data_size))
+    
+    
+    ### THIS FUNCTION NEEDS TO BE CHECKED
+    
+    all_indices = np.linspace(1, data_size, data_size, dtype=int)
+    
+    # highway scenes
+    
+    highway_indices = all_indices[:8400]
+    np.random.shuffle(highway_indices)
+    
+    highway_end = int(np.size(highway_indices)*test_split_ratio)
+    
+    highway_train = highway_indices[:highway_end]
+    highway_test = highway_indices[highway_end:]
+    
+    # traffic jam scenes
+    trafficjam_indices = all_indices[8400:15000]
+    np.random.shuffle(trafficjam_indices)
+    
+    trafficjam_end = int(np.size(trafficjam_indices)*test_split_ratio)
+    
+    trafficjam_train = all_indices[:trafficjam_end]
+    trafficjam_test = all_indices[trafficjam_end:]
+
+    # city scenes
+    city_indices = all_indices[15000:]
+    np.random.shuffle(city_indices)
+    city_end = int(np.size(city_indices)*test_split_ratio)
+
+    city_train = city_indices[:city_end]
+    city_test = city_indices[city_end:]
+    
+    train_indices = [*highway_train,*trafficjam_train,*city_train]
+    test_indices = [*highway_test,*trafficjam_test,*city_test]
+    
+    partition = {'train': train_indices, 'validation': test_indices}
+    return partition
 
 def generate_label_dict(label_path, data_size):
     """generate a dictionary with all indices and their velocities"""
@@ -351,5 +411,7 @@ if __name__ == "__main__":
     #    cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
     #    cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
     # save_flow_as_tensors(path_tensor_opt_fl, path_raw_video)
-    #save_frames_as_tensors(path_tensor_frames, path_raw_video)
-    save_both(path_tensor_frames, path_tensor_opt_fl, path_raw_video)
+    # save_frames_as_tensors(path_tensor_frames, path_raw_video)
+    # save_both(path_tensor_frames, path_tensor_opt_fl, path_raw_video)
+    partition = generate_train_eval_dict_new_splitting(20399,0.8)
+    pass

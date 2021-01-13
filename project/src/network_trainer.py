@@ -16,13 +16,12 @@ import torch
 from matplotlib import pyplot as plt
 from data_loader import generate_label_dict, generate_train_eval_dict, \
     load_double_images, sample_down, cut_bottom, picture_bottom_offset, picture_opt_fl_size, picture_final_size, \
-    calculate_opt_flow, DatasetOptFlo, DatasetOptFlo2Frames, DatasetOptFlo1Frames
+    calculate_opt_flow, DatasetOptFlo
 
 # #############################################################
 # LOGGING INITIALISATION
 # #############################################################
-from cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
-from cnn.cnn_siamese_frames_flow import CnnSiamese
+from project.src.cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
 
 coloredlogs.install()
 logging.basicConfig(level=logging.DEBUG)
@@ -31,8 +30,11 @@ logging.basicConfig(level=logging.DEBUG)
 class NetworkTrainer:
     data_size = 20399
 
-    # loader_class = DatasetOptFlo2Frames
+    # model_class = DatasetOptFlo2Frames
     # network_class = CnnSiamese
+
+    loader_class = DatasetOptFlo
+    network_class = CNNFlowOnlyWithPooling
 
     def __init__(self, data_size, loader_class, network_class):
         self.data_size = data_size
@@ -149,7 +151,7 @@ class NetworkTrainer:
 
         vels = np.array([])
 
-        if produce_video:
+        if (produce_video):
             video_label = cv2.VideoWriter(save_to + ".mp4", 0x7634706d, 20, (640, 480))
 
         for count, (prev_frame, org_frame) in enumerate(tqdm(load_double_images(path_video), "Process Video")):
@@ -175,16 +177,15 @@ class NetworkTrainer:
 
             with torch.no_grad():
                 # predicted_velocity = model(rgb_flow_tensor, frame)
-                #print(type(self.loader_class.get_images(prev_frame, curr_frame, rgb_flow_tensor)))
-                predicted_velocity = model(*self.loader_class.get_images(prev_frame, curr_frame, rgb_flow_tensor))
+                predicted_velocity = model(self.model_class.get_images(prev_frame, curr_frame, rgb_flow_tensor))
                 vels = np.append(vels, predicted_velocity)
 
             if produce_video:
                 if label:
-                    frame_labeled = self.put_velocity_error_on_frame(org_frame, vels[count],
+                    frame_labeled = self.put_velocity_error_on_frame(org_frame, predicted_velocity,
                                                                      velocity=theory_velocity[count])
                 else:
-                    frame_labeled = self.put_velocity_error_on_frame(org_frame, vels[count])
+                    frame_labeled = self.put_velocity_error_on_frame(org_frame, predicted_velocity)
                 video_label.write(frame_labeled)
 
         video_label.release()
@@ -244,25 +245,28 @@ class NetworkTrainer:
 # #############################################################
 # IMPORTANT CONSTANTS
 # #############################################################
-path_labels = "./data/raw/train_label.txt"
-network_save_file = "./cnn/savedmodels/LeakyReLU_SIAMESE_2"
 
-test_split_ratio = 0.8
-block_size = 3400
+if __name__ == "__main__":
+    path_labels = "./data/raw/train_label.txt"
+    network_save_file = "leakyReLU10EpochsBatchNormMaxPooling"
 
-dataLoader_params = {'batch_size': 64, 'shuffle': True}
+    test_split_ratio = 0.8
+    block_size = 3400
 
-nwt = NetworkTrainer(20399, DatasetOptFlo1Frames, CnnSiamese)
+    dataLoader_params = {'batch_size': 64, 'shuffle': True}
 
-nwt.plot_velocity_chart("data/raw/test_predicts.txt", label="Data Siamese", color="red")
-nwt.plot_velocity_chart("data/raw/test_predicts_2.txt", label="Leaky Relu", color="orange", kernel_size=100)
-#nwt.plot_velocity_chart("data/raw/train_label.txt", label="Leaky Relu", color="green")
+    nwt = NetworkTrainer(20399, DatasetOptFlo, CNNFlowOnlyWithPooling)
 
-plt.legend()
-plt.show()
 
-#nwt.process_video("data/raw/test.mp4", "./cnn/savedmodels/LeakyReLU_SIAMESE.pth", 3,
-#                  "data/raw/test_predicts", produce_video=True)
+    tr_tensor, eval_tensor = nwt.configure_data_loader(path_labels, test_split_ratio, block_size, dataLoader_params)
+    metadata = nwt.train_model(tr_tensor, eval_tensor, 3, 10, network_save_file)
 
-#tr_tensor, eval_tensor = nwt.configure_data_loader(path_labels, test_split_ratio, block_size, dataLoader_params)
-#metadata = nwt.train_model(tr_tensor, eval_tensor, 3, 20, network_save_file)
+    #nwt.plot_velocity_chart("data/raw/train_predicts.txt", label="Data Siamese", color="red")
+    #nwt.plot_velocity_chart("data/raw/train_predicts_2.txt", label="Leaky Relu", color="orange", kernel_size=100)
+    #nwt.plot_velocity_chart("data/raw/train_label.txt", label="Leaky Relu", color="green")
+
+    #plt.legend()
+    #plt.show()
+
+    #nwt.process_video("data/raw/train.mp4", "./cnn/savedmodels/LeakyReLU15EpochsBatchNormMaxPoolingWithDropOut.pth", 3,
+    #                  "data/raw/train_predicts_2")

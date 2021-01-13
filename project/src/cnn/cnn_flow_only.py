@@ -99,10 +99,12 @@ class CNNFlowOnly(nn.Module):
         # is, what we want)
         return(x.squeeze(1))
         
-# if __name__ == '__main__':
-#     test = CNNFlowOnly(3)
-#     x = torch.rand(10,3,105,160)
-#     #x = torch.load("../data/tensorData/frames/00001.pt")
-#     res = test.forward(x)
-#     print(res)
+if __name__ == '__main__':
+    model = CNNFlowOnly(3)
+    from torchsummary import summary
+    summary(model, (3,105,160))
+    # x = torch.rand(10,3,105,160)
+    # #x = torch.load("../data/tensorData/frames/00001.pt")
+    # res = model.forward(x)
+    # print(res)
         
