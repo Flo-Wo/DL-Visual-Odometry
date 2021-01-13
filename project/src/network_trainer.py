@@ -64,15 +64,10 @@ class NetworkTrainer:
         # as this is used to evaluate our results in the initial challenge
         criterion = torch.nn.MSELoss()
         # starting with adam, later on maybe switching to SGD
-<<<<<<< HEAD
-        
+
         #optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
         optimizer = torch.optim.ASGD(model.parameters(), lr=1e-4)
-        
-        
-=======
-        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
->>>>>>> 21d81dadfcfd2fc50617ff195f991a461f08a195
+
         # add a learning rate scheduler, to reduce the learning rate after several
         # epochs, as we did in the MNIST exercise
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.9, patience=1)
