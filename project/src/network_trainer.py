@@ -45,9 +45,9 @@ class NetworkTrainer:
     # Configure Data Loaders
     # #############################################################
 
-    def configure_data_loader(self, labels_path, tsr, bs, dl_params):
+    def configure_data_loader(self, labels_path, tsr, bs, dl_params, new_splitting=True):
         labels = generate_label_dict(labels_path, self.data_size)
-        partitions = generate_train_eval_dict(self.data_size, tsr, bs, offset=0)
+        partitions = generate_train_eval_dict(self.data_size, tsr, block_size=bs, offset=0, new_split=new_splitting)
 
         training_set = self.loader_class(partitions['train'], labels)
         validation_set = self.loader_class(partitions['validation'], labels)

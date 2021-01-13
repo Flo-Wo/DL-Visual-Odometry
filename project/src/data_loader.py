@@ -316,9 +316,9 @@ def calculate_opt_flow(curr_frame, prev_frame):
 # #############################################################
 # TRAIN EVALUATION DICTIONARIES
 # #############################################################
-def generate_train_eval_dict(data_size, test_split_ratio, new=True,\
+def generate_train_eval_dict(data_size, test_split_ratio, new_split=True, \
                              block_size=100, offset=None):
-    if new:
+    if new_split:
         return(generate_train_eval_dict_new_splitting(data_size, test_split_ratio))
     else:
         return(generate_train_eval_dict_old(data_size, test_split_ratio, block_size, offset))
@@ -391,6 +391,7 @@ def generate_train_eval_dict_new_splitting(data_size, test_split_ratio):
     
     partition = {'train': train_indices, 'validation': test_indices}
     return partition
+
 
 def generate_label_dict(label_path, data_size):
     """generate a dictionary with all indices and their velocities"""
