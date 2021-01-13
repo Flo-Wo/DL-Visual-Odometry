@@ -137,7 +137,7 @@ class NetworkTrainer:
                     "train_epoch_loss": train_loss/len(train_dataset),
                     "eval_epoch_loss": eval_loss/len(eval_dataset),
                     "lr": optimizer.param_groups[0]['lr']}
-            logger.info('%s', log_dict)
+            logging.info('%s', log_dict)
             # use the scheduler and the mean error
             scheduler.step(train_loss / len(train_dataset))
 
@@ -261,13 +261,11 @@ class NetworkTrainer:
 
 if __name__ == "__main__":
     path_labels = "./data/raw/train_label.txt"
-<<<<<<< HEAD
+
     network_save_file = "leakyReLU5EpochsBatchNormMaxPooling"
-    
-=======
+
     network_save_file = "leakyReLU10EpochsBatchNormMaxPooling"
 
->>>>>>> 21d81dadfcfd2fc50617ff195f991a461f08a195
     test_split_ratio = 0.8
     block_size = 3400
 
@@ -277,13 +275,11 @@ if __name__ == "__main__":
 
 
     tr_tensor, eval_tensor = nwt.configure_data_loader(path_labels, test_split_ratio, block_size, dataLoader_params)
-<<<<<<< HEAD
+
     metadata = nwt.train_model(tr_tensor, eval_tensor, 3, 5, network_save_file)
-    
-=======
+
     metadata = nwt.train_model(tr_tensor, eval_tensor, 3, 10, network_save_file)
 
->>>>>>> 21d81dadfcfd2fc50617ff195f991a461f08a195
     #nwt.plot_velocity_chart("data/raw/train_predicts.txt", label="Data Siamese", color="red")
     #nwt.plot_velocity_chart("data/raw/train_predicts_2.txt", label="Leaky Relu", color="orange", kernel_size=100)
     #nwt.plot_velocity_chart("data/raw/train_label.txt", label="Leaky Relu", color="green")
