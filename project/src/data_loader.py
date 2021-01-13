@@ -59,6 +59,7 @@ class DatasetOptFlo(torch.utils.data.Dataset):
         # Load data and get label
         x = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(element_id))
         y = (self.labels[element_id] + self.labels[element_id - 1]) / 2
+        #y = self.labels[element_id]
 
         return x, y
 
