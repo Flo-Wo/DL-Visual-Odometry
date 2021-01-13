@@ -14,8 +14,9 @@ from torchvision.transforms import transforms
 from tqdm import tqdm
 import torch
 from matplotlib import pyplot as plt
-from data_loader import generate_label_dict, generate_train_eval_dict, \
-    load_double_images, sample_down, cut_bottom, picture_bottom_offset, picture_opt_fl_size, picture_final_size, \
+from data_loader import generate_label_dict, generate_train_eval_dict,\
+    load_double_images, sample_down, cut_bottom, picture_bottom_offset,\
+    picture_opt_fl_size, picture_final_size, \
     calculate_opt_flow, DatasetOptFlo
 
 # #############################################################
@@ -51,9 +52,12 @@ class NetworkTrainer:
     # Configure Data Loaders
     # #############################################################
 
-    def configure_data_loader(self, labels_path, tsr, bs, dl_params, new_splitting=True):
+    def configure_data_loader(self, labels_path, tsr, bs, dl_params,
+                              new_splitting=True):
         labels = generate_label_dict(labels_path, self.data_size)
-        partitions = generate_train_eval_dict(self.data_size, tsr, block_size=bs, offset=0, new_split=new_splitting)
+        partitions = generate_train_eval_dict(self.data_size, tsr,
+                                              block_size=bs, offset=0,
+                                              new_split=new_splitting)
 
         training_set = self.loader_class(partitions['train'], labels)
         validation_set = self.loader_class(partitions['validation'], labels)
@@ -63,7 +67,8 @@ class NetworkTrainer:
 
         return train_tensor, eval_tensor
 
-    def train_model(self, train_dataset, eval_dataset, num_input_channels, num_epochs, save_file):
+    def train_model(self, train_dataset, eval_dataset, num_input_channels,
+                    num_epochs, save_file):
         # create model
         model = self.network_class(num_input_channels)
         # create loss function and create optimizer object, we use the MSE Loss,
@@ -76,7 +81,9 @@ class NetworkTrainer:
 
         # add a learning rate scheduler, to reduce the learning rate after several
         # epochs, as we did in the MNIST exercise
-        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.9, patience=1)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,
+                                                               factor=0.9,
+                                                               patience=1)
         # reduce learning rate each epoch by 10%
         # lr_lambda = lambda epoch: 0.6
         # scheduler = torch.optim.lr_scheduler.MultiplicativeLR(optimizer, lr_lambda, last_epoch=-1, verbose=True)
@@ -92,7 +99,7 @@ class NetworkTrainer:
         metadata = np.zeros([num_epochs, 4])
 
         for epoch in range(num_epochs):
-            print("Epoch: " + str(epoch + 1))
+            logging.info("\nEpoch: " + str(epoch + 1))
             ## training part ##
             model.train()
             train_loss = 0
@@ -122,7 +129,8 @@ class NetworkTrainer:
             ## evaluation part ##
             # print("evaluation...")
             model.eval()
-            for _, (*a, velocity_vector) in enumerate(tqdm(eval_dataset, "Evaluate")):
+            for _, (*a, velocity_vector) in enumerate(tqdm(eval_dataset,
+                                                           "Evaluate")):
                 # for _, (flow_stack, normal_stack, velocity_vector) in enumerate(tqdm(eval_dataset, "Evaluate")):
                 # flow_stack = flow_stack.squeeze(1)
                 # do not use backpropagation here, as this is the validation data
@@ -147,13 +155,15 @@ class NetworkTrainer:
             scheduler.step(train_loss / len(train_dataset))
 
         # save the models weights and bias' to use it later
-        torch.save(model.state_dict(), save_file + ".pth")
+        save_path = "./cnn/savedmodels/NewSplitting/"
+        torch.save(model.state_dict(), save_path + save_file + ".pth")
         logging.debug("Model saved!")
         np.savetxt(save_file + "_METADATA.txt", metadata, delimiter=",")
 
         return metadata
 
-    def process_video(self, path_video, model_file, num_input_channels, save_to, produce_video=False, label_path=None):
+    def process_video(self, path_video, model_file, num_input_channels,
+                      save_to, produce_video=False, label_path=None):
         if label_path is not None:
             label = True
             theory_velocity = np.loadtxt(label_path)
@@ -237,27 +247,33 @@ class NetworkTrainer:
             velo = "speed (m/s): " + "{:2.3f}".format(velocity)
             err = "error (m/s): " + "{:2.3f}".format(error)
 
-            frame_labeled = cv2.putText(frame, velo, velo_position, font, fontScale, velo_color, thickness)
+            frame_labeled = cv2.putText(frame, velo, velo_position, font,
+                                        fontScale, velo_color, thickness)
 
-            frame_labeled = cv2.putText(frame_labeled, err, err_position, font, fontScale, err_color, thickness)
+            frame_labeled = cv2.putText(frame_labeled, err, err_position,
+                                        font, fontScale, err_color, thickness)
 
-            frame_labeled = cv2.putText(frame_labeled, pred, pred_position, font, fontScale, pred_color, thickness)
+            frame_labeled = cv2.putText(frame_labeled, pred, pred_position,
+                                        font, fontScale, pred_color, thickness)
         else:
             pred_position = (right_offset, upper_offset)
             pred = "pred (m/s): " + "{:2.3f}".format(prediction)
-            frame_labeled = cv2.putText(frame, pred, pred_position, font, fontScale, pred_color, thickness)
+            frame_labeled = cv2.putText(frame, pred, pred_position, font,
+                                        fontScale, pred_color, thickness)
 
         return frame_labeled
 
     @classmethod
-    def plot_velocity_chart(cls, data_file, label="Data", color="gray", kernel_size=None, kernel_color="black"):
+    def plot_velocity_chart(cls, data_file, label="Data", color="gray",
+                            kernel_size=None, kernel_color="black"):
         velocities = np.genfromtxt(data_file)
         plt.plot(velocities, color=color, ls=None, label=label)
 
         if kernel_size is not None:
             kernel = np.ones(kernel_size) / kernel_size
             data_convolved = np.convolve(velocities, kernel, mode='same')
-            plt.plot(data_convolved, color=kernel_color, ls="-", label="Smoothed")
+            plt.plot(data_convolved, color=kernel_color, ls="-",
+                     label="Smoothed")
 
 
 # #############################################################
@@ -277,7 +293,8 @@ if __name__ == "__main__":
     nwt = NetworkTrainer(20399, DatasetOptFlo, CNNFlowOnlyWithPooling)
 
 
-    tr_tensor, eval_tensor = nwt.configure_data_loader(path_labels, test_split_ratio, block_size, dataLoader_params)
+    tr_tensor, eval_tensor = nwt.configure_data_loader(path_labels,
+                            test_split_ratio, block_size, dataLoader_params)
     metadata = nwt.train_model(tr_tensor, eval_tensor, 3, 5, network_save_file)
 
     #nwt.plot_velocity_chart("data/raw/train_predicts.txt", label="Data Siamese", color="red")
