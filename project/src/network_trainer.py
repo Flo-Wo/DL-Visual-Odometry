@@ -18,23 +18,25 @@ from data_loader import generate_label_dict, generate_train_eval_dict,\
     load_double_images, sample_down, cut_bottom, picture_bottom_offset, picture_opt_fl_size, picture_final_size, \
     calculate_opt_flow, DatasetOptFlo
 
-# #############################################################
-# LOGGING INITIALISATION
-# #############################################################
 from cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
 from cnn.cnn_flow_only import CNNFlowOnly
 
+# #############################################################
+# LOGGING INITIALISATION
+# #############################################################
+
 coloredlogs.install()
-logging.basicConfig(level=logging.DEBUG)
+
+#logging.basicConfig(level=logging.DEBUG)
 
 
-# logging.basicConfig(
-#     level=logging.INFO,
-#     format='%(message)s',
-#     handlers=[
-#         logging.StreamHandler()
-#     ]
-# )
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(message)s',
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
 
 class NetworkTrainer:
     data_size = 20399

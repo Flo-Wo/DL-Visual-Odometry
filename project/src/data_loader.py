@@ -345,23 +345,46 @@ def generate_train_eval_dict_new_splitting(data_size, test_split_ratio):
 
     # constants:
     # Scene       | from minute to minute | frame to frame
+    # ------------------------------------------------------
     # highway     | 0:00 to 7:00          | 0 to 8400
     # stop&go     | 7:00 to 12:30         | 8401 to 15000
     # city        | 12:30 to end          | 15001 to end
-    highway_end = int(np.floor(test_split_ratio*8400))
-    trafficjam_end = int(np.floor(test_split_ratio*15000))
-    last_split = int(np.floor(test_split_ratio*data_size))
+    
+    # highway_end = int(np.floor(test_split_ratio*8400))
+    # trafficjam_end = int(np.floor(test_split_ratio*15000))
+    # last_split = int(np.floor(test_split_ratio*data_size))
+    
+    
+    ### THIS FUNCTION NEEDS TO BE CHECKED
     
     all_indices = np.linspace(1, data_size, data_size, dtype=int)
     
-    highway_train = all_indices[:highway_end]
-    highway_test = all_indices[highway_end:8400]
+    # highway scenes
     
-    trafficjam_train = all_indices[8400:trafficjam_end]
-    trafficjam_test = all_indices[trafficjam_end:15000]
+    highway_indices = all_indices[:8400]
+    np.random.shuffle(highway_indices)
+    
+    highway_end = int(np.size(highway_indices)*test_split_ratio)
+    
+    highway_train = highway_indices[:highway_end]
+    highway_test = highway_indices[highway_end:]
+    
+    # traffic jam scenes
+    trafficjam_indices = all_indices[8400:15000]
+    np.random.shuffle(trafficjam_indices)
+    
+    trafficjam_end = int(np.size(trafficjam_indices)*test_split_ratio)
+    
+    trafficjam_train = all_indices[:trafficjam_end]
+    trafficjam_test = all_indices[trafficjam_end:]
 
-    city_train = all_indices[15000:last_split]
-    city_test = all_indices[last_split:]
+    # city scenes
+    city_indices = all_indices[15000:]
+    np.random.shuffle(city_indices)
+    city_end = int(np.size(city_indices)*test_split_ratio)
+
+    city_train = city_indices[:city_end]
+    city_test = city_indices[city_end:]
     
     train_indices = [*highway_train,*trafficjam_train,*city_train]
     test_indices = [*highway_test,*trafficjam_test,*city_test]
