@@ -157,13 +157,8 @@ class NetworkTrainer:
         # save the models weights and bias' to use it later
         save_path = "./cnn/savedmodels/NewSplitting/"
         torch.save(model.state_dict(), save_path + save_file + ".pth")
-<<<<<<< HEAD
-        #logging.debug("Model saved!")
-        np.savetxt(save_file + "_METADATA.txt", metadata, delimiter=",")
-=======
-        logging.debug("Model saved!")
         np.savetxt(save_path + save_file + "_METADATA.txt", metadata, delimiter=",")
->>>>>>> 4fa3996e0a9c769c5048bfee73d980690612ce5a
+
 
         return metadata
 
