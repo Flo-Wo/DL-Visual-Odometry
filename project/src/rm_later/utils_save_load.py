@@ -36,9 +36,8 @@ class Dataset(torch.utils.data.Dataset):
         'Generates one sample of data'
         # Select sample
         ID = self.list_IDs[index]
-
         # Load data and get label
-        X = torch.load('data/tensorData/of/' + str(ID) + '.pt')
+        X = torch.load('data/tensorData/of/' + "{:05d}.pt".format(ID))
         y = self.labels[ID]
 
         return X, y

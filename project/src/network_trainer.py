@@ -76,7 +76,7 @@ class NetworkTrainer:
         criterion = torch.nn.MSELoss()
         # starting with adam, later on maybe switching to SGD
 
-        optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
         #optimizer = torch.optim.ASGD(model.parameters(), lr=1e-4)
 
         # add a learning rate scheduler, to reduce the learning rate after several
@@ -90,7 +90,7 @@ class NetworkTrainer:
         # according to https://pytorch.org/docs/stable/optim.html?highlight=optim#module-torch.optim
         # this reduces the lr by a factor of 0.1 if the relative decrease after 2
         # epochs is not bigger than the default threshold
-        logging.debug("Begin Training")
+        #logging.debug("Begin Training")
         
         # create logger
         logger = logging.getLogger("train_logger")
@@ -157,7 +157,7 @@ class NetworkTrainer:
         # save the models weights and bias' to use it later
         save_path = "./cnn/savedmodels/NewSplitting/"
         torch.save(model.state_dict(), save_path + save_file + ".pth")
-        logging.debug("Model saved!")
+        #logging.debug("Model saved!")
         np.savetxt(save_file + "_METADATA.txt", metadata, delimiter=",")
 
         return metadata
@@ -285,29 +285,29 @@ class NetworkTrainer:
 # IMPORTANT CONSTANTS
 # #############################################################
 
-if __name__ == "__main__":
-    path_labels = "./data/raw/train_label.txt"
+# if __name__ == "__main__":
+#     path_labels = "./data/raw/train_label.txt"
 
-    network_save_file = "leakyReLU8EpochsBatchNormMaxPooling"
+#     network_save_file = "leakyReLU8EpochsBatchNormMaxPooling"
 
-    test_split_ratio = 0.8
-    block_size = 3400
+#     test_split_ratio = 0.8
+#     block_size = 3400
 
-    dataLoader_params = {'batch_size': 64, 'shuffle': True}
+#     dataLoader_params = {'batch_size': 64, 'shuffle': True}
 
-    nwt = NetworkTrainer(20399, DatasetOptFlo, CNNFlowOnlyWithPooling)
+#     nwt = NetworkTrainer(20399, DatasetOptFlo, CNNFlowOnlyWithPooling)
 
 
-    tr_tensor, eval_tensor = nwt.configure_data_loader(path_labels,
-                            test_split_ratio, block_size, dataLoader_params)
-    metadata = nwt.train_model(tr_tensor, eval_tensor, 3, 12, network_save_file)
+#     tr_tensor, eval_tensor = nwt.configure_data_loader(path_labels,
+#                             test_split_ratio, block_size, dataLoader_params)
+#     metadata = nwt.train_model(tr_tensor, eval_tensor, 3, 12, network_save_file)
 
-    #nwt.plot_velocity_chart("data/raw/train_predicts.txt", label="Data Siamese", color="red")
-    #nwt.plot_velocity_chart("data/raw/train_predicts_2.txt", label="Leaky Relu", color="orange", kernel_size=100)
-    #nwt.plot_velocity_chart("data/raw/train_label.txt", label="Leaky Relu", color="green")
+#     #nwt.plot_velocity_chart("data/raw/train_predicts.txt", label="Data Siamese", color="red")
+#     #nwt.plot_velocity_chart("data/raw/train_predicts_2.txt", label="Leaky Relu", color="orange", kernel_size=100)
+#     #nwt.plot_velocity_chart("data/raw/train_label.txt", label="Leaky Relu", color="green")
 
-    #plt.legend()
-    #plt.show()
+#     #plt.legend()
+#     #plt.show()
 
-    #nwt.process_video("data/raw/train.mp4", "./cnn/savedmodels/LeakyReLU15EpochsBatchNormMaxPoolingWithDropOut.pth", 3,
-    #                  "data/raw/train_predicts_2")
+#     #nwt.process_video("data/raw/train.mp4", "./cnn/savedmodels/LeakyReLU15EpochsBatchNormMaxPoolingWithDropOut.pth", 3,
+#     #                  "data/raw/train_predicts_2")

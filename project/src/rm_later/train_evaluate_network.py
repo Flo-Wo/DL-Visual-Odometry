@@ -10,7 +10,8 @@ Created on Tue Dec 29 10:19:53 2020
 import torch
 from cnn.cnn_flow_only import CNNFlowOnly
 from cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
-from utils_save_load import Dataset, generate_label_dict, generate_train_eval_dict
+from utils_save_load import Dataset, generate_label_dict
+from data_loader import generate_train_eval_dict
 from tqdm import tqdm
 import logging
 
