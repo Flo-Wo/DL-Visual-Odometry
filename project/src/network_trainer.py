@@ -81,8 +81,6 @@ class NetworkTrainer:
         optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
         #optimizer = torch.optim.ASGD(model.parameters(), lr=1e-4)
 
-        # add a learning rate scheduler, to reduce the learning rate after several
-        # epochs, as we did in the MNIST exercise
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,
                                                                factor=0.9,
                                                                patience=1)
@@ -106,11 +104,7 @@ class NetworkTrainer:
             model.train()
             train_loss = 0
             eval_loss = 0
-            # now iterate through training examples
-            # train_dataset consists of batches of an torch data loader, including
-            # the flow fields and the velocity vectors, attention the enumerator
-            # also returns an integer
-            # print("training...")
+
             # for _, (flow_stack, normal_stack, velocity_vector) in enumerate(tqdm(train_dataset, "Train")):
             for _, (*a, velocity_vector) in enumerate(tqdm(train_dataset, "Train")):
                 # flow_stack = flow_stack.squeeze(1)
@@ -120,8 +114,6 @@ class NetworkTrainer:
                 # predicted_velocity = model(flow_stack, normal_stack)
                 predicted_velocity = model(*a)
                 loss = criterion(predicted_velocity, velocity_vector.float())
-                # print(loss)
-                # print(loss.item())
                 # backward propagation
                 loss.backward()
                 # use optimizer
