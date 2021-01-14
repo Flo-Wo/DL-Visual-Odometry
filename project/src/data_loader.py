@@ -7,8 +7,8 @@ Created on Sun Jan 03.01.2021
 """
 
 import torch
-from torch.utils.data import Dataset, DataLoader, Subset, TensorDataset
-from torchvision import datasets, transforms
+#from torch.utils.data import Dataset, DataLoader, Subset, TensorDataset
+from torchvision import transforms
 import cv2
 import numpy as np
 from tqdm import tqdm
@@ -282,6 +282,14 @@ def save_flow_as_tensors(save_path, video_path, save_as_png=False, save_png_path
         # print(rgb_flow_tensor.shape)
         torch.save(rgb_flow_tensor, save_path + "{:05d}.pt".format(i + 1))
 
+## #############################################################
+# Brightness augmentation
+# #############################################################
+
+def augment_brightness(frame):
+    # function to add some noise into the image
+    pass
+
 
 # #############################################################
 # CALCULATE OPTICAL FLOW
@@ -353,9 +361,6 @@ def generate_train_eval_dict_new_splitting(data_size, test_split_ratio):
     # trafficjam_end = int(np.floor(test_split_ratio*15000))
     # last_split = int(np.floor(test_split_ratio*data_size))
     
-    
-    ### THIS FUNCTION NEEDS TO BE CHECKED
-    
     all_indices = np.linspace(1, data_size, data_size, dtype=int)
     
     # highway scenes
@@ -380,6 +385,7 @@ def generate_train_eval_dict_new_splitting(data_size, test_split_ratio):
     # city scenes
     city_indices = all_indices[15000:]
     np.random.shuffle(city_indices)
+    
     city_end = int(np.size(city_indices)*test_split_ratio)
 
     city_train = city_indices[:city_end]
@@ -403,15 +409,15 @@ def generate_label_dict(label_path, data_size):
 
 
 if __name__ == "__main__":
-    #    i1 = cv2.imread("./data/frames/frame1.png")
-    #    i2 = cv2.imread("./data/frames/frame2.png")
-    #    i2_cut_down = sample_down_half(i2[:-60,:,:])
-    #    flow_field = calc_of(i1, i2)
-    #    cv2.imwrite("../report/imgs/frame2_original.png",i2)
-    #    cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
-    #    cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
+    # i1 = cv2.imread("./data/frames/frame1.png")
+    # i2 = cv2.imread("./data/frames/frame2.png")
+    # i2_cut_down = sample_down_half(i2[:-60,:,:])
+    # flow_field = calc_of(i1, i2)
+    # cv2.imwrite("../report/imgs/frame2_original.png",i2)
+    # cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
+    # cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
     # save_flow_as_tensors(path_tensor_opt_fl, path_raw_video)
     # save_frames_as_tensors(path_tensor_frames, path_raw_video)
-    save_both(path_tensor_frames, path_tensor_opt_fl, path_raw_video)
-    #partition = generate_train_eval_dict_new_splitting(20399,0.8)
+    # save_both(path_tensor_frames, path_tensor_opt_fl, path_raw_video)
+    # partition = generate_train_eval_dict_new_splitting(20399,0.8)
     pass

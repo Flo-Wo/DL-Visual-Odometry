@@ -11,6 +11,7 @@ import torch.nn as nn
 
 # this way we can easily change the activation function for the whole network
 def activ_func():
+    # change distribution of the weights for the conv layers
     return(nn.LeakyReLU())
     #return(nn.ReLU())
 # additional arguments default values are taken directly from pytorch
@@ -61,7 +62,7 @@ class CNNFlowOnlyWithPooling(nn.Module):
                 # add nonlinearity to the layer, as we are using the relu function
                 # this should also be the way how matlab chooses weights
                 nn.init.kaiming_uniform_(layer.weight.data, mode='fan_in',\
-                                         nonlinearity='relu')
+                                         nonlinearity='leaky_relu')
                 if layer.bias is not None:
                     # init bias with all zeros, as we usually did in the lecture
                     layer.bias.data.zero_()

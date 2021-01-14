@@ -17,7 +17,7 @@ from matplotlib import pyplot as plt
 from data_loader import generate_label_dict, generate_train_eval_dict,\
     load_double_images, sample_down, cut_bottom, picture_bottom_offset,\
     picture_opt_fl_size, picture_final_size, \
-    calculate_opt_flow, DatasetOptFlo
+    calculate_opt_flow#, DatasetOptFlo
 
 
 # from cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
@@ -142,8 +142,8 @@ class NetworkTrainer:
                     loss = criterion(predicted_velocity, velocity_vector.float())
                     eval_loss += loss.item()
             # mean the error to print correctly
-            logging.info("Training Loss: " + str(train_loss / len(train_dataset)))
-            logging.info("Eval Loss: " + str(eval_loss / len(eval_dataset)))
+            print("\nTraining Loss: " + str(train_loss / len(train_dataset)))
+            print("Eval Loss: " + str(eval_loss / len(eval_dataset)))
 
             metadata[epoch, :] = np.array([epoch, train_loss / len(train_dataset), eval_loss / len(eval_dataset),
                                            optimizer.param_groups[0]['lr']])
