@@ -35,10 +35,8 @@ class CNNFlowOnlyWithPooling(nn.Module):
         super(CNNFlowOnlyWithPooling,self).__init__()
         self.bn1 = nn.BatchNorm2d(num_input_channels)
         self.conv1 = conv_layer(num_input_channels, 24, kernel_size=5, stride=2)
-        self.conv2 = conv_layer(24, 36, kernel_size=5, stride=2)
         
-        # first pooling layer after second convolution layer, conv_layer
-        # already includes the activation function
+        self.conv2 = conv_layer(24, 36, kernel_size=5, stride=2)
         self.pool1 = pooling(kernel_size_own=2,stride_own=2,padding_own=1)
         
         self.conv3 = conv_layer(36, 48, kernel_size=5, stride=2)
@@ -75,19 +73,19 @@ class CNNFlowOnlyWithPooling(nn.Module):
         #print("shape = ",x.shape)
         x = self.bn1(x)
         x = self.conv1(x)
-
+        
         x = self.conv2(x)
         x = self.pool1(x)
+        
         x = self.conv3(x)
         # drop out layer
-        x = self.drop(x)
-        
+        x = self.drop(x)      
         x = self.conv4(x)
         
         x = self.conv5(x)
         x = self.pool2(x)
         # here we need a reshape, to pass the tensor into a fc
-        #print("shape = ",x.shape)
+
         # result: shape =  torch.Size([10, 64, 53, 73]), according to
         # https://discuss.pytorch.org/t/transition-from-conv2d-to-linear-layer-equations/93850/2
         # we need to reshape the output (flatten layer in matlab)
@@ -107,9 +105,9 @@ class CNNFlowOnlyWithPooling(nn.Module):
 # if __name__ == '__main__':
 #     model = CNNFlowOnlyWithPooling(3)
 #     from torchsummary import summary
-#     summary(model, (3,105,160))
-#     # x = torch.rand(10,3,105,160)
+#     #summary(model, (3,105,160))
+#     x = torch.rand(10,3,105,160)
 #     # #x = torch.load("../data/tensorData/frames/00001.pt")
-#     # res = model.forward(x)
-#     # print(res)
+#     res = model.forward(x)
+#     print(res)
         
