@@ -282,15 +282,6 @@ def save_flow_as_tensors(save_path, video_path, save_as_png=False, save_png_path
         # print(rgb_flow_tensor.shape)
         torch.save(rgb_flow_tensor, save_path + "{:05d}.pt".format(i + 1))
 
-## #############################################################
-# Brightness augmentation
-# #############################################################
-
-def augment_brightness(frame):
-    # function to add some noise into the image
-    pass
-
-
 # #############################################################
 # CALCULATE OPTICAL FLOW
 # #############################################################
@@ -407,6 +398,20 @@ def generate_label_dict(label_path, data_size):
 
     return labels
 
+## #############################################################
+# Brightness augmentation
+# #############################################################
+
+def augment_brightness(frame,contrast_factor,brigth_factor=0):
+    return cv2.addWeighted(frame, contrast_factor,
+                           frame,0,
+                           brigth_factor)
+    # function to add some noise into the image
+    hsv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    # bright_factor = 0.2 + np.random.uniform()
+    hsv_image[:,:,2] = hsv_image[:,:,2] * contrast_factor
+    frame_rgb = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+    return frame_rgb
 
 if __name__ == "__main__":
     # i1 = cv2.imread("./data/frames/frame1.png")
@@ -420,4 +425,10 @@ if __name__ == "__main__":
     # save_frames_as_tensors(path_tensor_frames, path_raw_video)
     # save_both(path_tensor_frames, path_tensor_opt_fl, path_raw_video)
     # partition = generate_train_eval_dict_new_splitting(20399,0.8)
+    frame = cv2.imread("./data/frames/frame1.png")
+    # in expectation we decrease the contrast
+    contrast_factor = 0.3 + np.random.uniform()
+    bright_factor = np.random.uniform(-20,20)
+    frame_changed = augment_brightness(frame, contrast_factor,bright_factor)
+    cv2.imwrite("../augmentation9.png",frame_changed)
     pass

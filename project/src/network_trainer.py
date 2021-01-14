@@ -81,9 +81,14 @@ class NetworkTrainer:
         optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
         #optimizer = torch.optim.ASGD(model.parameters(), lr=1e-4)
 
-        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,
-                                                               factor=0.9,
-                                                               patience=1)
+        # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,
+        #                                                        factor=0.9,
+        #                                                        patience=1)
+        #lr_lambda = lambda epoch: 0.95 ** epoch
+        #scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda, last_epoch=-1,
+        #                                  verbose=False)
+        
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.5)
         # reduce learning rate each epoch by 10%
         # lr_lambda = lambda epoch: 0.6
         # scheduler = torch.optim.lr_scheduler.MultiplicativeLR(optimizer, lr_lambda, last_epoch=-1, verbose=True)
@@ -146,7 +151,7 @@ class NetworkTrainer:
                     "lr": optimizer.param_groups[0]['lr']}
             logger.info('%s', log_dict)
             # use the scheduler and the mean error
-            scheduler.step(train_loss / len(train_dataset))
+            scheduler.step()#train_loss / len(train_dataset)
 
         # save the models weights and bias' to use it later
         save_path = "./cnn/savedmodels/NewSplitting/"
