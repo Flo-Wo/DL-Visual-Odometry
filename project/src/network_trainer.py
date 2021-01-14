@@ -19,11 +19,13 @@ from data_loader import generate_label_dict, generate_train_eval_dict,\
     picture_opt_fl_size, picture_final_size, \
     calculate_opt_flow, DatasetOptFlo
 
+
+# from cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
+# from cnn.cnn_flow_only import CNNFlowOnly
+
 # #############################################################
 # LOGGING INITIALISATION
 # #############################################################
-from cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
-from cnn.cnn_flow_only import CNNFlowOnly
 
 logging.basicConfig(
     level=logging.INFO,
@@ -37,11 +39,11 @@ logging.basicConfig(
 class NetworkTrainer:
     data_size = 20399
 
-    # model_class = DatasetOptFlo2Frames
-    # network_class = CnnSiamese
+    # # model_class = DatasetOptFlo2Frames
+    # # network_class = CnnSiamese
 
-    loader_class = DatasetOptFlo
-    network_class = CNNFlowOnlyWithPooling
+    # loader_class = DatasetOptFlo
+    # network_class = CNNFlowOnlyWithPooling
 
     def __init__(self, data_size, loader_class, network_class):
         self.data_size = data_size
@@ -280,10 +282,6 @@ class NetworkTrainer:
             plt.plot(data_convolved, color=kernel_color, ls="-",
                      label="Smoothed")
 
-
-# #############################################################
-# IMPORTANT CONSTANTS
-# #############################################################
 
 # if __name__ == "__main__":
 #     path_labels = "./data/raw/train_label.txt"
