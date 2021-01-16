@@ -7,7 +7,8 @@ Created on 15.01.2021
 """
 import torch
 
-from data_loader import generate_block_splitting, generate_label_dict, DatasetOptFlo1Frames, path_labels
+from data_loader import generate_block_splitting, generate_label_dict, DatasetOptFlo1Frames, path_labels, \
+    generate_situation_splitting
 from network_trainer import setup_data_loader, train_network
 from cnn.cnn_siamese_frames_flow import CnnSiamese
 
@@ -25,11 +26,13 @@ SCHEDULER_RedLROnPlateau_Siamese = torch.optim.lr_scheduler.ReduceLROnPlateau(OP
                                                                               factor=0.9, patience=1)
 
 if __name__ == "__main__":
-    splitting = generate_block_splitting(data_size, train_eval_ratio, block_size)
+    # splitting = generate_block_splitting(data_size, train_eval_ratio, block_size)
+    splitting = generate_situation_splitting(0.8)
+
     labels = generate_label_dict(path_labels, data_size)
 
     train_tensor, validation_tensor = setup_data_loader(DatasetOptFlo1Frames, splitting, labels)
 
-    train_network(train_tensor, validation_tensor, 20, "LeakyReLU_SIAMESE",
+    train_network(train_tensor, validation_tensor, 20, "LeakyReLU_SIAMESE_SitSplit",
                   model=MODEL_Siamese, criterion=CRITERION_MSELoss, optimizer=OPTIMIZER_Adam_Siamese,
                   scheduler=SCHEDULER_RedLROnPlateau_Siamese)
