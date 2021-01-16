@@ -50,26 +50,17 @@ def setup_data_loader(dataset_class, splitting, labels, params=standard_loader_p
 
 # standard model
 standard_model = CnnSiamese(3)
-# all models we are using
-MODEL_Siamese = CnnSiamese(3)
 
 # create loss function and create optimizer object, we use the MSE Loss,
 # as this is used to evaluate our results in the initial challenge
 standard_criterion = torch.nn.MSELoss()
-# all criteria we are using
-CRITERION_MSELoss = torch.nn.MSELoss()
 
 # standard optimizer
 standard_optimizer = torch.optim.Adam(standard_model.parameters(), lr=1e-3)
-# all optimizers we are using
-OPTIMIZER_Adam_Siamese = torch.optim.Adam(MODEL_Siamese.parameters(), lr=1e-3)
 
 # add a learning rate scheduler, to reduce the learning rate after several
 # epochs, as we did in the MNIST exercise
 standard_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(standard_optimizer, factor=0.9, patience=1)
-# all schedulers we are using
-SCHEDULER_RedLROnPlateau_Siamese = torch.optim.lr_scheduler.ReduceLROnPlateau(OPTIMIZER_Adam_Siamese,
-                                                                              factor=0.9, patience=1)
 
 # path to save trained models to
 network_folder = "./cnn/saved_models/NewSplitting/"
