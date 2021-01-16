@@ -120,6 +120,15 @@ possibilities to fine-tune and improve the model.\\
 \\In a first approach, we tried the raw model gaining an MSE of around 18-20 on testing and under 3 on training. One can clearly 
 see, that the model really overfits the train dataset.
 
+\subsection{Siamese approach}
+
+In order to improve our results we expanded our model to also use the original image: Siamese approach
+
+Initial splitting blocks of 100 frames size with 80\% training data, 20\% test data; 20 epochs (train error: 0.411, test error: 2.70)
+
+New splitting: each driving scenario 80\% training data, 20\% test data: (train error: 0.23, test error: 29.7)
+
+
 \section{Tuning of the model}
 To speed up the training we used batch normalization layers https://arxiv.org/pdf/1502.03167.pdf and we tested different activation functions, to improve the performance of the model. 
 

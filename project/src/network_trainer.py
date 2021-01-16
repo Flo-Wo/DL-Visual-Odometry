@@ -29,7 +29,7 @@ logging.basicConfig(
 # #############################################################
 
 # parameters for data loader
-standard_loader_params = {'batch_size': 64, 'shuffle': True}
+standard_loader_params = {'batch_size': 64 , 'shuffle': True}
 
 standard_dataset_class = DatasetOptFlo1Frames
 

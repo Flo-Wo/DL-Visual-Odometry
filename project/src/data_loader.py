@@ -87,7 +87,7 @@ class DatasetFrames(torch.utils.data.Dataset):
         # Load data and get label
         X1 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID - 1))
         X2 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
-        y = (self.labels[ID] + self.labels[ID - 1]) / 2
+        y = self.labels[ID]
 
         return X1, X2, y
 
@@ -147,7 +147,7 @@ class DatasetOptFlo2Frames(torch.utils.data.Dataset):
         F1 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID - 1))
         F2 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
         X = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(ID))
-        y = (self.labels[ID] + self.labels[ID - 1]) / 2
+        y = self.labels[ID]
 
         return F1, F2, X, y
 
