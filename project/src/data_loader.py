@@ -1,229 +1,429 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Dec 29 10:36:35 2020
-
-@author: florianwolf
+Created on Sun Jan 03.01.2021
+@author: Franz Herbst
 """
 
 import torch
-from torch.utils.data import Dataset, DataLoader, Subset, TensorDataset
-from torchvision import datasets,transforms
+from torchvision import transforms
 import cv2
 import numpy as np
+from tqdm import tqdm
 
-
-# we use this file to laod the data into a torch dataloader, to efficiently
+# we use this file to load the data into a torch data loader, to efficiently
 # store the data set and split it into train and test data
 
 # override the Dataset class of pytorch to efficiently run the code
 # https://stanford.edu/~shervine/blog/pytorch-how-to-generate-data-parallel
 # using this technique
 
-path_tensor_opt_fl = "data/tensorData/of/"
-path_tensor_frames = "data/tensorData/frames/"
+# #############################################################
+# IMPORTANT CONSTANTS
+# #############################################################
 
-#class Dataset_OpFl(torch.utils.data.Dataset):
+path_tensor_opt_fl = "./data/tensorData/of/"
+path_tensor_frames = "./data/tensorData/frames/"
+path_image_opt_fl = "data/opticalFlow/"
+path_image_frames = "data/frames/"
+path_raw_video = "data/raw/train.mp4"
+path_labels = "./data/raw/train_label.txt"
+
+picture_bottom_offset = 60
+picture_opt_fl_size = (320, 210)
+picture_final_size = (160, 105)
 
 
+# #############################################################
+# DATASET CLASSES
+# #############################################################
 
-class Dataset(torch.utils.data.Dataset):
-  'Characterizes a dataset for PyTorch'
-  def __init__(self, list_IDs, labels):
-        'Initialization with two dicts'
+class DatasetOptFlo(torch.utils.data.Dataset):
+    """Characterizes a dataset for PyTorch"""
+
+    def __init__(self, list_ids, labels):
+        """Initialization with two dicts"""
+        self.list_IDs = list_ids
         self.labels = labels
-        self.list_IDs = list_IDs
 
-  def __len__(self):
-        'Denotes the total number of samples'
+    def __len__(self):
+        """Denotes the total number of samples"""
         return len(self.list_IDs)
 
-  def __getitem__(self, index):
-        'Generates one sample of data'
+    def __getitem__(self, index):
+        """Generates one sample of data"""
+        # Select sample
+        element_id = self.list_IDs[index]
+
+        # Load data and get label
+        x = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(element_id))
+        # y = (self.labels[element_id] + self.labels[element_id - 1]) / 2
+        y = self.labels[element_id]
+
+        return x, y
+
+    @classmethod
+    def get_images(cls, prev_frame, curr_frame, opt_flow):
+        return opt_flow
+
+
+class DatasetFrames(torch.utils.data.Dataset):
+    """Characterizes a dataset for PyTorch"""
+
+    def __init__(self, list_ids, labels):
+        """Initialization with two dicts"""
+        self.list_IDs = list_ids
+        self.labels = labels
+
+    def __len__(self):
+        """Denotes the total number of samples"""
+        return len(self.list_IDs)
+
+    def __getitem__(self, index):
+        """Generates one sample of data"""
         # Select sample
         ID = self.list_IDs[index]
 
         # Load data and get label
-        X = torch.load('data/tensorData/of/' + str(ID) + '.pt')
-        y = self.labels[ID]
+        X1 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID - 1))
+        X2 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
+        y = (self.labels[ID] + self.labels[ID - 1]) / 2
 
-        return X, y
+        return X1, X2, y
 
-class Dataset_of_frames(torch.utils.data.Dataset):
+    @classmethod
+    def get_images(cls, prev_frame, curr_frame, opt_flow):
+        return prev_frame, curr_frame
+
+
+class DatasetOptFlo1Frames(torch.utils.data.Dataset):
     # class to return mini batches to the siamese network
-    # here X1 is the optical flow frame and X2 is the downsampled, but 
+    # here X1 is the optical flow frame and X2 is the one sampled down, but
     # raw frame, y is the label
     # we can decide here, how we want to pass this into the network
     # (siamese or linear combination)
-    'Characterizes a dataset for PyTorch'
-    def __init__(self, list_IDs, labels):
-          'Initialization with two dicts'
-          self.labels = labels
-          self.list_IDs = list_IDs
-    
+    """Characterizes a dataset for PyTorch"""
+
+    def __init__(self, list_ids, labels):
+        """Initialization with two dicts"""
+        self.labels = labels
+        self.list_IDs = list_ids
+
     def __len__(self):
-          'Denotes the total number of samples'
-          return len(self.list_IDs)
-    
+        """Denotes the total number of samples"""
+        return len(self.list_IDs)
+
     def __getitem__(self, index):
-          'Generates one sample of data'
-          # Select sample
-          ID = self.list_IDs[index]
-    
-          # Load data and get label
-          X1 = torch.load('data/tensorData/of/' + "{:05d}.pt".format(ID))
-          X2 = torch.load("data/tensorData/frames/" + "{:05d}.pt".format(ID))
-          y = self.labels[ID]
-    
-          return X1, X2, y
+        """Generates one sample of data"""
+        # Select sample
+        ID = self.list_IDs[index]
 
-#### SAVE THE IMAGES AS TENSORS ####
+        # Load data and get label
+        X1 = torch.load('data/tensorData/of/' + "{:05d}.pt".format(ID))
+        X2 = torch.load("data/tensorData/frames/" + "{:05d}.pt".format(ID))
+        y = self.labels[ID]
 
-def load_images_single():
-    # only load the single images, to sample them down and save them as tensors
-    # do it like 
-    # https://www.geeksforgeeks.org/opencv-the-gunnar-farneback-optical-flow/
-    video = cv2.VideoCapture("data/raw/train.mp4")
-    success,prev_frame = video.read()
+        return X1, X2, y
+
+
+class DatasetOptFlo2Frames(torch.utils.data.Dataset):
+    """Characterizes a dataset for PyTorch"""
+
+    def __init__(self, list_ids, labels):
+        """Initialization with two dicts"""
+        self.list_IDs = list_ids
+        self.labels = labels
+
+    def __len__(self):
+        """Denotes the total number of samples"""
+        return len(self.list_IDs)
+
+    def __getitem__(self, index):
+        """Generates one sample of data"""
+        # Select sample
+        ID = self.list_IDs[index]
+
+        # Load data and get label
+        F1 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID - 1))
+        F2 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
+        X = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(ID))
+        y = (self.labels[ID] + self.labels[ID - 1]) / 2
+
+        return F1, F2, X, y
+
+    @classmethod
+    def get_images(cls, prev_frame, curr_frame, opt_flow):
+        return prev_frame, curr_frame, opt_flow
+
+
+# #############################################################
+# IMAGE LOADERS
+# #############################################################
+
+def load_single_images(video_path):
+    """
+    Loading the single images out of the video to sample them down and save them as tensors
+    Source: https://www.geeksforgeeks.org/opencv-the-gunnar-farneback-optical-flow/
+    """
+    video = cv2.VideoCapture(video_path)
+
+    success, curr_frame = video.read()
     while success:
-        success, curr_frame = video.read()
-        if success == False:
-            break
         yield curr_frame
+        success, curr_frame = video.read()
+
     video.release()
     cv2.destroyAllWindows()
-    
-def save_frames_as_tensors(save_path):
-    print("saving single frames!")
-    # load images, transform to tensors and add the label
-    for i, frame in enumerate(load_images_single()):
-        if i%100 == 0:
-            print(i)
-        frame = sample_down_half(frame[:-60,:,:])
-        frame = sample_down_half_second(frame)
-        frame = transforms.ToTensor()(frame)#.unsqueeze(0)
-        #print(frame.shape)
-        torch.save(frame, save_path + "{:05d}.pt".format(i+1))
 
-#### CALCULATION AND SAVING OF THE OPTICAL FLOW #####
 
-def generate_flow_all(save_path):
-    print("saving of tensors!")
-    # load images, transform to tensors and add the label
-    for i, (prev_frame, curr_frame) in enumerate(load_images()):
-        if i%100 == 0:
-            print(i)
-        #filepath = flow_dataset_path + "/{:05d}_of.png".format(i)
-        rgb_flow = calc_of(curr_frame, prev_frame)
-        #print(rgb_flow)
-        #cv2.imwrite("./data/opticalflow/" + str(i) + "_of.png", rgb_flow)
+def load_double_images(video_path):
+    """
+    Loading two images out of the video to sample them down and calculate the optical flow
+    Source: https://www.geeksforgeeks.org/opencv-the-gunnar-farneback-optical-flow/
+    """
+    video = cv2.VideoCapture(video_path)
+
+    success, prev_frame = video.read()
+    if success:
+        success, curr_frame = video.read()
+
+        while success:
+            yield prev_frame, curr_frame
+            prev_frame = curr_frame
+            success, curr_frame = video.read()
+
+    video.release()
+    cv2.destroyAllWindows()
+
+
+# #############################################################
+# SAMPLE DOWN IMAGES
+# #############################################################
+
+def sample_down(frame, size):
+    """Sample down the frame to special height"""
+    return cv2.resize(frame, size)
+
+
+def cut_bottom(frame, height):
+    """Cuts off the bottom of the image"""
+    return frame[:-height, :, :]
+
+
+# #############################################################
+# SAVE TENSORS
+# #############################################################
+
+def save_both(save_path_frames, save_path_of, video_path,
+              save_as_png=False, save_png_fr=path_image_frames, save_png_of=path_image_opt_fl):
+    """Iterate through video and save images and optical flow as tensors"""
+    for i, (prev_frame, curr_frame) in enumerate(tqdm(load_double_images(video_path), "Save Flow and Frame Tensors")):
+        curr_frame = sample_down(cut_bottom(curr_frame, picture_bottom_offset), picture_opt_fl_size)
+        prev_frame = sample_down(cut_bottom(prev_frame, picture_bottom_offset), picture_opt_fl_size)
+
+        # SAVE FRAME
+
+        if i == 0:
+            frame = sample_down(prev_frame, picture_final_size)
+            if save_as_png:
+                cv2.imwrite(save_png_fr + "{:05d}.png".format(i), frame)
+
+            frame = transforms.ToTensor()(frame)
+            torch.save(frame, save_path_frames + "{:05d}.pt".format(i))
+
+        frame = sample_down(curr_frame, picture_final_size)
+        if save_as_png:
+            cv2.imwrite(save_png_fr + "{:05d}.png".format(i), frame)
+
+        frame = transforms.ToTensor()(frame)
+        torch.save(frame, save_path_frames + "{:05d}.pt".format(i))
+
+        # SAVE FLOW
+
+        rgb_flow = calculate_opt_flow(curr_frame, prev_frame)
+
+        if save_as_png:
+            cv2.imwrite(save_png_of + "{:05d}.png".format(i + 1), rgb_flow)
         # transform image to a tensor and concat them
-        rgb_flow_tensor = transforms.ToTensor()(rgb_flow)#.unsqueeze(0)
-        #print(rgb_flow_tensor.shape)
-        torch.save(rgb_flow_tensor,save_path + "{:05d}.pt".format(i+1))
+        rgb_flow_tensor = transforms.ToTensor()(rgb_flow)
+        torch.save(rgb_flow_tensor, save_path_of + "{:05d}.pt".format(i + 1))
 
-def generate_train_eval_dict(data_size, test_split_ratio):
-    # we have 20399 images and of frames, we split them and create a dict
-    data_size= 20399
-    split_index = int(np.floor(data_size*test_split_ratio))
-    all_indices = list(range(1,data_size+1))
-    train_indices = ["{:05d}".format(x) for x in all_indices[:split_index]]
-    test_indices = ["{:05d}".format(x) for x in all_indices[split_index:]]
-    partition = {'train' : train_indices,\
-                 'validation' : test_indices}
-    return(partition)
+
+def save_frames_as_tensors(save_path, video_path, save_as_png=False, save_png_path=path_image_frames):
+    """load images, transform to tensors and add the label"""
+    for i, frame in enumerate(tqdm(load_single_images(video_path), "Save Frames as Tensors")):
+        frame = cut_bottom(frame, picture_bottom_offset)
+        frame = sample_down(frame, picture_final_size)
+
+        if save_as_png:
+            cv2.imwrite(save_png_path + "{:05d}.png".format(i), frame)
+
+        frame = transforms.ToTensor()(frame)
+        torch.save(frame, save_path + "{:05d}.pt".format(i))
+
+
+def save_flow_as_tensors(save_path, video_path, save_as_png=False, save_png_path=path_image_opt_fl):
+    # load images, transform to tensors and add the label
+    for i, (prev_frame, curr_frame) in enumerate(tqdm(load_double_images(video_path), "Save Opt. Flow as Tensors")):
+        curr_frame = sample_down(cut_bottom(curr_frame, picture_bottom_offset), picture_opt_fl_size)
+        prev_frame = sample_down(cut_bottom(prev_frame, picture_bottom_offset), picture_opt_fl_size)
+
+        rgb_flow = calculate_opt_flow(curr_frame, prev_frame)
+        # print(rgb_flow)
+        if save_as_png:
+            cv2.imwrite(save_png_path + "{:05d}.png".format(i + 1), rgb_flow)
+        # transform image to a tensor and concat them
+        rgb_flow_tensor = transforms.ToTensor()(rgb_flow)
+        torch.save(rgb_flow_tensor, save_path + "{:05d}.pt".format(i + 1))
+
+
+# #############################################################
+# CALCULATE OPTICAL FLOW
+# #############################################################
+
+def calculate_opt_flow(curr_frame, prev_frame):
+    """
+    Calculates the optical Flow of two images
+    Source: https://www.geeksforgeeks.org/opencv-the-gunnar-farneback-optical-flow/
+    """
+    # Create mask
+    hsv_mask = np.zeros_like(prev_frame)
+    # Make image saturation to a maximum value
+    hsv_mask[:, :, 1] = 255
+
+    prev_gray = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
+    curr_gray = cv2.cvtColor(curr_frame, cv2.COLOR_BGR2GRAY)
+
+    # Optical flow is now calculated
+    flow = cv2.calcOpticalFlowFarneback(prev_gray, curr_gray, None, pyr_scale=0.5, levels=3, winsize=6,
+                                        iterations=3, poly_n=5, poly_sigma=1.1, flags=0)
+    # Compute magnitude and angle of 2D vector
+    mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
+    # Set image hue value according to the angle of optical flow
+    hsv_mask[:, :, 0] = ang * (90 / np.pi)
+    # Set value as per the normalized magnitude of optical flow
+    hsv_mask[:, :, 2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)
+    # Convert to rgb
+    rgb_image = cv2.cvtColor(hsv_mask, cv2.COLOR_HSV2RGB)
+    rgb_image = sample_down(rgb_image, picture_final_size)
+    return rgb_image
+
+
+# #############################################################
+# TRAIN EVALUATION DICTIONARIES
+# #############################################################
+def generate_train_eval_dict(data_size, test_split_ratio, new_split=True, block_size=100, offset=None):
+    if new_split:
+        return generate_train_eval_dict_new_splitting(data_size, test_split_ratio)
+    else:
+        return generate_block_splitting(data_size, test_split_ratio, block_size)
+
+
+def generate_block_splitting(data_size, test_split_ratio, block_size):
+    test_block = block_size * test_split_ratio
+
+    all_indices = np.linspace(1, data_size, data_size, dtype=int)
+    train_index = (all_indices % block_size) < test_block
+    train_indices = [*all_indices[train_index]]
+    test_indices = [*all_indices[~train_index]]
+
+    partition = {'train': train_indices, 'validation': test_indices}
+    return partition
+
 
 def generate_train_eval_dict_new_splitting(data_size, test_split_ratio):
-    # we have 20399 images and of frames, we split them and create a dict
-    ratio_percent = int(test_split_ratio * 100)
-    all_indices = list(range(1, data_size + 1))
+    # function to do the new splitting according to Dr. Lin's advice
 
-    train_indices = []
-    test_indices = []
+    # constants:
+    # Scene       | from minute to minute | frame to frame
+    # ------------------------------------------------------
+    # highway     | 0:00 to 7:00          | 0 to 8400
+    # stop&go     | 7:00 to 12:30         | 8401 to 15000
+    # city        | 12:30 to end          | 15001 to end
 
-    for index in range(0,int(data_size/100)+1):
-        if index == int(data_size/100)+1:
-            train_indices.extend(all_indices[100*index:100*index + ratio_percent])
-            test_indices.extend(all_indices[100*index + ratio_percent:])
-        else:
-            train_indices.extend(all_indices[100*index:100*index + ratio_percent])
-            test_indices.extend(all_indices[100*index + ratio_percent:(index+1)*100])
-    partition = {'train' : train_indices, 'validation' : test_indices}
-    return(partition)
+    # highway_end = int(np.floor(test_split_ratio*8400))
+    # traffic_jam_end = int(np.floor(test_split_ratio*15000))
+    # last_split = int(np.floor(test_split_ratio*data_size))
+
+    all_indices = np.linspace(1, data_size, data_size, dtype=int)
+
+    # highway scenes
+
+    highway_indices = all_indices[:8400]
+    np.random.shuffle(highway_indices)
+
+    highway_end = int(np.size(highway_indices) * test_split_ratio)
+
+    highway_train = highway_indices[:highway_end]
+    highway_test = highway_indices[highway_end:]
+
+    # traffic jam scenes
+    traffic_jam_indices = all_indices[8400:15000]
+    np.random.shuffle(traffic_jam_indices)
+
+    traffic_jam_end = int(np.size(traffic_jam_indices) * test_split_ratio)
+
+    traffic_jam_train = traffic_jam_indices[:traffic_jam_end]
+    traffic_jam_test = traffic_jam_indices[traffic_jam_end:]
+
+    # city scenes
+    city_indices = all_indices[15000:]
+    np.random.shuffle(city_indices)
+
+    city_end = int(np.size(city_indices) * test_split_ratio)
+
+    city_train = city_indices[:city_end]
+    city_test = city_indices[city_end:]
+
+    train_indices = [*highway_train, *traffic_jam_train, *city_train]
+    test_indices = [*highway_test, *traffic_jam_test, *city_test]
+
+    partition = {'train': train_indices, 'validation': test_indices}
+    return partition
 
 
-def generate_label_dict(label_path,data_size):
+def generate_label_dict(label_path, data_size):
     # these are all labels in a txt, we want to write them into a dict and
     # ignore the first value
     labels_np_array = np.loadtxt(label_path)
     labels = {}
-    for index in range(1,data_size+1):
-        #labels["{:05d}".format(index)] = labels_np_array[index]
+    for index in range(1, data_size+1):
         labels[index] = labels_np_array[index]
-    return(labels)
+    return labels
 
 
-def load_images():
-    # do it like 
-    # https://www.geeksforgeeks.org/opencv-the-gunnar-farneback-optical-flow/
-    video = cv2.VideoCapture("data/raw/train.mp4")
-    success,prev_frame = video.read()
-    while success:
-        success, curr_frame = video.read()
-        if success == False:
-            break
-        yield prev_frame, curr_frame
-        prev_frame = curr_frame
-    video.release()
-    cv2.destroyAllWindows()
-    
-def sample_down_half(frame):
-    # sample to half size using bilinear interpolation
-    return(cv2.resize(frame,(320,210)))
+# #############################################################
+# Brightness augmentation
+# #############################################################
 
-def sample_down_half_second(frame):
-    # sample the image again down for half the size, after the of is calculated
-    return(cv2.resize(frame,(160,105)))
-
-def calc_of(curr_frame, prev_frame):
-    # do it like 
-    # https://www.geeksforgeeks.org/opencv-the-gunnar-farneback-optical-flow/
-    curr_frame, prev_frame = sample_down_half(curr_frame[:-60,:,:]), sample_down_half(prev_frame[:-60,:,:])
-    # Create mask 
-    hsv_mask = np.zeros_like(prev_frame) 
-    # Make image saturation to a maximum value 
-    hsv_mask[:,:, 1] = 255
-    
-    prev_gray = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
-    curr_gray = cv2.cvtColor(curr_frame, cv2.COLOR_BGR2GRAY)
-    
-    # Optical flow is now calculated 
-    flow = cv2.calcOpticalFlowFarneback(prev_gray, curr_gray,
-                                        None,\
-                                        pyr_scale=0.5, levels=3, winsize=6,\
-                                        iterations=3, poly_n=5, poly_sigma=1.1,\
-                                        flags=0)
-    # Compute magnitude and angle of 2D vector 
-    mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1]) 
-    # Set image hue value according to the angle of optical flow 
-    hsv_mask[:,:, 0] = ang * (180 / np.pi / 2)
-    # Set value as per the normalized magnitude of optical flow 
-    hsv_mask[:,:, 2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX) 
-    # Convert to rgb 
-    rgb_image = cv2.cvtColor(hsv_mask, cv2.COLOR_HSV2RGB) 
-    rgb_image = sample_down_half_second(rgb_image)
-    return(rgb_image)
-    
-
-if __name__ == "__main__":
-#    i1 = cv2.imread("./data/frames/frame1.png")
-#    i2 = cv2.imread("./data/frames/frame2.png")
-#    i2_cut_down = sample_down_half(i2[:-60,:,:])
-#    flow_field = calc_of(i1, i2)
-#    cv2.imwrite("../report/imgs/frame2_original.png",i2)
-#    cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
-#    cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
-    generate_flow_all("./data/tensorData/of/")
-    save_frames_as_tensors("./data/tensorData/frames/")
+def augment_brightness(frame, contrast_factor, bright_factor=0):
+    return cv2.addWeighted(frame, contrast_factor,
+                           frame, 0,
+                           bright_factor)
+    # function to add some noise into the image
+    hsv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    # bright_factor = 0.2 + np.random.uniform()
+    hsv_image[:, :, 2] = hsv_image[:, :, 2] * contrast_factor
+    frame_rgb = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+    return frame_rgb
 
 
+# if __name__ == "__main__":
+    # i1 = cv2.imread("./data/frames/frame1.png")
+    # i2 = cv2.imread("./data/frames/frame2.png")
+    # i2_cut_down = sample_down_half(i2[:-60,:,:])
+    # flow_field = calc_of(i1, i2)
+    # cv2.imwrite("../report/imgs/frame2_original.png",i2)
+    # cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
+    # cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
+    # save_flow_as_tensors(path_tensor_opt_fl, path_raw_video)
+    # save_frames_as_tensors(path_tensor_frames, path_raw_video)
+    # save_both(path_tensor_frames, path_tensor_opt_fl, path_raw_video)
+    # partition = generate_train_eval_dict_new_splitting(20399,0.8)
+    #frame = cv2.imread("./data/frames/frame1.png")
+    # in expectation we decrease the contrast
+    #contrast_factor = 0.3 + np.random.uniform()
+    #bright_factor = np.random.uniform(-20, 20)
+    #frame_changed = augment_brightness(frame, contrast_factor, bright_factor)
+    #cv2.imwrite("../augmentation9.png", frame_changed)
+    #pass

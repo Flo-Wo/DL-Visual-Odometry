@@ -107,7 +107,7 @@ def train_model(train_dataset, eval_dataset,num_input_channels, num_epochs, log_
         scheduler.step(train_loss/len(train_dataset))
         
     # save the models weights and bias' to use it later
-    torch.save(model.state_dict(),"./cnn/savedmodels/LeakyReLU8EpochsBatchNormAvgPoolingWithDropOut.pth")
+    torch.save(model.state_dict(), "cnn/saved_models/LeakyReLU8EpochsBatchNormAvgPoolingWithDropOut.pth")
     print("model saved!")
 
 def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path):
@@ -117,7 +117,7 @@ def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path)
     model = CNNFlowOnly(num_input_channels)
     # load like 
     # https://stackoverflow.com/questions/49941426/attributeerror-collections-ordereddict-object-has-no-attribute-eval
-    model.load_state_dict(torch.load("./cnn/savedmodels/ReLU25EpochsBatchNormNoResidual.pth"))
+    model.load_state_dict(torch.load("./cnn/saved_models/ReLU25EpochsBatchNormNoResidual.pth"))
     # set model in evaluation mode
     model.eval()
     eval_loss = 0
