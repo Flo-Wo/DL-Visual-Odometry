@@ -118,7 +118,7 @@ class DatasetOptFlo1Frames(torch.utils.data.Dataset):
         F = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
         X = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(ID))
         y = (self.labels[ID] + self.labels[ID - 1]) / 2
-        #y = self.labels[ID]
+        # y = self.labels[ID]
 
         return F, X, y
 
@@ -320,7 +320,8 @@ def calculate_opt_flow(curr_frame, prev_frame):
 def generate_train_eval_dict(data_size, test_split_ratio, new_split=True, \
                              block_size=100, offset=None):
     if new_split:
-        return(generate_train_eval_dict_new_splitting(data_size, test_split_ratio))
+        return(generate_train_eval_dict_original(data_size, test_split_ratio))
+        #return(generate_train_eval_dict_new_splitting(data_size, test_split_ratio))
     else:
         return(generate_train_eval_dict_old(data_size, test_split_ratio, block_size))
 
@@ -388,6 +389,16 @@ def generate_train_eval_dict_new_splitting(data_size, test_split_ratio):
     partition = {'train': train_indices, 'validation': test_indices}
     return partition
 
+def generate_train_eval_dict_original(data_size, test_split_ratio):
+    # we have 20399 images and of frames, we split them and create a dict
+    # data_size= 20399
+    split_index = int(np.floor(data_size*test_split_ratio))
+    all_indices = list(range(1,data_size+1))
+    train_indices = [*all_indices[:split_index]]
+    test_indices = [*all_indices[split_index:]]
+    partition = {'train': train_indices, 'validation': test_indices}
+    return(partition)
+
 
 def generate_label_dict(label_path, data_size):
     """generate a dictionary with all indices and their velocities"""
@@ -427,8 +438,8 @@ if __name__ == "__main__":
     # partition = generate_train_eval_dict_new_splitting(20399,0.8)
     frame = cv2.imread("./data/frames/frame1.png")
     # in expectation we decrease the contrast
-    contrast_factor = 0.3 + np.random.uniform()
-    bright_factor = np.random.uniform(-20,20)
+    contrast_factor = 0.5 + np.random.uniform()
+    bright_factor = np.random.uniform(-30,30)
     frame_changed = augment_brightness(frame, contrast_factor,bright_factor)
     cv2.imwrite("../augmentation9.png",frame_changed)
     pass

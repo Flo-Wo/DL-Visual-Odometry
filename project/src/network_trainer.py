@@ -78,25 +78,16 @@ class NetworkTrainer:
         criterion = torch.nn.MSELoss()
         # starting with adam, later on maybe switching to SGD
 
-        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
         #optimizer = torch.optim.ASGD(model.parameters(), lr=1e-4)
 
-        # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,
-        #                                                        factor=0.9,
-        #                                                        patience=1)
-        #lr_lambda = lambda epoch: 0.95 ** epoch
-        #scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda, last_epoch=-1,
-        #                                  verbose=False)
-        
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.5)
-        # reduce learning rate each epoch by 10%
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer,
+                                                                factor=0.9,
+                                                                patience=1)
+
         # lr_lambda = lambda epoch: 0.6
         # scheduler = torch.optim.lr_scheduler.MultiplicativeLR(optimizer, lr_lambda, last_epoch=-1, verbose=True)
-        # according to https://pytorch.org/docs/stable/optim.html?highlight=optim#module-torch.optim
-        # this reduces the lr by a factor of 0.1 if the relative decrease after 2
-        # epochs is not bigger than the default threshold
-        #logging.debug("Begin Training")
-        
+       
         # create logger
         logger = logging.getLogger("train_logger")
         logger.addHandler(logging.FileHandler(f'./cnn/train_logs/{save_file}.log', mode='w'))
@@ -146,9 +137,9 @@ class NetworkTrainer:
                                            optimizer.param_groups[0]['lr']])
             # create logger dict, to save the data into a logger file
             log_dict = {"epoch": epoch+1,
-                    "train_epoch_loss": train_loss/len(train_dataset),
-                    "eval_epoch_loss": eval_loss/len(eval_dataset),
-                    "lr": optimizer.param_groups[0]['lr']}
+                        "train_epoch_loss": train_loss/len(train_dataset),
+                        "eval_epoch_loss": eval_loss/len(eval_dataset),
+                        "lr": optimizer.param_groups[0]['lr']}
             logger.info('%s', log_dict)
             # use the scheduler and the mean error
             scheduler.step()#train_loss / len(train_dataset)
