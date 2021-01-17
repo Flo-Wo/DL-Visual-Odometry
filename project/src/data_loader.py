@@ -125,6 +125,9 @@ class DatasetOptFlo1Frames(torch.utils.data.Dataset):
 
         return X1, X2, y
 
+    @classmethod
+    def get_images(cls, prev_frame, curr_frame, opt_flow):
+        return opt_flow, curr_frame
 
 class DatasetOptFlo2Frames(torch.utils.data.Dataset):
     """Characterizes a dataset for PyTorch"""

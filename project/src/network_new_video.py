@@ -26,6 +26,6 @@ txt4 = np.genfromtxt("./cnn/saved_models/Videos/LeakyReLU_Frames_Conv_SitSplit.t
 
 plt.plot(txt1, color="red")
 plt.plot(txt2, color="blue")
-plt.plot(txt3, color="green")
-plt.plot(txt4, color="gray")
+plt.plot(txt3, ls="--", color="green")
+plt.plot(txt4, ls="--", color="gray")
 plt.show()

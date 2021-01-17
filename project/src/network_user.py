@@ -136,7 +136,9 @@ def process_video(path_video, model_file, save_to, produce_video=False, label_pa
 
             video_label.write(frame_labeled)
 
-    video_label.release()
+    if produce_video:
+        video_label.release()
+
     cv2.destroyAllWindows()
 
     #plt.plot(velocities)
