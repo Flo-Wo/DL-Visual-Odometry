@@ -12,6 +12,8 @@ from tqdm import tqdm
 
 from cnn.cnn_siamese_frames_flow import CnnSiamese
 from data_loader import DatasetOptFlo1Frames
+# time module, to get date and time
+import time
 
 # #############################################################
 # LOGGING INITIALISATION
@@ -74,7 +76,7 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
 
     # create logger
     logger = logging.getLogger("train_logger")
-    logger.addHandler(logging.FileHandler(logging_folder + f'{save_file}.log', mode='w'))
+    logger.addHandler(logging.FileHandler(logging_folder + f'{save_file}-' + time.strftime("%Y%m%d-%H%M%S") + '.log', mode='w'))
 
     for epoch in range(num_epochs):
         # training part
