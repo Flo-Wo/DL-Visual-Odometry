@@ -49,6 +49,7 @@ deep learning, computer vision, visual odometry, dense optical flow, siamese net
 \section{Introduction}
 Here are some motivational words needed
 \subsection{Aim of the project}
+\label{subsec:AimAndMeasure}
 The goal of the project is to predict the speed (in $m/s$) of a velocity in each frame, using machine learning 
 techniques, as well as computer vision tools like optical flow. As a measure of success we use mean squared errors (MSE).
 Before we start to gather data, we have to make some assumptions. Our first and foremost question is how to evaluate a
@@ -100,8 +101,6 @@ The prediction of the vehicles speed is a non-linear regression task , so the ch
 Recent architectures we discussed in the lecture (ResNet, GoogLeNet, etc.) have shown that using multiple stacked convolution layers
 combined with stacked dense layers, perform well on image classification tasks. Therefore the choice of a convolutional neural 
 network is justified.
-
-As a performance measure, we choose mean squared errors (MSE).
 
 \subsection{Initial Network}
 
@@ -173,7 +172,7 @@ driving.
 
 \subsection{Pooling layers with initial splitting}
 We added two generic pooling layers to the network to reduce the number of parameters of the model. One after the second 
-convolutional layer and the second one before the fully connected layers start\footnote{Indeed, the number of 
+convolutional layer and the second one right before the fully connected layers start\footnote{Indeed, the number of 
 parameters decreased from a total of 636.225 trainable parameters to 156.225. Therefore the number of parameters decreased by a 
 factor of 4. We calculated these numbers using the tool \enquote{PyTorch summary}.}.We tested maximum and average pooling with the following 
 parameters
@@ -183,11 +182,11 @@ parameters
 \text{padding} &:= 1\\
 \text{dilatation} &:= \text{None}
 \end{align*}
-The implementation of pooling layers helped a lot, as now the loss on the train and test data seem to decrease 
-nearly equally. Our results on the initial splitting are shown in \cref{tab:ResultsInitialSplitting}. We gave the network
+The implementation of pooling layers helped a lot, as now the loss on the train and test data seemed to decrease 
+nearly equally. Our results with the initial splitting are shown in \cref{tab:ResultsInitialSplitting}. We gave the network
 with max pooling a try with 15 epochs, as the loss on the train and test set was decreasing in a pretty stable manner. Using this
-network, we achieved for the first time a MSE of under 10 on the test set, which is according to the companies guideline a pretty 
-good result --- especially, as we trained the model mostly on highway scenes and tested it only in city driving scenarios.
+network, we achieved for the first time a MSE of under 10 on the test set, which is according to our assumptions in \cref{subsec:AimAndMeasure} a 
+pretty good result --- especially, as we trained the model mostly on highway scenes and tested it only in city driving scenarios.
 \begin{table}[!t]
 \normalsize
 \centering
@@ -221,13 +220,14 @@ category blocks into train and test data.
 \begin{figure}[h]
 \centering
 \includegraphics[scale=0.6]{./imgs/plot_speed_time_new_splitting.eps}
-\caption{Distribution of the velocities of all frames in the training video including the three categories.}
+\caption{Distribution of the velocities of all frames in the training video, including the three categories.}
 \label{fig:SpeedPerFrameDistributionNewSplitting}
 \end{figure}
 \subsection{Augmented brightness}
+STILL UNDER CONSTRUCTION
 
 \section{New Approach using siamese network for two consecutive frames without optical flow}
-
+inspired by https://arxiv.org/pdf/1709.08429.pdf
 
 \section{Error analysis and results}
 
