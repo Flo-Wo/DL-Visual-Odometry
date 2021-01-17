@@ -72,7 +72,7 @@ class CNNFlowOnlyWithPooling(nn.Module):
     
     # implement forward function for the network
     def forward(self,x):
-        #print("shape = ",x.shape)
+#        print("shape = ",x.shape)
         x = self.bn1(x)
         x = self.conv1(x)
 

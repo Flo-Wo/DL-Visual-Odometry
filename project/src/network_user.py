@@ -122,7 +122,6 @@ def process_video(path_video, model_file, save_to, produce_video=False, label_pa
 
         with torch.no_grad():
             # predicted_velocity = model(rgb_flow_tensor, frame)
-
             predicted_velocity = model(*dataset_class.get_images(prev_frame, curr_frame, rgb_flow_tensor))
             velocities = np.append(velocities, predicted_velocity)
 
