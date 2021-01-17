@@ -24,11 +24,9 @@ if prodVideos:
                   "./cnn/saved_models/Videos/LeakyReLU_SIAMESE_SitSplit", model=CnnSiamese(3),
                   dataset_class=DatasetOptFlo1Frames)
 
-
-
-process_video("./data/raw/test.mp4", "./cnn/savedmodels/OriginalSplitting/LeakyReLU15EpochsBatchNormMaxPoolingWithDropOut.pth",
-                  "./cnn/saved_models/Videos/LeakyReLU15EpochsBatchNormMaxPoolingWithDropOut",
-                  model=CNNFlowOnlyWithPooling(3), dataset_class=DatasetOptFlo)
+    process_video("./data/raw/test.mp4", "./cnn/savedmodels/OriginalSplitting/LeakyReLU15EpochsBatchNormMaxPoolingWithDropOut.pth",
+                      "./cnn/saved_models/Videos/LeakyReLU15EpochsBatchNormMaxPoolingWithDropOut",
+                      model=CNNFlowOnlyWithPooling(3), dataset_class=DatasetOptFlo)
 
 txt1 = np.genfromtxt("./cnn/saved_models/Videos/LeakyReLU_SIAMESE.txt")
 txt2 = np.genfromtxt("./cnn/saved_models/Videos/LeakyReLU_Frames_Conv.txt")
@@ -50,10 +48,10 @@ txt4_convolved = np.convolve(txt4, kernel, mode='same')
 txt5_convolved = np.convolve(txt5, kernel, mode='same')
 
 plt.plot(txt1_convolved, color="black", label="Siamese Smoothed (100S)")
-#plt.plot(txt2_convolved, color="gray", label="Conv. Smoothed (100S)")
-plt.plot(txt3_convolved, color="gray", label="Siamese Smoothed (SitS)")
+plt.plot(txt2_convolved, color="gray", label="Conv. Smoothed (100S)")
+#plt.plot(txt3_convolved, color="gray", label="Siamese Smoothed (SitS)")
 #plt.plot(txt4_convolved, color="black", label="Conv. Smoothed (SitS)")
-plt.plot(txt5_convolved, color="black", label="Classical (HardS)")
+plt.plot(txt5_convolved, color="green", label="Classical (HardS)")
 
 plt.legend()
 plt.savefig("./cnn/saved_models/Videos/LeakyReLU_ALL.eps")
