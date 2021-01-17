@@ -135,7 +135,7 @@ def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path)
     write_txt_file(list_predicted_velocity,txt_path)
     return(list_predicted_velocity)  
         
-  
+### TEST ###
         
 ##### TRAINING PART #####
 if __name__ == "__main__":
