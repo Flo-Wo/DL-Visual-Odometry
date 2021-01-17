@@ -331,12 +331,14 @@ def generate_block_splitting(data_size, test_split_ratio, block_size):
 situation_params = [("highway", 0, 8400), ("traffic jam", 8400, 15000), ("city", 15000, 20399)]
 
 
-def generate_situation_splitting(test_split_ratio, params=situation_params):
+def generate_situation_splitting(test_split_ratio, params=situation_params,shuffle=True):
     train_indices = []
     test_indices = []
 
     for situation, start, stop in params:
         indices = np.linspace(start+1, stop, stop-start, dtype=int)
+        if shuffle:
+            np.random.shuffle(indices)
 
         train_indices = [*train_indices, *indices[indices <= start + (stop - start) * test_split_ratio]]
         test_indices = [*test_indices, *indices[indices > start + (stop - start) * test_split_ratio]]

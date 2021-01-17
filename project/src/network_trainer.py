@@ -96,7 +96,7 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
             train_loss += loss.item()
 
         train_loss = train_loss / len(train_tensor)
-        logging.info("Training Loss: {:1.2e}".format(train_loss))
+        logging.info("Training Loss: {:12.3f}".format(train_loss))
 
         # evaluation part
         model.eval()
@@ -113,7 +113,7 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
         # mean the error to print correctly
 
         validation_loss = validation_loss / len(validation_tensor)
-        logging.info("Training Loss: {:1.2e}".format(validation_loss))
+        logging.info("Validation Loss: {:12.3f}".format(validation_loss))
 
         # create logger dict, to save the data into a logger file
         log_dict = {"epoch": epoch + 1,
