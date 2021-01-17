@@ -32,3 +32,4 @@ if __name__ == "__main__":
     train_network(train_tensor, validation_tensor, 10, "LeakyReLU_Frames_Conv_SitSplit_10Epochs_BatchNorm_MaxPool_17-01-2021",
                   model=MODEL_Conv, criterion=CRITERION_MSELoss, optimizer=OPTIMIZER_Adam_Conv,
                   scheduler=SCHEDULER_RedLROnPlateau_Conv)
+
