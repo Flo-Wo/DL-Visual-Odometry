@@ -122,7 +122,8 @@ def process_video(path_video, model_file, save_to, produce_video=False, label_pa
 
         with torch.no_grad():
             # predicted_velocity = model(rgb_flow_tensor, frame)
-            predicted_velocity = model(dataset_class.get_images(prev_frame, curr_frame, rgb_flow_tensor))
+
+            predicted_velocity = model(*dataset_class.get_images(prev_frame, curr_frame, rgb_flow_tensor))
             velocities = np.append(velocities, predicted_velocity)
 
         if produce_video:
@@ -135,9 +136,11 @@ def process_video(path_video, model_file, save_to, produce_video=False, label_pa
 
             video_label.write(frame_labeled)
 
-    video_label.release()
+    if produce_video:
+        video_label.release()
+
     cv2.destroyAllWindows()
 
-    plt.plot(velocities)
-    plt.show()
+    #plt.plot(velocities)
+    #plt.show()
     np.savetxt(save_to + ".txt", velocities)

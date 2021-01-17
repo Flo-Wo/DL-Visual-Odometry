@@ -87,7 +87,7 @@ class DatasetFrames(torch.utils.data.Dataset):
         # Load data and get label
         X1 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID - 1))
         X2 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
-        y = (self.labels[ID] + self.labels[ID - 1]) / 2
+        y = self.labels[ID]
 
         return X1, X2, y
 
@@ -125,6 +125,9 @@ class DatasetOptFlo1Frames(torch.utils.data.Dataset):
 
         return X1, X2, y
 
+    @classmethod
+    def get_images(cls, prev_frame, curr_frame, opt_flow):
+        return opt_flow, curr_frame
 
 class DatasetOptFlo2Frames(torch.utils.data.Dataset):
     """Characterizes a dataset for PyTorch"""
@@ -147,7 +150,7 @@ class DatasetOptFlo2Frames(torch.utils.data.Dataset):
         F1 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID - 1))
         F2 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
         X = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(ID))
-        y = (self.labels[ID] + self.labels[ID - 1]) / 2
+        y = self.labels[ID]
 
         return F1, F2, X, y
 
@@ -312,12 +315,6 @@ def calculate_opt_flow(curr_frame, prev_frame):
 # #############################################################
 # TRAIN EVALUATION DICTIONARIES
 # #############################################################
-def generate_train_eval_dict(data_size, test_split_ratio, new_split=True, block_size=100, offset=None):
-    if new_split:
-        return generate_train_eval_dict_new_splitting(data_size, test_split_ratio)
-    else:
-        return generate_block_splitting(data_size, test_split_ratio, block_size)
-
 
 def generate_block_splitting(data_size, test_split_ratio, block_size):
     test_block = block_size * test_split_ratio
@@ -331,52 +328,18 @@ def generate_block_splitting(data_size, test_split_ratio, block_size):
     return partition
 
 
-def generate_train_eval_dict_new_splitting(data_size, test_split_ratio):
-    # function to do the new splitting according to Dr. Lin's advice
+situation_params = [("highway", 0, 8400), ("traffic jam", 8400, 15000), ("city", 15000, 20399)]
 
-    # constants:
-    # Scene       | from minute to minute | frame to frame
-    # ------------------------------------------------------
-    # highway     | 0:00 to 7:00          | 0 to 8400
-    # stop&go     | 7:00 to 12:30         | 8401 to 15000
-    # city        | 12:30 to end          | 15001 to end
 
-    # highway_end = int(np.floor(test_split_ratio*8400))
-    # traffic_jam_end = int(np.floor(test_split_ratio*15000))
-    # last_split = int(np.floor(test_split_ratio*data_size))
+def generate_situation_splitting(test_split_ratio, params=situation_params):
+    train_indices = []
+    test_indices = []
 
-    all_indices = np.linspace(1, data_size, data_size, dtype=int)
+    for situation, start, stop in params:
+        indices = np.linspace(start+1, stop, stop-start, dtype=int)
 
-    # highway scenes
-
-    highway_indices = all_indices[:8400]
-    np.random.shuffle(highway_indices)
-
-    highway_end = int(np.size(highway_indices) * test_split_ratio)
-
-    highway_train = highway_indices[:highway_end]
-    highway_test = highway_indices[highway_end:]
-
-    # traffic jam scenes
-    traffic_jam_indices = all_indices[8400:15000]
-    np.random.shuffle(traffic_jam_indices)
-
-    traffic_jam_end = int(np.size(traffic_jam_indices) * test_split_ratio)
-
-    traffic_jam_train = traffic_jam_indices[:traffic_jam_end]
-    traffic_jam_test = traffic_jam_indices[traffic_jam_end:]
-
-    # city scenes
-    city_indices = all_indices[15000:]
-    np.random.shuffle(city_indices)
-
-    city_end = int(np.size(city_indices) * test_split_ratio)
-
-    city_train = city_indices[:city_end]
-    city_test = city_indices[city_end:]
-
-    train_indices = [*highway_train, *traffic_jam_train, *city_train]
-    test_indices = [*highway_test, *traffic_jam_test, *city_test]
+        train_indices = [*train_indices, *indices[indices <= start + (stop - start) * test_split_ratio]]
+        test_indices = [*test_indices, *indices[indices > start + (stop - start) * test_split_ratio]]
 
     partition = {'train': train_indices, 'validation': test_indices}
     return partition
