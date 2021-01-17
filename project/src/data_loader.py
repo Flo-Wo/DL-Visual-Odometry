@@ -266,11 +266,21 @@ def save_frames_as_tensors(save_path, video_path, save_as_png=False, save_png_pa
         torch.save(frame, save_path + "{:05d}.pt".format(i))
 
 
-def save_flow_as_tensors(save_path, video_path, save_as_png=False, save_png_path=path_image_opt_fl):
+def save_flow_as_tensors(save_path, video_path, save_as_png=False, save_png_path=path_image_opt_fl, augmentation=False):
     # load images, transform to tensors and add the label
     for i, (prev_frame, curr_frame) in enumerate(tqdm(load_double_images(video_path), "Save Opt. Flow as Tensors")):
         curr_frame = sample_down(cut_bottom(curr_frame, picture_bottom_offset), picture_opt_fl_size)
         prev_frame = sample_down(cut_bottom(prev_frame, picture_bottom_offset), picture_opt_fl_size)
+        # if brightness and contrast flag is true, run the augmentation
+        # function
+        if augmentation:
+            contrast_factor = 0.35 + np.random.uniform()
+            bright_factor = np.random.uniform(-5, 35)
+            curr_frame = augment_brightness(curr_frame, contrast_factor, bright_factor)
+            
+            contrast_factor = 0.35 + np.random.uniform()
+            bright_factor = np.random.uniform(-5, 35)
+            prev_frame = augment_brightness(prev_frame, contrast_factor, bright_factor)
 
         rgb_flow = calculate_opt_flow(curr_frame, prev_frame)
         # print(rgb_flow)
@@ -374,22 +384,26 @@ def augment_brightness(frame, contrast_factor, bright_factor=0):
     return frame_rgb
 
 
+
 # if __name__ == "__main__":
-    # i1 = cv2.imread("./data/frames/frame1.png")
-    # i2 = cv2.imread("./data/frames/frame2.png")
-    # i2_cut_down = sample_down_half(i2[:-60,:,:])
-    # flow_field = calc_of(i1, i2)
-    # cv2.imwrite("../report/imgs/frame2_original.png",i2)
-    # cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
-    # cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
-    # save_flow_as_tensors(path_tensor_opt_fl, path_raw_video)
-    # save_frames_as_tensors(path_tensor_frames, path_raw_video)
-    # save_both(path_tensor_frames, path_tensor_opt_fl, path_raw_video)
-    # partition = generate_train_eval_dict_new_splitting(20399,0.8)
-    #frame = cv2.imread("./data/frames/frame1.png")
-    # in expectation we decrease the contrast
-    #contrast_factor = 0.3 + np.random.uniform()
-    #bright_factor = np.random.uniform(-20, 20)
-    #frame_changed = augment_brightness(frame, contrast_factor, bright_factor)
-    #cv2.imwrite("../augmentation9.png", frame_changed)
-    #pass
+#     # i1 = cv2.imread("./data/frames/frame1.png")
+#     # i2 = cv2.imread("./data/frames/frame2.png")
+#     # i2_cut_down = sample_down_half(i2[:-60,:,:])
+#     # flow_field = calc_of(i1, i2)
+#     # cv2.imwrite("../report/imgs/frame2_original.png",i2)
+#     # cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
+#     # cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
+#     # save_flow_as_tensors(path_tensor_opt_fl, path_raw_video)
+#     # save_frames_as_tensors(path_tensor_frames, path_raw_video)
+#     # save_both(path_tensor_frames, path_tensor_opt_fl, path_raw_video)
+#     # partition = generate_train_eval_dict_new_splitting(20399,0.8)
+#     frame = cv2.imread("./data/frames/frame1.png")
+    
+#     cv2.imwrite("../original.png",frame)
+#     for i in range(0,10):
+#         contrast_factor = 0.35 + np.random.uniform()
+#         bright_factor = np.random.uniform(-5, 35)
+#         frame_changed = augment_brightness(frame, contrast_factor, bright_factor)
+#         cv2.imwrite("../augmentation{}.png".format(i), frame_changed)
+    
+#     pass

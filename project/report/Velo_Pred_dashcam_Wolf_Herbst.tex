@@ -174,7 +174,7 @@ driving.
 We added two generic pooling layers to the network to reduce the number of parameters of the model. One after the second 
 convolutional layer and the second one right before the fully connected layers start\footnote{Indeed, the number of 
 parameters decreased from a total of 636.225 trainable parameters to 156.225. Therefore the number of parameters decreased by a 
-factor of 4. We calculated these numbers using the tool \enquote{PyTorch summary}.}.We tested maximum and average pooling with the following 
+factor of 4. We calculated these numbers using the tool \enquote{PyTorch summary}(\url{https://github.com/sksq96/pytorch-summary}).}.We tested maximum and average pooling with the following 
 parameters
 \begin{align*}
 \text{kernel size} &:= 2\times 2\\
@@ -225,6 +225,9 @@ category blocks into train and test data.
 \end{figure}
 \subsection{Augmented brightness}
 STILL UNDER CONSTRUCTION
+\section{Training of the models}
+we used bla bla as optimizers and bla bla as schedulers, for each model we tried different combinations and bla bla
+
 
 \section{New Approach using siamese network for two consecutive frames without optical flow}
 inspired by https://arxiv.org/pdf/1709.08429.pdf
