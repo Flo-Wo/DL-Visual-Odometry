@@ -15,6 +15,10 @@ from data_loader import DatasetOptFlo1Frames
 # time module, to get date and time
 import time
 
+def get_lr(optimizer):
+    for param_group in optimizer.param_groups:
+        return param_group['lr']
+
 # #############################################################
 # LOGGING INITIALISATION
 # #############################################################
@@ -123,10 +127,10 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
         log_dict = {"epoch": epoch + 1,
                     "train_epoch_loss": train_loss,
                     "eval_epoch_loss": validation_loss,
-                    "lr": optimizer.param_groups[0]['lr']}
+                    "lr": get_lr(optimizer)}
         logger.info('%s', log_dict)
         # use the scheduler and the mean error
-        scheduler.step(train_loss)
+        scheduler.step()
 
     # save the models weights and bias' to use it later
     torch.save(model.state_dict(), network_folder + save_file + ".pth")
