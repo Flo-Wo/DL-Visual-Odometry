@@ -29,8 +29,12 @@ traffic
 IMAGE OF THE SPEED DISTRIBUTION
 \end{frame}
 \begin{frame}{Possible solutions}
-We found
-\begin{itemize}
-\item askdflo
-\end{itemize}
+
+\begin{enumerate}
+\item \textbf{Simplify model}: pooling layers (maximum and average pooling) to get more compression\\
+\textbf{Siamese approach}: put flow field and raw frame into the model or put two consecutive frames into the model
+\item \textbf{Add additional noise}: add noise before computing the optical flow filed, to get more invariance regarding illumination changes
+\item \textbf{Different splitting}: get better ratio between different scenarios, by using a splitting bases on the different road traffic situations in
+the video
+\end{enumerate}
 \end{frame}
