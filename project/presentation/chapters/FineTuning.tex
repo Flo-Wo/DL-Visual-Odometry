@@ -1,8 +1,36 @@
-\section{Fine Tuning of the model}
+\section{Fine-tuning of the model}
+\subsection{Batch Normalization, Dropout layers, activation function and pooling}
 
-\begin{frame}{Batch Normalization, Dropout layers and pooling}
+\begin{frame}{Batch Normalization, Dropout layers, activation function and pooling}
 \begin{itemize}
-\item Test
+\item Batch normalization to speed up the training \cite{BatchNorm2015}
+\item Initial activation function: $\mathrm{ReLu}: \mathbb{R} \to \mathbb{R}_0^+, x \mapsto \max\{0,x\}$, still MSE over 15 on the testing set\\
+$\Rightarrow$ Overfitting problems
+\item Found paper about dropout layers \cite{Dropout2014} to reduce overfit, build in one with dropout probability $p=0.5$
+\item Solve problems of dead neurons using
+\begin{align*}
+\mathrm{leakyReLU} : \mathbb{R} \to \mathbb{R}, x \mapsto \begin{cases}
+x, x \geq 0\\
+c \cdot x, x <0
+\end{cases}
+\end{align*}
+with $c = 0.01$, MSE of around 12 on the testing set
 \end{itemize}
 \end{frame}
-
+\subsection{Problems and possible solutions}
+\begin{frame}{Problems}
+We identified three possible problems for poor results
+\begin{enumerate}
+\item Too complex model, as initially used for autonomous driving or insufficient amount of information put into the model
+\item Problems with different brightnesses/illumination changes in the frames, therefore unstable calculations of the optical flow
+\item Too ambiguous splitting, as the training and testing datasets represent totally different road traffic scenarios in the road 
+traffic
+\end{enumerate}
+IMAGE OF THE SPEED DISTRIBUTION
+\end{frame}
+\begin{frame}{Possible solutions}
+We found
+\begin{itemize}
+\item askdflo
+\end{itemize}
+\end{frame}

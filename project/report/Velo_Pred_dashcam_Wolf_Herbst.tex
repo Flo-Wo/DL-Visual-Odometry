@@ -134,7 +134,7 @@ code multiple times, to ensure this result holds. This result was not really pro
 modifying the model even more.
 
 As we still had a lot of issues with overfits, we decided to include a dropout layer, according to \cite{Dropout2014}. We tried different numbers and positions for dropout layers, but using one layer with a dropout 
-probability of $p=0.5$ after the third concolutional layer seemed to work best.
+probability of $p=0.5$ after the third convolutional layer seemed to work best.
 
 To solve the problem of dead neurons\footnote{One can clearly see in the definition of the ReLU 
 function, that neurons with a value below zero cannot participate in the learning process.} of the ReLU function, we 
@@ -145,7 +145,7 @@ x, x \geq 0\\
 c \cdot x, x <0
 \end{cases}
 \end{align*}
-with a hyperparameter $c = 0.01$. Using the leakyReLU function, we achieved a MSE of around 11 on the testing set and under 3 on the 
+with a hyperparameter $c = 0.01$. Using the leakyReLU function, we achieved a MSE of around 12 on the testing set and under 3 on the 
 training set. All of the models were trained with only eight epochs, as we still had problems with overfits.
 
 We identified three possible reasons for our poor results:
@@ -154,7 +154,7 @@ We identified three possible reasons for our poor results:
 \item[(ii)] Problems with different brightnesses in the frames (lack of generality), which leads to unstable calculations in the 
 optical flow, as the optical flow is quite sensitive to brightness. (Explain how in the train part the sky is quite dark and in the 
 city (end) the sky is bright)
-\item[(iii)] Too naive/ambigous splitting of the data into train and testing set, as both datasets seem to represent totally different
+\item[(iii)] Too naive/ambiguous splitting of the data into train and testing set, as both datasets seem to represent totally different
 scenarios in the road traffic.
 \end{enumerate}
 We came up with the following approaches to solve these problems
