@@ -130,7 +130,7 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
                     "lr": get_lr(optimizer)}
         logger.info('%s', log_dict)
         # use the scheduler and the mean error
-        scheduler.step()
+        scheduler.step(train_loss)
 
     # save the models weights and bias' to use it later
     torch.save(model.state_dict(), network_folder + save_file + ".pth")

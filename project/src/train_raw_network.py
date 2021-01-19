@@ -21,15 +21,15 @@ train_eval_ratio = 0.8
 
 MODEL_Conv = CNNFlowOnlyWithPooling(3)
 CRITERION_MSELoss = torch.nn.MSELoss()
-OPTIMIZER_Adam_Conv = torch.optim.Adam(MODEL_Conv.parameters(), lr=1e-3)
+OPTIMIZER_Adam_Conv = torch.optim.Adam(MODEL_Conv.parameters(), lr=1e-4)
 
-scheduler = torch.optim.lr_scheduler.MultiStepLR(OPTIMIZER_Adam_Conv,
-                                                 milestones=[2,12],gamma=0.1,
-                                                 last_epoch=-1, verbose=True)
+# scheduler = torch.optim.lr_scheduler.MultiStepLR(OPTIMIZER_Adam_Conv,
+#                                                  milestones=[10],gamma=0.1,
+#                                                  last_epoch=-1, verbose=True)
 
 # lr_lambda = lambda epoch: 0.6
 # scheduler = torch.optim.lr_scheduler.MultiplicativeLR(OPTIMIZER_Adam_Conv, lr_lambda, last_epoch=-1, verbose=True)
-# SCHEDULER_RedLROnPlateau_Conv = torch.optim.lr_scheduler.ReduceLROnPlateau(OPTIMIZER_Adam_Conv, factor=0.9, patience=1)
+SCHEDULER_RedLROnPlateau_Conv = torch.optim.lr_scheduler.ReduceLROnPlateau(OPTIMIZER_Adam_Conv, factor=0.9, patience=1)
 
 if __name__ == "__main__":
     #splitting = generate_block_splitting(data_size, train_eval_ratio, block_size)
@@ -41,5 +41,5 @@ if __name__ == "__main__":
 
     train_network(train_tensor, validation_tensor, 15, "LeakyReLU_Frames_Conv_SitSplit_15Epochs_BatchNorm_MaxPool",
                   model=MODEL_Conv, criterion=CRITERION_MSELoss, optimizer=OPTIMIZER_Adam_Conv,
-                  scheduler=scheduler)
+                  scheduler=SCHEDULER_RedLROnPlateau_Conv)
 
