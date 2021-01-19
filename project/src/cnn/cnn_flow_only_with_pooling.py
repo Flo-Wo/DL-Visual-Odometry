@@ -43,10 +43,11 @@ class CNNFlowOnlyWithPooling(nn.Module):
         
         self.conv3 = conv_layer(36, 48, kernel_size=5, stride=2)
         # randomly pick some channels/feature maps and zero them out
-        self.drop1 = nn.Dropout2d(p=0.3)
+        self.drop1 = nn.Dropout2d(p=0.5)
         self.conv4 = conv_layer(48, 64, kernel_size=3, stride=1)
         self.conv5 = conv_layer(64, 64, kernel_size=3, stride=1)
         # second pooling layer
+        self.drop1 = nn.Dropout2d(p=0.5)
         self.pool2 = pooling(kernel_size_own=2,stride_own=2,padding_own=1)
         
         # now fully connected layers
