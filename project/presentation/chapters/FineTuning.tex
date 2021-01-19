@@ -4,7 +4,8 @@
 \begin{frame}{Batch Normalization, Dropout layers, activation function and pooling}
 \begin{itemize}
 \item Batch normalization to speed up the training \cite{BatchNorm2015}
-\item Initial activation function: $\mathrm{ReLu}: \mathbb{R} \to \mathbb{R}_0^+, x \mapsto \max\{0,x\}$, still MSE over 15 on the testing set\\
+\item Initial activation function: $\mathrm{ReLu}: \mathbb{R} \to \mathbb{R}_0^+, x \mapsto \max\{0,x\}$, still MSE of over 15 on the testing 
+set, less then 2 on the training set\\
 $\Rightarrow$ Overfitting problems
 \item Found paper about dropout layers \cite{Dropout2014} to reduce overfit
 %build in one with dropout probability $p=0.5$
@@ -15,7 +16,7 @@ x, x \geq 0\\
 c \cdot x, x <0
 \end{cases}
 \end{align*}
-with $c = 0.01$, MSE of around 11 on the testing set
+with $c = 0.01$, MSE of around 11 on the testing set and less than 3 on the training set
 \end{itemize}
 \end{frame}
 \subsection{Problems and possible solutions}
@@ -28,8 +29,9 @@ We identified three possible problems for our poor results
 \end{enumerate}
 IMAGE OF THE SPEED DISTRIBUTION
 \end{frame}
-\begin{frame}{Possible solutions}
 
+
+\begin{frame}{Possible solutions}
 \begin{enumerate}
 \item \textbf{Simplify model}: pooling layers (maximum and average pooling) to get more compression\\
 \textbf{Siamese approach}: put flow field and raw frame into the model or put two consecutive frames into the model

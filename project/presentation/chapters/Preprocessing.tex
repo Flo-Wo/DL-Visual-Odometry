@@ -50,12 +50,12 @@ for an image sequence $(f_t)_t$ with $f_t : \Omega \to \R^3$, for all $t$, and t
 \item RGB representation via
 \setbeamertemplate{itemize items}[circle]
 \begin{itemize}
-\item Transform flow field into polar coordinates $(V_x,V_y) \to (r, \varphi)$
-\item Normalize magnitudes $r$ for third channel
-\item Values of the second channel are set to 255
-\item Multiply angle $\varphi$ by factor $\frac{180}{2\pi}$ for first channel
+\item Transform flow field into polar coordinates $(V_x,V_y) \overset{\simeq}{\mapsto} (r, \varphi)$
+\item Normalize magnitudes $r$ for the third channel
+\item Values of the second channel are all set to 255
+\item Multiply angle $\varphi$ by factor $\frac{180}{2\pi}$ for the first channel
 \end{itemize}
-\item Sample down the size again, to speed up the training
+\item Sample down the resolution again, to speed up the training
 \end{itemize}
 
 \begin{columns}[t]
