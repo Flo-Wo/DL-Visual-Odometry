@@ -29,15 +29,6 @@ We identified three possible problems for our poor results
 \end{enumerate}
 \end{frame}
 
-\begin{frame}{New splitting: situational splitting}
-\begin{figure}
-\centering
-\includegraphics[scale=0.5]{./imgs/plot_speed_time_new_splitting.eps}
-\caption{Speed distribution in the training video, including labels for different scenarios.}
-\end{figure}
-\end{frame}
-
-
 \begin{frame}{Possible solutions}
 \begin{enumerate}
 \item \textbf{Simplify model}: pooling layers (maximum and average pooling) to get more compression\\
@@ -47,6 +38,15 @@ We identified three possible problems for our poor results
 finer one and a more specific one based on the different road traffic situations in the video
 \end{enumerate}
 \end{frame}
+
+\begin{frame}{New splitting: situational splitting}
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{./imgs/plot_speed_time_new_splitting.eps}
+\caption{Velocity distribution in the training video, including labels for different scenarios.}
+\end{figure}
+\end{frame}
+
 \subsection{Simplified model}
 \begin{frame}{Pooling layers (initial splitting)}
 \begin{table}[!t]
