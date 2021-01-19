@@ -30,18 +30,22 @@ class CNNFlowOnly(nn.Module):
         # call super method to create instance of the network class
         super(CNNFlowOnly,self).__init__()
         self.bn1 = nn.BatchNorm2d(num_input_channels)
+        self.drop1 = nn.Dropout(p=0.2)
+
         self.conv1 = conv_layer(num_input_channels, 24, kernel_size=5, stride=2)        
         self.conv2 = conv_layer(24, 36, kernel_size=5, stride=2)
         self.conv3 = conv_layer(36, 48, kernel_size=5, stride=2)
         # randomly pick some channels/feature maps and zero them out
-        self.drop = nn.Dropout2d(p=0.3)
+        self.drop1 = nn.Dropout2d(p=0.3)
         self.conv4 = conv_layer(48, 64, kernel_size=3, stride=1)
         self.conv5 = conv_layer(64, 64, kernel_size=3, stride=1)
         self.drop2 = nn.Dropout2d(p=0.3)
         # now fully connected layers
         self.fc1 = fc_layer(64*6*13, 100)
         self.fc2 = fc_layer(100,50)
-        self.drop3 = nn.Dropout(p=0.3)
+        
+        self.drop3 = nn.Dropout(p=0.5)
+        
         self.fc3 = fc_layer(50,10)
         # no activation function in the last layer
         self.fc4 = nn.Linear(10,1)

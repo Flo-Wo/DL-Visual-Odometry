@@ -342,7 +342,8 @@ def generate_block_splitting(data_size, test_split_ratio, block_size):
 situation_params = [("highway", 0, 8400), ("traffic jam", 8400, 15000), ("city", 15000, 20399)]
 
 
-def generate_situation_splitting(test_split_ratio, params=situation_params,shuffle=True):
+def generate_situation_splitting(test_split_ratio, params=situation_params,
+                                 shuffle=True):
     train_indices = []
     test_indices = []
 
@@ -351,8 +352,8 @@ def generate_situation_splitting(test_split_ratio, params=situation_params,shuff
         if shuffle:
             np.random.shuffle(indices)
 
-        train_indices = [*train_indices, *indices[indices <= start + (stop - start) * test_split_ratio]]
-        test_indices = [*test_indices, *indices[indices > start + (stop - start) * test_split_ratio]]
+        train_indices = [*train_indices, *indices[0:int(test_split_ratio*len(indices))]]
+        test_indices = [*test_indices, *indices[int(test_split_ratio*len(indices)):]]
 
     partition = {'train': train_indices, 'validation': test_indices}
     return partition
