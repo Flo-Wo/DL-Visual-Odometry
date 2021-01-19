@@ -358,7 +358,6 @@ def generate_situation_splitting(test_split_ratio, params=situation_params,
     partition = {'train': train_indices, 'validation': test_indices}
     return partition
 
-
 def generate_label_dict(label_path, data_size):
     # these are all labels in a txt, we want to write them into a dict and
     # ignore the first value
