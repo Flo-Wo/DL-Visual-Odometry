@@ -15,6 +15,10 @@ from data_loader import DatasetOptFlo1Frames
 # time module, to get date and time
 import time
 
+def get_lr(optimizer):
+    for param_group in optimizer.param_groups:
+        return param_group['lr']
+
 # #############################################################
 # LOGGING INITIALISATION
 # #############################################################
@@ -58,11 +62,13 @@ standard_model = CnnSiamese(3)
 standard_criterion = torch.nn.MSELoss()
 
 # standard optimizer
-standard_optimizer = torch.optim.Adam(standard_model.parameters(), lr=1e-3)
+standard_optimizer = torch.optim.Adam(standard_model.parameters(), lr=1e-4)
 
 # add a learning rate scheduler, to reduce the learning rate after several
 # epochs, as we did in the MNIST exercise
 standard_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(standard_optimizer, factor=0.9, patience=1)
+
+
 
 # path to save trained models to
 network_folder = "./cnn/saved_models/NewSplitting/"
@@ -121,12 +127,12 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
         log_dict = {"epoch": epoch + 1,
                     "train_epoch_loss": train_loss,
                     "eval_epoch_loss": validation_loss,
-                    "lr": optimizer.param_groups[0]['lr']}
+                    "lr": get_lr(optimizer)}
         logger.info('%s', log_dict)
         # use the scheduler and the mean error
         scheduler.step(train_loss)
 
     # save the models weights and bias' to use it later
     torch.save(model.state_dict(), network_folder + save_file + ".pth")
-
+    print("Model saved!")
     return network_folder + save_file + ".pth", logging_folder + f'{save_file}.log'

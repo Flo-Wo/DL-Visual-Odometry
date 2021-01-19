@@ -54,7 +54,7 @@ class DatasetOptFlo(torch.utils.data.Dataset):
         """Generates one sample of data"""
         # Select sample
         element_id = self.list_IDs[index]
-
+        element_id = element_id % 20400
         # Load data and get label
         x = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(element_id))
         # y = (self.labels[element_id] + self.labels[element_id - 1]) / 2
@@ -253,7 +253,8 @@ def save_both(save_path_frames, save_path_of, video_path,
         torch.save(rgb_flow_tensor, save_path_of + "{:05d}.pt".format(i + 1))
 
 
-def save_frames_as_tensors(save_path, video_path, save_as_png=False, save_png_path=path_image_frames):
+def save_frames_as_tensors(save_path, video_path, save_as_png=False,
+                           save_png_path=path_image_frames):
     """load images, transform to tensors and add the label"""
     for i, frame in enumerate(tqdm(load_single_images(video_path), "Save Frames as Tensors")):
         frame = cut_bottom(frame, picture_bottom_offset)
@@ -266,12 +267,13 @@ def save_frames_as_tensors(save_path, video_path, save_as_png=False, save_png_pa
         torch.save(frame, save_path + "{:05d}.pt".format(i))
 
 
-def save_flow_as_tensors(save_path, video_path, save_as_png=False, save_png_path=path_image_opt_fl, augmentation=False):
+def save_flow_as_tensors(save_path, video_path, save_as_png=False,
+                         save_png_path=path_image_opt_fl, augmentation=False):
     # load images, transform to tensors and add the label
     for i, (prev_frame, curr_frame) in enumerate(tqdm(load_double_images(video_path), "Save Opt. Flow as Tensors")):
         curr_frame = sample_down(cut_bottom(curr_frame, picture_bottom_offset), picture_opt_fl_size)
         prev_frame = sample_down(cut_bottom(prev_frame, picture_bottom_offset), picture_opt_fl_size)
-        # if brightness and contrast flag is true, run the augmentation
+        # if brightness and augmentation flag is true, run the augmentation
         # function
         if augmentation:
             contrast_factor = 0.35 + np.random.uniform()
@@ -288,7 +290,14 @@ def save_flow_as_tensors(save_path, video_path, save_as_png=False, save_png_path
             cv2.imwrite(save_png_path + "{:05d}.png".format(i + 1), rgb_flow)
         # transform image to a tensor and concat them
         rgb_flow_tensor = transforms.ToTensor()(rgb_flow)
-        torch.save(rgb_flow_tensor, save_path + "{:05d}.pt".format(i + 1))
+        if not augmentation:
+            torch.save(rgb_flow_tensor, save_path + "{:05d}.pt".format(i + 1))
+        else:
+            # choose 20400 as offset, so in the dataloader, we can do modulo
+            # 20400, to get the label of the frame
+            offset = 20400
+            torch.save(rgb_flow_tensor, save_path + "{:05d}.pt".format(i + 1 + offset))
+            pass
 
 
 # #############################################################
@@ -343,7 +352,7 @@ situation_params = [("highway", 0, 8400), ("traffic jam", 8400, 15000), ("city",
 
 
 def generate_situation_splitting(test_split_ratio, params=situation_params,
-                                 shuffle=True):
+                                 shuffle=True, augmentation=False):
     train_indices = []
     test_indices = []
 
@@ -351,8 +360,15 @@ def generate_situation_splitting(test_split_ratio, params=situation_params,
         indices = np.linspace(start+1, stop, stop-start, dtype=int)
         if shuffle:
             np.random.shuffle(indices)
-
-        train_indices = [*train_indices, *indices[0:int(test_split_ratio*len(indices))]]
+        
+        if augmentation:
+            train_additional = indices[0:int(test_split_ratio*len(indices))]+20400
+            train_indices = [*train_indices, 
+                             *indices[0:int(test_split_ratio*len(indices))],
+                             *train_additional]
+        else:
+            train_indices = [*train_indices, 
+                             *indices[0:int(test_split_ratio*len(indices))]]
         test_indices = [*test_indices, *indices[int(test_split_ratio*len(indices)):]]
 
     partition = {'train': train_indices, 'validation': test_indices}

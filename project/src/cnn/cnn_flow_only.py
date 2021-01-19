@@ -44,7 +44,7 @@ class CNNFlowOnly(nn.Module):
         self.fc1 = fc_layer(64*6*13, 100)
         self.fc2 = fc_layer(100,50)
         
-        self.drop3 = nn.Dropout(p=0.5)
+        self.drop3 = nn.Dropout(p=0.3)
         
         self.fc3 = fc_layer(50,10)
         # no activation function in the last layer
