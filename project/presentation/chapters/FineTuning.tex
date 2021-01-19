@@ -20,12 +20,11 @@ with $c = 0.01$, MSE of around 11 on the testing set
 \end{frame}
 \subsection{Problems and possible solutions}
 \begin{frame}{Problems}
-We identified three possible problems for poor results
+We identified three possible problems for our poor results
 \begin{enumerate}
 \item Too complex model, as initially used for autonomous driving or insufficient amount of information put into the model
-\item Problems with different brightnesses/illumination changes in the frames, therefore unstable calculations of the optical flow
-\item Too ambiguous splitting, as the training and testing datasets represent totally different road traffic scenarios in the road 
-traffic
+\item Brightnesses/illumination changes in the frames, therefore unstable calculations of the optical flow
+\item Too ambiguous splitting, as the training and testing datasets represent totally different road traffic scenarios
 \end{enumerate}
 IMAGE OF THE SPEED DISTRIBUTION
 \end{frame}
@@ -59,7 +58,7 @@ Average pooling & 7.70 & 11.40 & 6.08 & 13.09\\
 the initial splitting. We trained each of the models for eight epochs.}
 \end{table}
 \end{frame}
-\subsection{New splitting}
+\subsection{Siamese approach with flow field and image (new splitting)}
 \begin{frame}{1.2 Siamese approach with new splitting}
 RESULTS ARE NEEDED :)
 \end{frame}
