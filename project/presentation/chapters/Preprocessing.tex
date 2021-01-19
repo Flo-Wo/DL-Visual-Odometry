@@ -6,7 +6,21 @@
     \item Cut off last 60 pixels, to remove black frame inside the car
     \item Sample down the frame to half its size, due to computational limitations
     \end{itemize}
-    IMAGES with arrows are needed
+
+\begin{columns}[t]
+\begin{column}{.45\textwidth}
+\begin{center}
+\only<1->{\includegraphics[width=\linewidth]{./imgs/frame2_original.png}}
+\small{Original frame}
+\end{center}
+\end{column}
+\begin{column}{.45\textwidth}
+\begin{center}
+\only<1->{\includegraphics[width=\linewidth]{./imgs/frame2_cut_sampled.png}}
+\small{Cut off the last 60 pixels, downsampled}
+\end{center}
+\end{column}
+\end{columns}
 \end{frame}
 
 \begin{frame}{Optical flow using \enquote{Farneback pyramid method}\cite{Farneback2003}}
@@ -43,6 +57,21 @@ for an image sequence $(f_t)_t$ with $f_t : \Omega \to \R^3$, for all $t$, and t
 \end{itemize}
 \item Sample down the size again, to speed up the training
 \end{itemize}
-IMAGE REQUIRED
+
+\begin{columns}[t]
+\begin{column}{.45\textwidth}
+\begin{center}
+\only<1->{\includegraphics[width=0.85\linewidth]{./imgs/frame2_original.png}}
+\small{\\Original frame}
+\end{center}
+\end{column}
+\begin{column}{.45\textwidth}
+\begin{center}
+\only<1->{\includegraphics[width=0.85\linewidth]{./imgs/frame2_flow_field.png}}
+\small{\\Corresponding flow field, already sampled down}
+\end{center}
+\end{column}
+\end{columns}
+
 \end{frame}
 
