@@ -58,11 +58,13 @@ standard_model = CnnSiamese(3)
 standard_criterion = torch.nn.MSELoss()
 
 # standard optimizer
-standard_optimizer = torch.optim.Adam(standard_model.parameters(), lr=1e-3)
+standard_optimizer = torch.optim.Adam(standard_model.parameters(), lr=1e-4)
 
 # add a learning rate scheduler, to reduce the learning rate after several
 # epochs, as we did in the MNIST exercise
 standard_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(standard_optimizer, factor=0.9, patience=1)
+
+
 
 # path to save trained models to
 network_folder = "./cnn/saved_models/NewSplitting/"
@@ -128,5 +130,5 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
 
     # save the models weights and bias' to use it later
     torch.save(model.state_dict(), network_folder + save_file + ".pth")
-
+    print("Model saved!")
     return network_folder + save_file + ".pth", logging_folder + f'{save_file}.log'
