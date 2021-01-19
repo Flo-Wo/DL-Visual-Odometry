@@ -352,7 +352,7 @@ situation_params = [("highway", 0, 8400), ("traffic jam", 8400, 15000), ("city",
 
 
 def generate_situation_splitting(test_split_ratio, params=situation_params,
-                                 shuffle=True,augmentation=False):
+                                 shuffle=True, augmentation=False):
     train_indices = []
     test_indices = []
 
@@ -360,8 +360,15 @@ def generate_situation_splitting(test_split_ratio, params=situation_params,
         indices = np.linspace(start+1, stop, stop-start, dtype=int)
         if shuffle:
             np.random.shuffle(indices)
-
-        train_indices = [*train_indices, *indices[0:int(test_split_ratio*len(indices))]]
+        
+        if augmentation:
+            train_additional = indices[0:int(test_split_ratio*len(indices))]+20400
+            train_indices = [*train_indices, 
+                             *indices[0:int(test_split_ratio*len(indices))],
+                             *train_additional]
+        else:
+            train_indices = [*train_indices, 
+                             *indices[0:int(test_split_ratio*len(indices))]]
         test_indices = [*test_indices, *indices[int(test_split_ratio*len(indices)):]]
 
     partition = {'train': train_indices, 'validation': test_indices}
