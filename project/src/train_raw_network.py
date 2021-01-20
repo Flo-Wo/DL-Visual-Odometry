@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     train_tensor, validation_tensor = setup_data_loader(DatasetOptFlo, splitting, labels)
 
-    train_network(train_tensor, validation_tensor, 15, "LeakyReLU_Frames_Conv_SitSplit_15Epochs_BatchNorm_MaxPool",
+    train_network(train_tensor, validation_tensor, 20, "LeakyReLU_Frames_Conv_SitSplit_20Epochs_BatchNorm_2xMaxPool",
                   model=MODEL_Conv, criterion=CRITERION_MSELoss, optimizer=OPTIMIZER_Adam_Conv,
                   scheduler=SCHEDULER_RedLROnPlateau_Conv)
 
