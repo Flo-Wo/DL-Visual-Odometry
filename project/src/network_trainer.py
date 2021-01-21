@@ -7,6 +7,8 @@ Created on Fri Jan 15.01.2021
 
 import coloredlogs
 import logging
+
+import numpy as np
 import torch
 from tqdm import tqdm
 
@@ -95,6 +97,7 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
             # we need to set the gradient to zero first
             optimizer.zero_grad()
             predicted_velocity = model(*image_stacks)
+
             loss = criterion(predicted_velocity, velocity_vector.float())
             # backward propagation
             loss.backward()

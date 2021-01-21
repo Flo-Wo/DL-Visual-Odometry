@@ -32,15 +32,15 @@ class CnnFramesConv(nn.Module):
         # call super method to create instance of the network class
         super(CnnFramesConv, self).__init__()
 
-        self.conv1 = conv_layer(6, 32, kernel_size=5, padding=3, stride=2)
-        self.conv2 = conv_layer(32, 64, kernel_size=4, padding=2, stride=2)
-        self.conv3 = conv_layer(64, 128, kernel_size=4, padding=2, stride=2)
-        self.conv3_1 = conv_layer(128, 128, kernel_size=3, padding=1, stride=1)
-        self.conv4 = conv_layer(128, 128, kernel_size=3, padding=1, stride=2)
-        self.conv4_1 = conv_layer(128, 128, kernel_size=3, padding=1, stride=1)
+        self.conv1 = conv_layer(6, 8, kernel_size=5, padding=3, stride=2)
+        self.conv2 = conv_layer(8, 8, kernel_size=4, padding=2, stride=2)
+        self.conv3 = conv_layer(8, 16, kernel_size=4, padding=2, stride=2)
+        self.conv3_1 = conv_layer(16, 16, kernel_size=3, padding=1, stride=1)
+        self.conv4 = conv_layer(16, 32, kernel_size=3, padding=1, stride=2)
+        self.conv4_1 = conv_layer(32, 32, kernel_size=3, padding=1, stride=1)
 
         # now fully connected layers
-        self.fc1 = fc_layer(128 * 8 * 11, 100)
+        self.fc1 = fc_layer(32 * 8 * 11, 100)
         self.fc2 = fc_layer(100, 20)
         # no activation function in the last layer
         self.fc3 = nn.Linear(20, 1)
@@ -58,11 +58,11 @@ class CnnFramesConv(nn.Module):
 
         # print(self.modules)
 
-    # implement forward function for the network, to take the flow and 
+    # implement forward function for the network, to take the flow and
     # the image
     def forward(self, x, y):
         # we use shared weight for feature extraction and add up the extracted
-        # flow and image features, before transforming them into the fully 
+        # flow and image features, before transforming them into the fully
         # connected layers
         t = torch.cat((x, y), 1)
 
@@ -77,9 +77,9 @@ class CnnFramesConv(nn.Module):
         # result: shape =  torch.Size([10, 64, 53, 73]), according to
         # https://discuss.pytorch.org/t/transition-from-conv2d-to-linear-layer-equations/93850/2
         # we need to reshape the output (flatten layer in matlab)
-        t = t.view(-1, 128 * 8 * 11)
+        t = t.view(-1, 32 * 8 * 11)
 
-        # now we add the features together as proposed in 
+        # now we add the features together as proposed in
         # https://arxiv.org/pdf/2010.09925.pdf and in
         # https://www.mathworks.com/help/deeplearning/ug/train-a-siamese-network-to-compare-images.html,
 
@@ -90,3 +90,4 @@ class CnnFramesConv(nn.Module):
         # batchSize x 1 (in particular a scalar for each input image, which
         # is, what we want)
         return t.squeeze(1)
+
