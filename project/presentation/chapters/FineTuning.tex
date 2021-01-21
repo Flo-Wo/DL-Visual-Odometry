@@ -35,7 +35,10 @@ We identified three possible problems for our poor results
 \textbf{Siamese approach}: put flow field and raw frame into the model or put two consecutive frames into the model
 \item \textbf{Add additional noise}: add noise before computing the optical flow filed, to get more invariance regarding illumination changes
 \item \textbf{Different splitting}: get better ratio between different scenarios, by using different data splittings:
-finer one and a more specific one based on the different road traffic situations in the video
+\begin{itemize}
+\item really fine block splitting (100 frames per block)
+\item based on the different road traffic situations in the video
+\end{itemize}
 \end{enumerate}
 \end{frame}
 
@@ -63,7 +66,7 @@ Max pooling (15 epochs) & - & - & \textbf{3.22} & \textbf{9.63} \\
 Average pooling & 7.70 & 11.40 & 6.08 & 13.09\\
 \bottomrule
 \end{tabular}
-\caption{MSE results of the network using different pooling strategies, one dropout layers, two different activation functions and 
+\caption{MSE results of the network using different pooling strategies, one dropout layer, two different activation functions and 
 the initial splitting. We trained each of the models for eight epochs.}
 \end{table}
 \end{frame}

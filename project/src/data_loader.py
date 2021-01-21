@@ -54,7 +54,7 @@ class DatasetOptFlo(torch.utils.data.Dataset):
         """Generates one sample of data"""
         # Select sample
         element_id = self.list_IDs[index]
-        element_id = element_id % 20400
+        element_id = (element_id % 20400)
         # Load data and get label
         x = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(element_id))
         # y = (self.labels[element_id] + self.labels[element_id - 1]) / 2
@@ -423,3 +423,7 @@ def augment_brightness(frame, contrast_factor, bright_factor=0):
 #         cv2.imwrite("../augmentation{}.png".format(i), frame_changed)
     
 #     pass
+
+if __name__ == "__main__":
+    save_flow_as_tensors(path_tensor_opt_fl, path_raw_video, save_as_png=False,
+                         augmentation=True)

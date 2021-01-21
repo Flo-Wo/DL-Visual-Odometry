@@ -47,7 +47,7 @@ class CNNFlowOnlyWithPooling(nn.Module):
         self.conv4 = conv_layer(48, 64, kernel_size=3, stride=1)
         self.conv5 = conv_layer(64, 64, kernel_size=3, stride=1)
         # second pooling layer
-        self.drop1 = nn.Dropout2d(p=0.5)
+        # self.drop2 = nn.Dropout2d(p=0.5)
         self.pool2 = pooling(kernel_size_own=2,stride_own=2,padding_own=1)
         
         # now fully connected layers
@@ -93,6 +93,7 @@ class CNNFlowOnlyWithPooling(nn.Module):
         x = self.conv4(x)
         
         x = self.conv5(x)
+        # x = self.drop2(x)
         x = self.pool2(x)
         # here we need a reshape, to pass the tensor into a fc
         #print("shape = ",x.shape)
