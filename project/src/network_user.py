@@ -70,13 +70,15 @@ def put_velocity_error_on_frame(frame, prediction, **kwargs):
     return frame_labeled
 
 
-def plot_velocity_chart(data_file, label="Data", color="gray", kernel_size=None, kernel_color="black"):
+def plot_velocity_chart(data_file, label="Data", color="gray",
+                        kernel_size=None, kernel_color="black",
+                        factor=1):
     velocities = np.genfromtxt(data_file)
-    plt.plot(velocities, color=color, ls=None, label=label)
+    plt.plot(factor*velocities, color=color, ls=None, label=label)
 
     if kernel_size is not None:
         kernel = np.ones(kernel_size) / kernel_size
-        data_convolved = np.convolve(velocities, kernel, mode='same')
+        data_convolved = np.convolve(factor*velocities, kernel, mode='same')
         plt.plot(data_convolved, color=kernel_color, ls="-",
                  label="Smoothed")
 
@@ -100,6 +102,7 @@ def process_video(path_video, model_file, save_to, produce_video=False, label_pa
         video_label = cv2.VideoWriter(save_to + ".mp4", 0x7634706d, 20, (640, 480))
 
     for count, (prev_frame, org_frame) in enumerate(tqdm(load_double_images(path_video), "Process Video")):
+        # #print(count)
         curr_frame = sample_down(cut_bottom(org_frame, picture_bottom_offset), picture_opt_fl_size)
         prev_frame = sample_down(cut_bottom(prev_frame, picture_bottom_offset), picture_opt_fl_size)
 
@@ -119,10 +122,12 @@ def process_video(path_video, model_file, save_to, produce_video=False, label_pa
 
         # logging.debug(frame.size())
         # logging.debug(rgb_flow_tensor.size())
-
+        
+        # path_tensor_opt_fl = "./data/tensorData/of/"
+        # rgb_flow_tensor = torch.load(path_tensor_opt_fl+ "{:05d}.pt".format(count+1))
         with torch.no_grad():
-            # predicted_velocity = model(rgb_flow_tensor, frame)
-            predicted_velocity = model(*dataset_class.get_images(prev_frame, curr_frame, rgb_flow_tensor))
+            predicted_velocity = model(rgb_flow_tensor.unsqueeze(0))
+            #predicted_velocity = model(*dataset_class.get_images(prev_frame, curr_frame, rgb_flow_tensor))
             velocities = np.append(velocities, predicted_velocity)
 
         if produce_video:
