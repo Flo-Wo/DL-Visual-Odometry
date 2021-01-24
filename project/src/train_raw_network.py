@@ -12,7 +12,7 @@ import numpy as np
 from data_loader import generate_situation_splitting, generate_label_dict, path_labels, \
     DatasetOptFlo, generate_block_splitting, generate_hard_cut_off_splitting
     
-from network_trainer import setup_data_loader, train_network
+from network_trainer import setup_data_loader, train_network, eval_network_test
 from cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
 from cnn.cnn_flow_only import CNNFlowOnly
 
@@ -24,8 +24,10 @@ standard_loader_params = {'batch_size': 64 , 'shuffle': False}
 
 model_path = "./cnn/savedmodels/OriginalSplitting/LeakyReLU15EpochsBatchNormMaxPoolingWithDropOut.pth"
 
+model_path_new = "./cnn/saved_models/NewSplitting/LeakyReLU_Frames_Conv_100Split_20Epochs_BatchNorm_MaxPool_TEST.pth"
+
 MODEL_Conv = CNNFlowOnlyWithPooling(3)
-MODEL_Conv.load_state_dict(torch.load(model_path))
+MODEL_Conv.load_state_dict(torch.load(model_path_new))
 CRITERION_MSELoss = torch.nn.MSELoss()
 OPTIMIZER_Adam_Conv = torch.optim.Adam(MODEL_Conv.parameters(), lr=1e-4)
 
@@ -46,18 +48,8 @@ if __name__ == "__main__":
 
     train_tensor, validation_tensor = setup_data_loader(DatasetOptFlo, splitting, labels,params=standard_loader_params)
 
-    velo_all = train_network(train_tensor, validation_tensor, 2, "LeakyReLU_Frames_Conv_100Split_20Epochs_BatchNorm_MaxPool_AUGMENTED",
+    velo_all = eval_network_test(train_tensor, validation_tensor, 1, "LeakyReLU_Frames_Conv_100Split_20Epochs_BatchNorm_MaxPool_TEST_EVALUATED",
                   model=MODEL_Conv, criterion=CRITERION_MSELoss, optimizer=OPTIMIZER_Adam_Conv,
                   scheduler=SCHEDULER_RedLROnPlateau_Conv)
     
-    from network_user import plot_velocity_chart
-
-    
-    desired_label = "./data/raw/train_label.txt"
-    own_label = "./results_test.txt"
-    factor = 1.0
-    own_array = np.genfromtxt(own_label)
-    desired_array = np.genfromtxt(desired_label)
-    plot_velocity_chart(own_label,kernel_size=20,factor=factor,kernel_color="red")
-    plot_velocity_chart(desired_label,color="orange")
 

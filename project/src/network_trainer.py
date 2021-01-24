@@ -109,7 +109,7 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
             # this actually returns the loss value
             train_loss += loss.item()
             train_loss_list.append(loss.item())
-
+        print(train_loss_list)
         train_loss = train_loss / len(train_tensor)
         logging.info("Training Loss: {:12.3f}".format(train_loss))
 
@@ -139,7 +139,72 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
         logger.info('%s', log_dict)
         # use the scheduler and the mean error
         scheduler.step(train_loss)
-        return velo_all
+        np.savetxt("velo_all_{}".format(epoch) + time.strftime("%Y%m%d-%H%M%S"), velo_all)
+        # return velo_all
+    # save the models weights and bias' to use it later
+    torch.save(model.state_dict(), network_folder + save_file + time.strftime("%Y%m%d-%H%M%S") + ".pth")
+    print("Model saved!")
+    
+    return network_folder + save_file + ".pth", logging_folder + f'{save_file}.log'
+
+def eval_network_test(train_tensor, validation_tensor, num_epochs, save_file, model=standard_model,
+                  criterion=standard_criterion, optimizer=standard_optimizer, scheduler=standard_scheduler):
+    """Trains the network"""
+
+    # create logger
+    logger = logging.getLogger("train_logger")
+    logger.addHandler(logging.FileHandler(logging_folder + f'{save_file}-' + time.strftime("%Y%m%d-%H%M%S") + '.log', mode='w'))
+
+    for epoch in range(num_epochs):
+        # training part
+        model.eval()
+        train_loss = 0
+        train_loss_list = []
+        velo_all = np.array([])
+
+        for _, (*image_stacks, velocity_vector) in \
+                enumerate(tqdm(train_tensor, "Epoch {:02d}: Train".format(epoch + 1))):
+            # according to https://stackoverflow.com/questions/48001598/why-do-we-need-to-call-zero-grad-in-pytorch
+            # we need to set the gradient to zero first
+            with torch.no_grad():
+                predicted_velocity = model(*image_stacks)
+                velo_all = np.append(velo_all, predicted_velocity.detach().numpy())
+                loss = criterion(predicted_velocity, velocity_vector.float())
+                # this actually returns the loss value
+                train_loss += loss.item()
+                train_loss_list.append(loss.item())
+        print(train_loss_list)
+        train_loss = train_loss / len(train_tensor)
+        logging.info("Training Loss: {:12.3f}".format(train_loss))
+
+        # evaluation part
+        model.eval()
+        validation_loss = 0
+
+        for _, (*image_stacks, velocity_vector) in \
+                enumerate(tqdm(validation_tensor, "Epoch {:02d}: Evaluate".format(epoch + 1))):
+            # do not use backpropagation here, as this is the validation data
+            with torch.no_grad():
+                # predicted_velocity = model(flow_stack, normal_stack)
+                predicted_velocity = model(*image_stacks)
+                loss = criterion(predicted_velocity, velocity_vector.float())
+                validation_loss += loss.item()
+                velo_all = np.append(velo_all, predicted_velocity.detach().numpy())
+        # mean the error to print correctly
+
+        validation_loss = validation_loss / len(validation_tensor)
+        logging.info("Validation Loss: {:12.3f}".format(validation_loss))
+
+        # create logger dict, to save the data into a logger file
+        log_dict = {"epoch": epoch + 1,
+                    "train_epoch_loss": train_loss,
+                    "eval_epoch_loss": validation_loss,
+                    "lr": get_lr(optimizer)}
+        logger.info('%s', log_dict)
+        # use the scheduler and the mean error
+        scheduler.step(train_loss)
+        np.savetxt("velo_all_{}".format(epoch) + time.strftime("%Y%m%d-%H%M%S"), velo_all)
+        # return velo_all
     # save the models weights and bias' to use it later
     torch.save(model.state_dict(), network_folder + save_file + ".pth")
     print("Model saved!")
