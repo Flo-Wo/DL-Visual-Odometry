@@ -55,6 +55,7 @@ class DatasetOptFlo(torch.utils.data.Dataset):
         # Select sample
         element_id = self.list_IDs[index]
         element_id = (element_id % 20400)
+        # print(element_id)
         # Load data and get label
         x = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(element_id))
         # y = (self.labels[element_id] + self.labels[element_id - 1]) / 2
@@ -374,6 +375,14 @@ def generate_situation_splitting(test_split_ratio, params=situation_params,
     partition = {'train': train_indices, 'validation': test_indices}
     return partition
 
+def generate_hard_cut_off_splitting(test_split_ratio):
+    all_indices = np.arange(1,20400)
+    point = int(len(all_indices)*test_split_ratio)
+    train_indices = [*all_indices[:point]]
+    test_indices = [*all_indices[point:]]
+    partition = {'train': train_indices, 'validation': test_indices}
+    return partition
+
 def generate_label_dict(label_path, data_size):
     # these are all labels in a txt, we want to write them into a dict and
     # ignore the first value
@@ -425,5 +434,6 @@ def augment_brightness(frame, contrast_factor, bright_factor=0):
 #     pass
 
 if __name__ == "__main__":
-    save_flow_as_tensors(path_tensor_opt_fl, path_raw_video, save_as_png=False,
-                         augmentation=True)
+    # save_flow_as_tensors(path_tensor_opt_fl, path_raw_video, save_as_png=False,
+    #                      augmentation=True)
+    test = generate_hard_cut_off_splitting(0.8)
