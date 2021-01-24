@@ -32,8 +32,8 @@ OPTIMIZER_Adam_Conv = torch.optim.Adam(MODEL_Conv.parameters(), lr=1e-4)
 SCHEDULER_RedLROnPlateau_Conv = torch.optim.lr_scheduler.ReduceLROnPlateau(OPTIMIZER_Adam_Conv, factor=0.9, patience=1)
 
 if __name__ == "__main__":
-    splitting = generate_block_splitting(data_size, train_eval_ratio, block_size)
-    #splitting = generate_situation_splitting(0.8,augmentation=True)
+    #splitting = generate_block_splitting(data_size, train_eval_ratio, block_size)
+    splitting = generate_situation_splitting(0.8,augmentation=False)
 
     labels = generate_label_dict(path_labels, data_size)
 
