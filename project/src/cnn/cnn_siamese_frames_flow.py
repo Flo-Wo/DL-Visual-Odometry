@@ -27,7 +27,7 @@ def fc_layer(num_input_channels, num_output_channels):
 
 # same architecture as the flow only cnn, but the forward function is different
 class CnnSiamese(nn.Module):
-    def __init__(self, num_input_channels):
+    def __init__(self, num_input_channels, last_layer=False):
         # call super method to create instance of the network class
         super(CnnSiamese, self).__init__()
         self.conv1 = conv_layer(num_input_channels, 24, kernel_size=5, stride=2)
@@ -43,6 +43,11 @@ class CnnSiamese(nn.Module):
         self.fc3 = fc_layer(50, 10)
         # no activation function in the last layer
         self.fc4 = nn.Linear(10, 1)
+        self.last_layer = last_layer
+
+        if last_layer:
+            # linear last layer
+            self.fc5 = nn.Linear(1, 1)
         # init weights and bias' for the convolution layer
         # for the linear layers, pytorch chooses a uniform distribution for
         # w and b, which should be fine
@@ -99,6 +104,9 @@ class CnnSiamese(nn.Module):
         z = self.fc2(z)
         z = self.fc3(z)
         z = self.fc4(z)
+
+        if self.last_layer:
+            z = self.fc5(z)
         # remove all dimensions with size 1, so we get a tensor of the form
         # batchSize x 1 (in particular a scalar for each input image, which
         # is, what we want)

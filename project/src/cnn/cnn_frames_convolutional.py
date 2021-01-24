@@ -28,7 +28,7 @@ def fc_layer(num_input_channels, num_output_channels):
 # use:
 # https://arxiv.org/pdf/1709.08429.pdf
 class CnnFramesConv(nn.Module):
-    def __init__(self):
+    def __init__(self, last_layer=False):
         # call super method to create instance of the network class
         super(CnnFramesConv, self).__init__()
 
@@ -44,6 +44,11 @@ class CnnFramesConv(nn.Module):
         self.fc2 = fc_layer(100, 20)
         # no activation function in the last layer
         self.fc3 = nn.Linear(20, 1)
+        self.last_layer = last_layer
+
+        if last_layer:
+            # linear last layer
+            self.fc5 = nn.Linear(1, 1)
         # init weights and bias' for the convolution layer
         # for the linear layers, pytorch chooses a uniform distribution for
         # w and b, which should be fine
@@ -86,6 +91,10 @@ class CnnFramesConv(nn.Module):
         t = self.fc1(t)
         t = self.fc2(t)
         t = self.fc3(t)
+
+        if self.last_layer:
+            t = self.fc5(t)
+
         # remove all dimensions with size 1, so we get a tensor of the form
         # batchSize x 1 (in particular a scalar for each input image, which
         # is, what we want)

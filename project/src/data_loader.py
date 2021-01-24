@@ -425,5 +425,5 @@ def augment_brightness(frame, contrast_factor, bright_factor=0):
 #     pass
 
 if __name__ == "__main__":
-    save_flow_as_tensors(path_tensor_opt_fl, path_raw_video, save_as_png=False,
-                         augmentation=True)
+    save_both(path_tensor_frames + "new/", path_tensor_opt_fl + "new/" , "data/raw/VID_20210122_081356.mp4", save_as_png=False)#,
+                         #augmentation=True)
