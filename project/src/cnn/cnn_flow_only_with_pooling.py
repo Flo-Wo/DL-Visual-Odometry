@@ -46,10 +46,7 @@ class CNNFlowOnlyWithPooling(nn.Module):
         self.drop1 = nn.Dropout2d(p=0.5)
         self.conv4 = conv_layer(48, 64, kernel_size=3, stride=1)
         self.conv5 = conv_layer(64, 64, kernel_size=3, stride=1)
-        # second pooling layer
-        # self.drop2 = nn.Dropout2d(p=0.5)
         self.pool2 = pooling(kernel_size_own=2,stride_own=2,padding_own=1)
-        
         # now fully connected layers
         self.fc1 = fc_layer(64*1*3, 100)
         self.fc2 = fc_layer(100,50)
@@ -83,26 +80,16 @@ class CNNFlowOnlyWithPooling(nn.Module):
 #        print("shape = ",x.shape)
         x = self.bn1(x)
         x = self.conv1(x)
-
         x = self.conv2(x)
         x = self.pool1(x)
         x = self.conv3(x)
         # drop out layer
         x = self.drop1(x)
-        
         x = self.conv4(x)
-        
         x = self.conv5(x)
-        # x = self.drop2(x)
+
         x = self.pool2(x)
-        # here we need a reshape, to pass the tensor into a fc
-        #print("shape = ",x.shape)
-        # result: shape =  torch.Size([10, 64, 53, 73]), according to
-        # https://discuss.pytorch.org/t/transition-from-conv2d-to-linear-layer-equations/93850/2
-        # we need to reshape the output (flatten layer in matlab)
-        
-        # here we can clearly see how the poolings layers reduce the number of
-        # output neurons after the convolutional layers
+
         x = x.view(-1, 64*1*3)
         x = self.fc1(x)
         x = self.fc2(x)

@@ -9,6 +9,7 @@ import coloredlogs
 import logging
 
 import numpy as np
+import numpy
 import torch
 from tqdm import tqdm
 
@@ -90,6 +91,8 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
         # training part
         model.train()
         train_loss = 0
+        train_loss_list = []
+        velo_all = np.array([])
 
         for _, (*image_stacks, velocity_vector) in \
                 enumerate(tqdm(train_tensor, "Epoch {:02d}: Train".format(epoch + 1))):
@@ -97,7 +100,7 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
             # we need to set the gradient to zero first
             optimizer.zero_grad()
             predicted_velocity = model(*image_stacks)
-
+            velo_all = np.append(velo_all, predicted_velocity.detach().numpy())
             loss = criterion(predicted_velocity, velocity_vector.float())
             # backward propagation
             loss.backward()
@@ -105,6 +108,7 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
             optimizer.step()
             # this actually returns the loss value
             train_loss += loss.item()
+            train_loss_list.append(loss.item())
 
         train_loss = train_loss / len(train_tensor)
         logging.info("Training Loss: {:12.3f}".format(train_loss))
@@ -121,6 +125,7 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
                 predicted_velocity = model(*image_stacks)
                 loss = criterion(predicted_velocity, velocity_vector.float())
                 validation_loss += loss.item()
+                velo_all = np.append(velo_all, predicted_velocity.detach().numpy())
         # mean the error to print correctly
 
         validation_loss = validation_loss / len(validation_tensor)
@@ -134,8 +139,9 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
         logger.info('%s', log_dict)
         # use the scheduler and the mean error
         scheduler.step(train_loss)
-
+        return velo_all
     # save the models weights and bias' to use it later
     torch.save(model.state_dict(), network_folder + save_file + ".pth")
     print("Model saved!")
+    
     return network_folder + save_file + ".pth", logging_folder + f'{save_file}.log'
