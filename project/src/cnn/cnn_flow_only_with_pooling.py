@@ -30,7 +30,7 @@ def pooling(kernel_size_own,stride_own,padding_own):
 
 
 class CNNFlowOnlyWithPooling(nn.Module):
-    def __init__(self,num_input_channels):
+    def __init__(self,num_input_channels, last_layer=False):
         # call super method to create instance of the network class
         super(CNNFlowOnlyWithPooling,self).__init__()
         self.bn1 = nn.BatchNorm2d(num_input_channels)
@@ -53,6 +53,13 @@ class CNNFlowOnlyWithPooling(nn.Module):
         self.fc3 = fc_layer(50,10)
         # no activation function in the last layer
         self.fc4 = nn.Linear(10,1)
+
+        self.last_layer = last_layer
+
+        if last_layer:
+            # linear last layer
+            self.fc5 = nn.Linear(1, 1)
+
         # init weights and bias' for the convolution layer
         # for the linear layers, pytorch chooses a uniform distribution for
         # w and b, which should be fine
@@ -88,6 +95,9 @@ class CNNFlowOnlyWithPooling(nn.Module):
         x = self.fc2(x)
         x = self.fc3(x)
         x = self.fc4(x)
+
+        if self.last_layer:
+            x = self.fc5(x)
         # remove all dimensions with size 1, so we get a tensor of the form
         # batchSize x 1 (in particular a scalar for each input image, which
         # is, what we want)

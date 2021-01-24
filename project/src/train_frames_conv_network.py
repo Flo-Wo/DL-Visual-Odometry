@@ -31,6 +31,6 @@ if __name__ == "__main__":
 
     train_tensor, validation_tensor = setup_data_loader(DatasetFrames, splitting, labels)
 
-    train_network(train_tensor, validation_tensor, 10, "LeakyReLU_Frames_Conv_SitSplit",
+    train_network(train_tensor, validation_tensor, 10, "LeakyReLU_Frames_Conv_SitSplit_Small",
                   model=MODEL_Conv, criterion=CRITERION_MSELoss, optimizer=OPTIMIZER_Adam_Conv,
                   scheduler=SCHEDULER_RedLROnPlateau_Conv)
