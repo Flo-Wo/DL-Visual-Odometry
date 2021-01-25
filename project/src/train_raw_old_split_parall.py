@@ -92,7 +92,7 @@ if __name__ == "__main__":
 video = "./data/raw/train.mp4"
 '''
     process_video(video,
-                  "./cnn/saved_models/NewSplitting/LeakyReLU_25Epochs_BatchNorm_MaxPooling_WithDropout_MultLayer_SitSplitShuffle.pth",
+                  "./cnn/saved_models/NewSplitting/LeakyReLU_25Epochs_BatchNorm_MaxPooling_WithDropout_MultLayer_SitSplit.pth",
                   "./cnn/saved_models/Videos/LeakyReLU_25Epochs_BatchNorm_MaxPooling_WithDropout_MultLayer_SitSplitShuffle_train",
                   model=CNNFlowOnlyWithPooling(3, last_layer=True), dataset_class=DatasetOptFlo)
 

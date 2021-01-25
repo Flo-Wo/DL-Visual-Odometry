@@ -28,6 +28,8 @@ path_image_opt_fl = "data/opticalFlow/"
 path_image_frames = "data/frames/"
 path_raw_video = "data/raw/train.mp4"
 path_labels = "./data/raw/train_label.txt"
+path_labels_test = "./data/raw/new_train_label.txt"
+test_path = "new/"
 
 picture_bottom_offset = 60
 picture_opt_fl_size = (320, 210)
@@ -41,10 +43,11 @@ picture_final_size = (160, 105)
 class DatasetOptFlo(torch.utils.data.Dataset):
     """Characterizes a dataset for PyTorch"""
 
-    def __init__(self, list_ids, labels):
+    def __init__(self, list_ids, labels, test=False):
         """Initialization with two dicts"""
         self.list_IDs = list_ids
         self.labels = labels
+        self.test = test
 
     def __len__(self):
         """Denotes the total number of samples"""
@@ -52,16 +55,19 @@ class DatasetOptFlo(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         """Generates one sample of data"""
-        # Select sample
+        #Select sample
         element_id = self.list_IDs[index]
         element_id = (element_id % 20400)
         # print(element_id)
         # Load data and get label
-        x = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(element_id))
+        if self.test:
+            x = torch.load(path_tensor_opt_fl + test_path + "{:05d}.pt".format(element_id))
+        else:
+            x = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(element_id))
         # y = (self.labels[element_id] + self.labels[element_id - 1]) / 2
         y = self.labels[element_id]
 
-        return x, y
+        return x, y, element_id
 
     @classmethod
     def get_images(cls, prev_frame, curr_frame, opt_flow):
@@ -71,10 +77,11 @@ class DatasetOptFlo(torch.utils.data.Dataset):
 class DatasetFrames(torch.utils.data.Dataset):
     """Characterizes a dataset for PyTorch"""
 
-    def __init__(self, list_ids, labels):
+    def __init__(self, list_ids, labels, test=False):
         """Initialization with two dicts"""
         self.list_IDs = list_ids
         self.labels = labels
+        self.test = test
 
     def __len__(self):
         """Denotes the total number of samples"""
@@ -85,12 +92,16 @@ class DatasetFrames(torch.utils.data.Dataset):
         # Select sample
         ID = self.list_IDs[index]
 
-        # Load data and get label
-        X1 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID - 1))
-        X2 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
+        if self.test:
+            X1 = torch.load(path_tensor_frames + test_path + "{:05d}.pt".format(ID - 1))
+            X2 = torch.load(path_tensor_frames + test_path + "{:05d}.pt".format(ID))
+        else:
+            # Load data and get label
+            X1 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID - 1))
+            X2 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
         y = self.labels[ID]
 
-        return X1, X2, y
+        return X1, X2, y, ID
 
     @classmethod
     def get_images(cls, prev_frame, curr_frame, opt_flow):
@@ -105,10 +116,11 @@ class DatasetOptFlo1Frames(torch.utils.data.Dataset):
     # (siamese or linear combination)
     """Characterizes a dataset for PyTorch"""
 
-    def __init__(self, list_ids, labels):
+    def __init__(self, list_ids, labels, test=False):
         """Initialization with two dicts"""
         self.labels = labels
         self.list_IDs = list_ids
+        self.test = test
 
     def __len__(self):
         """Denotes the total number of samples"""
@@ -120,11 +132,15 @@ class DatasetOptFlo1Frames(torch.utils.data.Dataset):
         ID = self.list_IDs[index]
 
         # Load data and get label
-        X1 = torch.load('data/tensorData/of/' + "{:05d}.pt".format(ID))
-        X2 = torch.load("data/tensorData/frames/" + "{:05d}.pt".format(ID))
+        if self.test:
+            X1 = torch.load(path_tensor_opt_fl + test_path + "{:05d}.pt".format(ID))
+            X2 = torch.load(path_tensor_frames + test_path + "{:05d}.pt".format(ID))
+        else:
+            X1 = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(ID))
+            X2 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
         y = self.labels[ID]
 
-        return X1, X2, y
+        return X1, X2, y, ID
 
     @classmethod
     def get_images(cls, prev_frame, curr_frame, opt_flow):
@@ -134,10 +150,11 @@ class DatasetOptFlo1Frames(torch.utils.data.Dataset):
 class DatasetOptFlo2Frames(torch.utils.data.Dataset):
     """Characterizes a dataset for PyTorch"""
 
-    def __init__(self, list_ids, labels):
+    def __init__(self, list_ids, labels, test=False):
         """Initialization with two dicts"""
         self.list_IDs = list_ids
         self.labels = labels
+        self.test = test
 
     def __len__(self):
         """Denotes the total number of samples"""
@@ -149,12 +166,17 @@ class DatasetOptFlo2Frames(torch.utils.data.Dataset):
         ID = self.list_IDs[index]
 
         # Load data and get label
-        F1 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID - 1))
-        F2 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
-        X = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(ID))
+        if self.test:
+            F1 = torch.load(path_tensor_frames + test_path + "{:05d}.pt".format(ID - 1))
+            F2 = torch.load(path_tensor_frames + test_path + "{:05d}.pt".format(ID))
+            X = torch.load(path_tensor_opt_fl + test_path + "{:05d}.pt".format(ID))
+        else:
+            F1 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID - 1))
+            F2 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
+            X = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(ID))
         y = self.labels[ID]
 
-        return F1, F2, X, y
+        return F1, F2, X, y, ID
 
     @classmethod
     def get_images(cls, prev_frame, curr_frame, opt_flow):
@@ -337,6 +359,10 @@ def calculate_opt_flow(curr_frame, prev_frame):
 # TRAIN EVALUATION DICTIONARIES
 # #############################################################
 
+def generate_test_splitting(data_size):
+    return np.linspace(1, data_size, data_size, dtype=int)
+
+
 def generate_block_splitting(data_size, test_split_ratio, block_size):
     test_block = block_size * test_split_ratio
 
@@ -375,6 +401,7 @@ def generate_situation_splitting(test_split_ratio, params=situation_params,
     partition = {'train': train_indices, 'validation': test_indices}
     return partition
 
+
 def generate_hard_cut_off_splitting(test_split_ratio):
     all_indices = np.arange(1,20400)
     point = int(len(all_indices)*test_split_ratio)
@@ -382,6 +409,7 @@ def generate_hard_cut_off_splitting(test_split_ratio):
     test_indices = [*all_indices[point:]]
     partition = {'train': train_indices, 'validation': test_indices}
     return partition
+
 
 def generate_label_dict(label_path, data_size):
     # these are all labels in a txt, we want to write them into a dict and
@@ -433,7 +461,7 @@ def augment_brightness(frame, contrast_factor, bright_factor=0):
     
 #     pass
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     # save_flow_as_tensors(path_tensor_opt_fl, path_raw_video, save_as_png=False,
     #                      augmentation=True)
-    test = generate_hard_cut_off_splitting(0.8)
+    #test = generate_hard_cut_off_splitting(0.8)

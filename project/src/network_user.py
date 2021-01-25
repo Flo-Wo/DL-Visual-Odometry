@@ -148,3 +148,104 @@ def process_video(path_video, model_file, save_to, produce_video=False, label_pa
     #plt.plot(velocities)
     #plt.show()
     np.savetxt(save_to + ".txt", velocities)
+
+
+def plot_training_process(file):
+    epochs = np.load(file)
+
+    train_loss = np.zeros(epochs.shape[2])
+    valid_loss = np.zeros(epochs.shape[2])
+    test_loss = np.zeros(epochs.shape[2])
+
+    for i in range(epochs.shape[2]):
+        train = (epochs[:, 3, i] == 1)
+        valid = (epochs[:, 3, i] == 0)
+        test = (epochs[:, 3, i] == 2)
+
+        train_data = epochs[train, :, i]
+        valid_data = epochs[valid, :, i]
+        test_data = epochs[test, :, i]
+
+        train_loss[i] = np.sqrt(np.sum((train_data[:, 1] - train_data[:, 2]) ** 2) / train_data.shape[0])
+        valid_loss[i] = np.sqrt(np.sum((valid_data[:, 1] - valid_data[:, 2]) ** 2) / valid_data.shape[0])
+        test_loss[i] = np.sqrt(np.sum((test_data[:, 1] - test_data[:, 2]) ** 2) / test_data.shape[0])
+
+    plt.plot(train_loss, marker=".", label="training data")
+    plt.plot(valid_loss, marker=".", label="validation data")
+    plt.plot(test_loss, marker=".", label="test data")
+    plt.legend()
+    plt.xlim([0, epochs.shape[2]-1])
+    plt.xlabel("Epoch")
+    plt.ylabel("MSE")
+    plt.show()
+
+
+def plot_train_data(file, epoch):
+    epochs = np.load(file)
+
+    train = (epochs[:, 3, epoch] == 1)
+    val = (epochs[:, 3, epoch] == 0)
+    test = (epochs[:, 3, epoch] == 2)
+
+    plt.plot(epochs[~test, 0, epoch], epochs[~test, 2, epoch], "r--", zorder=5, label="labels")
+    plt.plot(epochs[train, 0, epoch], epochs[train, 1, epoch], ".", label="training data")
+    plt.plot(epochs[val, 0, epoch], epochs[val, 1, epoch], ".", label="validation data")
+    plt.legend()
+    plt.xlim([np.min(epochs[~test, 0, epoch]), np.max(epochs[~test, 0, epoch])])
+    plt.xlabel("Frame")
+    plt.ylabel("Velocity (m/s)")
+
+    plt.show()
+
+
+def plot_train_data_error(file, epoch):
+    epochs = np.load(file)
+
+    train = (epochs[:, 3, epoch] == 1)
+    val = (epochs[:, 3, epoch] == 0)
+    test = (epochs[:, 3, epoch] == 2)
+
+    plt.plot(epochs[~test, 0, epoch], 27 + 8*epochs[~test, 2, epoch]/np.max(epochs[~test, 2, epoch]), "r--", zorder=5)
+    plt.plot(epochs[train, 0, epoch], np.abs(epochs[train, 1, epoch] - epochs[train, 2, epoch]), ".", label="test error")
+    plt.plot(epochs[val, 0, epoch], np.abs(epochs[val, 1, epoch] - epochs[val, 2, epoch]), ".", label="val. error")
+
+    plt.legend()
+    plt.xlim([np.min(epochs[~test, 0, epoch]), np.max(epochs[~test, 0, epoch])])
+    plt.xlabel("Frame")
+    plt.ylabel("Error (m/s)")
+
+    plt.show()
+
+
+def plot_test_data(file, epoch):
+    epochs = np.load(file)
+
+    test = (epochs[:, 3, epoch] == 2)
+
+    plt.plot(epochs[test, 0, epoch], epochs[test, 2, epoch], "r--", zorder=5, label="labels")
+    plt.plot(epochs[test, 0, epoch], epochs[test, 1, epoch], ".", label="predictions")
+
+    plt.legend()
+    plt.xlim([np.min(epochs[test, 0, epoch]), np.max(epochs[test, 0, epoch])])
+    plt.xlabel("Frame")
+    plt.ylabel("Velocity (m/s)")
+    plt.show()
+
+
+def plot_test_data_error(file, epoch):
+    epochs = np.load(file)
+
+    test = (epochs[:, 3, epoch] == 2)
+
+    plt.plot(epochs[test, 0, epoch], 27 + 8*epochs[test, 2, epoch]/np.max(epochs[test, 2, epoch]), "r--", zorder=5, label="labels")
+    plt.plot(epochs[test, 0, epoch], np.abs(epochs[test, 1, epoch]-epochs[test, 2, epoch]), ".", label="error")
+
+    plt.legend()
+    plt.xlim([np.min(epochs[test, 0, epoch]), np.max(epochs[test, 0, epoch])])
+    plt.xlabel("Frame")
+    plt.ylabel("Error (m/s)")
+    plt.show()
+
+plot_training_process("./cnn/saved_models/LeakyReLU_25Epochs_BatchNorm_MaxPooling_WithDropout_MultLayer_SitSplitShuffle.epochs.npy")
+plot_train_data_error("./cnn/saved_models/LeakyReLU_25Epochs_BatchNorm_MaxPooling_WithDropout_MultLayer_SitSplitShuffle.epochs.npy", 12)
+plot_train_data("./cnn/saved_models/LeakyReLU_25Epochs_BatchNorm_MaxPooling_WithDropout_MultLayer_SitSplitShuffle.epochs.npy", 12)
