@@ -13,21 +13,21 @@ video = "./data/raw/test.mp4"
 
 if prodVideos:
     process_video(video, "./cnn/saved_models/LeakyReLU_MixedSIAMESE_SitSplit.pth",
-                  "./cnn/saved_models/Videos/LeakyReLU_MixedSIAMESE_SitSplit_test",
+                  "./cnn/saved_models/LeakyReLU_MixedSIAMESE_SitSplit_test",
                   model=CnnSiamese(3), dataset_class=DatasetOptFlo1Frames)
 
     process_video(video, "./cnn/saved_models/LeakyReLU_25Epochs_BatchNorm_MaxPooling_WithDropout_MultLayer_SitSplitShuffle.pth",
                   "./cnn/saved_models/LeakyReLU_25Epochs_BatchNorm_MaxPooling_WithDropout_MultLayer_SitSplitShuffle_test",
                   model=CNNFlowOnlyWithPooling(3, last_layer=True), dataset_class=DatasetOptFlo)
 
-process_video(video, "./cnn/saved_models/LeakyReLU_FramesSIAMESE_SitSplit.pth",
-                  "./cnn/saved_models/LeakyReLU_FramesSIAMESE_SitSplit_test",
-                  model=CnnSiamese(3), dataset_class=DatasetFrames)
+    process_video(video, "./cnn/saved_models/LeakyReLU_FramesSIAMESE_SitSplit.pth",
+                      "./cnn/saved_models/LeakyReLU_FramesSIAMESE_SitSplit_test",
+                      model=CnnSiamese(3), dataset_class=DatasetFrames)
 
 
 txt1 = np.genfromtxt("./cnn/saved_models/LeakyReLU_25Epochs_BatchNorm_MaxPooling_WithDropout_MultLayer_SitSplitShuffle_test.txt")
-txt2 = np.genfromtxt("./cnn/saved_models/Videos/LeakyReLU_MixedSIAMESE_SitSplit_test.txt")
-txt3 = np.genfromtxt("./cnn/saved_models/Videos/LeakyReLU_FramesSIAMESE_SitSplit_test.txt")
+txt2 = np.genfromtxt("./cnn/saved_models/LeakyReLU_MixedSIAMESE_SitSplit_test.txt")
+txt3 = np.genfromtxt("./cnn/saved_models/LeakyReLU_FramesSIAMESE_SitSplit_test.txt")
 
 kernel_size = 50
 kernel = np.ones(kernel_size) / kernel_size
