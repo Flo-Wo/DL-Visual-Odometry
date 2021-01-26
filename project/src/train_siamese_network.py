@@ -10,7 +10,7 @@ import pickle
 
 from data_loader import generate_block_splitting, generate_label_dict, DatasetOptFlo1Frames, path_labels, \
     generate_situation_splitting, generate_test_splitting, path_labels_test
-from network_trainer import setup_data_loader, train_network
+from network_trainer import setup_data_loader, train_network, network_exists, load_splitting, save_splitting
 from cnn.cnn_siamese_frames_flow import CnnSiamese
 from network_user import plot_training_process
 
@@ -31,7 +31,11 @@ net_name = "LeakyReLU_MixedSIAMESE_SitSplit"
 
 if __name__ == "__main__":
     # splitting = generate_block_splitting(data_size, train_eval_ratio, block_size)
-    splitting = generate_situation_splitting(0.9, shuffle=False)
+    if network_exists(net_name):
+        splitting = load_splitting(net_name)
+    else:
+        splitting = generate_situation_splitting(0.9, shuffle=True)
+        save_splitting(splitting, net_name)
     test_ids = generate_test_splitting(data_size_test)
 
     labels = generate_label_dict(path_labels, data_size)
@@ -40,8 +44,8 @@ if __name__ == "__main__":
     train_tensor, validation_tensor, test_tensor = setup_data_loader(DatasetOptFlo1Frames, splitting, labels,
                                                                      test_ids=test_ids, test_labels=test_labels)
 
-    n, log = train_network(train_tensor, validation_tensor, 5, "LeakyReLU_MixedSIAMESE_SitSplit",
+    n, log = train_network(train_tensor, validation_tensor, 50, net_name,
                   model=MODEL_Siamese, criterion=CRITERION_MSELoss, optimizer=OPTIMIZER_Adam_Siamese,
                   scheduler=SCHEDULER_RedLROnPlateau_Siamese, test_tensor=test_tensor)
 
-    plot_training_process(n + ".epochs.npy")
+    plot_training_process(n)
