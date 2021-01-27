@@ -270,8 +270,11 @@ def plot_test_data_error(file, epoch):
 
 if __name__ == "__main__":
     #model_file = "./cnn/saved_models/LeakyReLU_25Epochs_BatchNorm_MaxPooling_WithDropout_MultLayer_SitSplitShuffle"
-    model_file = "./cnn/saved_models/LeakyReLU_MixedSIAMESE_SitSplit"
+    #model_file = "./cnn/saved_models/LeakyReLU_MixedSIAMESE_SitSplit"
     #model_file = "./cnn/saved_models/LeakyReLU_FramesSIAMESE_SitSplit"
+    #model_file = "./cnn/saved_models/LeakyReLU_FramesCONV_SitSplit"
+    #model_file = "./cnn/saved_models/LeakyReLU_FramesOfCONV_SitSplit"
+    model_file = "./cnn/saved_models/SuperSuperSimple"
 
     plot_training_process(model_file)
     plot_train_data_error(model_file, -1)
