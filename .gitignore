@@ -433,4 +433,3 @@ TSWLatexianTemp*
 /project/src/utils_save_load_2.py
 
 *.npy
-/project/src/cnn/saved_models/
