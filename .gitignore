@@ -431,3 +431,5 @@ TSWLatexianTemp*
 
 /project/src/params_2020_12_28__18_59_52.mat
 /project/src/utils_save_load_2.py
+
+*.npy
