@@ -1,0 +1,22 @@
+\section{Current and further work}
+\subsection{Additional noise}
+\begin{frame}{Contrast and brightness augmentation}
+\begin{itemize}
+\item Additional noise to frames \textbf{before} calculating the flow field.
+\item Change the brightness and contrast of an image via
+\begin{align*}
+\text{frame}_{\mathrm{augmented}}(i,j) = \alpha(i,j) \cdot \text{frame}(i,j) + \beta(i,j)
+\end{align*}
+with functions $\alpha$ (contrast: $>1$ increase, $<1$ decrease) and $\beta$ (brightness).\\
+To get some noise into the frames, we used
+\begin{align*}
+\alpha &\sim \mathcal{U}(0,1)+0.35\\
+\beta &\sim \mathcal{U}(-5,35),
+\end{align*}
+where $\mathcal{U}(a,b)$ is the uniform distribution in an interval $[a,b]$ for $a < b$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Siamese approach for two consecutive frames}
+HERE SOME IDEAS AND/OR RESULTS ARE NEEDED
+\end{frame}
