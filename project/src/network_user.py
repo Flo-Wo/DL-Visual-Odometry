@@ -176,6 +176,7 @@ def plot_training_process(file):
     plt.legend()
     plt.grid()
     plt.yscale('log')
+    plt.xscale('log')
     plt.xlim([1, epochs.shape[2]])
     plt.xlabel("Epoch")
     plt.ylabel("MSE")
@@ -239,6 +240,12 @@ def plot_test_data(file, epoch):
     plt.plot(epochs[test, 0, epoch], epochs[test, 2, epoch], "r--", zorder=5, label="labels")
     plt.plot(epochs[test, 0, epoch], epochs[test, 1, epoch], ".", label="predictions")
 
+    kernel_size = 100
+    kernel = np.ones(kernel_size) / kernel_size
+    pred_convolved = np.convolve(epochs[test, 1, epoch], kernel, mode='same')
+
+    plt.plot(epochs[test, 0, epoch], pred_convolved, "-", color="gray", label="predictions")
+
     plt.legend()
     plt.xlim([np.min(epochs[test, 0, epoch]), np.max(epochs[test, 0, epoch])])
     plt.xlabel("Frame")
@@ -274,7 +281,7 @@ if __name__ == "__main__":
     #model_file = "./cnn/saved_models/LeakyReLU_FramesSIAMESE_SitSplit"
     #model_file = "./cnn/saved_models/LeakyReLU_FramesCONV_SitSplit"
     #model_file = "./cnn/saved_models/LeakyReLU_FramesOfCONV_SitSplit"
-    model_file = "./cnn/saved_models/SuperSuperSimple"
+    model_file = "./cnn/saved_models/SuperSuperSimple2"
 
     plot_training_process(model_file)
     plot_train_data_error(model_file, -1)

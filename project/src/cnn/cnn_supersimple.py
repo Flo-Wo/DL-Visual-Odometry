@@ -34,8 +34,8 @@ class CnnSuperSimple(nn.Module):
         # call super method to create instance of the network class
         super(CnnSuperSimple, self).__init__()
         self.bn1 = nn.BatchNorm2d(num_input_channels)
-        self.conv1 = conv_layer(num_input_channels, 24, kernel_size=10, stride=2)
-        self.conv2 = conv_layer(24, 24, kernel_size=10, stride=2)
+        self.conv1 = conv_layer(num_input_channels, 24, kernel_size=3, stride=2)
+        #self.conv2 = conv_layer(24, 24, kernel_size=3, stride=2)
         #self.conv2 = conv_layer(24, 32, kernel_size=5, stride=2)
         
         # first pooling layer after second convolution layer, conv_layer
@@ -43,9 +43,9 @@ class CnnSuperSimple(nn.Module):
         #self.pool1 = pooling(kernel_size_own=2,stride_own=2,padding_own=1)
 
         # now fully connected layers
-        self.fc1 = fc_layer(24*20*34, 50)
-        self.fc2 = fc_layer(50,1)
-        #self.fc3 = fc_layer(20,1)
+        self.fc1 = fc_layer(24*52*79, 100)
+        self.fc2 = fc_layer(100, 50)
+        self.fc3 = fc_layer(50,1)
         # no activation function in the last layer
         #self.fc4 = nn.Linear(10,1)
 
@@ -74,13 +74,15 @@ class CnnSuperSimple(nn.Module):
 #        print("shape = ",x.shape)
         x = self.bn1(x)
         x = self.conv1(x)
-        x = self.conv2(x)
+        #x = self.conv2(x)
         #x = self.pool1(x)
 
-        x = x.view(-1, 24*20*34)
+        #print(x.shape)
+
+        x = x.view(-1, 24*52*79)
         x = self.fc1(x)
         x = self.fc2(x)
-        #x = self.fc3(x)
+        x = self.fc3(x)
         #x = self.fc4(x)
 
         if self.last_layer:

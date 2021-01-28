@@ -20,7 +20,7 @@ from cnn.cnn_flow_only import CNNFlowOnly
 from matplotlib import pyplot as plt
 
 from network_user import plot_training_process, plot_train_data_error, plot_test_data, plot_test_data_error
-from cnn.cnn_supersimple import CnnSuperSimple
+from cnn.cnn_supersimple2 import CnnSuperSimple
 from network_user import plot_train_data
 
 data_size = 20399
@@ -28,12 +28,12 @@ data_size_test = 13176
 block_size = 20399
 train_eval_ratio = 0.8
 
-MODEL_Conv = CnnSuperSimple(3, last_layer=True)
+MODEL_Conv = CnnSuperSimple(3)
 CRITERION_MSELoss = torch.nn.MSELoss()
 OPTIMIZER_Adam_Conv = torch.optim.Adam(MODEL_Conv.parameters(), lr=1e-3)
 SCHEDULER_RedLROnPlateau_Conv = torch.optim.lr_scheduler.ReduceLROnPlateau(OPTIMIZER_Adam_Conv, factor=0.9, patience=1)
 
-net_name = "SuperSuperSimple"
+net_name = "SuperSuperSimple2"
 
 if __name__ == "__main__":
     # splitting = generate_block_splitting(data_size, train_eval_ratio, block_size)
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     train_tensor, validation_tensor, test_tensor = setup_data_loader(DatasetOptFlo, splitting, labels,
                                                                      test_ids=test_ids, test_labels=test_labels)
 
-    n, log = train_network(train_tensor, validation_tensor, 15, net_name, model=MODEL_Conv,
+    n, log = train_network(train_tensor, validation_tensor, 100, net_name, model=MODEL_Conv,
                            criterion=CRITERION_MSELoss, optimizer=OPTIMIZER_Adam_Conv,
                            scheduler=SCHEDULER_RedLROnPlateau_Conv, test_tensor=test_tensor)
 

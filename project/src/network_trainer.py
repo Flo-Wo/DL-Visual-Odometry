@@ -119,6 +119,11 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
         model.load_state_dict(torch.load(network_folder + save_file + ".pth"))
         all_results = np.load(network_folder + save_file + ".epochs.npy")
         prev_epochs = all_results.shape[2]
+
+        with open(network_folder + save_file + ".scheduler.pkl", 'rb') as f:  # Python 3: open(..., 'wb')
+            scheduler = pickle.load(f)
+        with open(network_folder + save_file + ".optimizer.pkl", 'rb') as f:  # Python 3: open(..., 'wb')
+            optimizer = pickle.load(f)
     else:
         all_results = None
         prev_epochs = 0
@@ -218,6 +223,12 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
         logger.info('%s', log_dict)
         # use the scheduler and the mean error
         scheduler.step(train_loss**2)
+
+        with open(network_folder + save_file + ".scheduler.pkl", 'wb') as f:  # Python 3: open(..., 'wb')
+            pickle.dump(scheduler, f)
+        with open(network_folder + save_file + ".optimizer.pkl", 'wb') as f:  # Python 3: open(..., 'wb')
+            pickle.dump(optimizer, f)
+
         # save the models weights and bias' to use it later
         torch.save(model.state_dict(), network_folder + save_file + ".pth")
         logging.info("Model saved!")
