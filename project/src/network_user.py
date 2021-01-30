@@ -240,7 +240,7 @@ def plot_test_data(file, epoch):
     plt.plot(epochs[test, 0, epoch], epochs[test, 2, epoch], "r--", zorder=5, label="labels")
     plt.plot(epochs[test, 0, epoch], epochs[test, 1, epoch], ".", label="predictions")
 
-    kernel_size = 100
+    kernel_size = 300
     kernel = np.ones(kernel_size) / kernel_size
     pred_convolved = np.convolve(epochs[test, 1, epoch], kernel, mode='same')
 
@@ -281,10 +281,10 @@ if __name__ == "__main__":
     #model_file = "./cnn/saved_models/LeakyReLU_FramesSIAMESE_SitSplit"
     #model_file = "./cnn/saved_models/LeakyReLU_FramesCONV_SitSplit"
     #model_file = "./cnn/saved_models/LeakyReLU_FramesOfCONV_SitSplit"
-    model_file = "./cnn/saved_models/SuperSuperSimple2"
+    model_file = "./cnn/saved_models/SuperSuperSimple_NoOffset"
 
     plot_training_process(model_file)
-    plot_train_data_error(model_file, -1)
+    #plot_train_data_error(model_file, -1)
     plot_train_data(model_file, -1)
     plot_test_data(model_file, -1)
-    plot_test_data_error(model_file, -1)
+    #plot_test_data_error(model_file, -1)

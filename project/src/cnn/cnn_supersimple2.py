@@ -10,6 +10,9 @@ import torch
 import torch.nn as nn
 
 # this way we can easily change the activation function for the whole network
+from torch.nn import ReLU
+
+
 def activ_func():
     return(nn.LeakyReLU())
     #return(nn.ReLU())
@@ -43,10 +46,12 @@ class CnnSuperSimple(nn.Module):
         #self.pool1 = pooling(kernel_size_own=2,stride_own=2,padding_own=1)
 
         # now fully connected layers
-        self.fc1 = fc_layer(3*105*160, 50)
-        self.fc2 = fc_layer(50, 10)
+        self.fc1 = fc_layer(3*105*160, 10)
+        #self.fc2 = fc_layer(50, 10)
         self.fc3 = fc_layer(10,1)
-        self.fc4 = nn.Linear(1, 1)
+        self.fc4 = nn.Sequential(nn.Linear(1, 1, bias=False), ReLU())
+
+        #self.fc4 = nn.Linear(1, 1, bias=False)
 
 
         # init weights and bias' for the convolution layer
@@ -74,7 +79,7 @@ class CnnSuperSimple(nn.Module):
 
         x = x.view(-1, 3*105*160)
         x = self.fc1(x)
-        x = self.fc2(x)
+        #x = self.fc2(x)
         x = self.fc3(x)
         x = self.fc4(x)
 
