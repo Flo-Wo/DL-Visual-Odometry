@@ -1,4 +1,31 @@
-\section{Motivation, data collection and initial assumptions}
+\section{Motivation and initial Dataset}
+
+
+\begin{frame}{The \enquote{comma ai speed challenge}\footnote{https://github.com/commaai/speedchallenge}}
+	\textbf{Motivation}
+	\begin{itemize}
+		\item autonomous driving is currently one of the most prominent problems in machine learning
+		\item but quite hard to set up on a desktop pc
+		\item predicting a vehicles velocity from video footage is a related but also much more simplified task
+	\end{itemize}
+	\pause
+	\textbf{Initial Dataset:}
+	\begin{itemize}
+		\item training video with 20400 frames (20 fps)
+		\item data file with velocity of the car at each frame
+		\item test video with 10798 frames (20 fps)
+	\end{itemize}
+	\pause
+	\textbf{Evaluation:}
+	\begin{itemize}
+		\item the mean squared error (MSE) is used to measure performance
+		\begin{align*}
+			\mathcal{L} = \sum_i (p(x_i) - y_i)^2
+		\end{align*}
+	\end{itemize}
+\end{frame}
+
+\begin{comment}
 
 \begin{frame}{The \enquote{comma ai speed challenge}\footnote{https://github.com/commaai/speedchallenge}}
 \textbf{Motivation}
@@ -26,5 +53,6 @@
 \item MSE $\leq 3$: correct
 \end{itemize}
 \end{itemize}
-
 \end{frame}
+
+\end{comment}

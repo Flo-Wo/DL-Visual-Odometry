@@ -1,20 +1,29 @@
 \section{Method selection and architecture}
 
 \begin{frame}{Convolutional neural network and initial architecture}
-\textbf{Method selection}
-\begin{itemize}
-\item Speed prediction is a \textbf{non-linear regression} task $\rightsquigarrow$ Neural network
-\item Use convolution layers to perform feature extraction $\rightsquigarrow$ \textbf{convolutional neural network} (CNN)
-\end{itemize}
-\textbf{Initial architecture}
-\begin{itemize}
-\item Paper of NVIDIA work group \cite{NVIDIA2016} of a CNN for self-driving cars
-\item Enough complexity and layers to handle the task and lots of possibilities to fine-tune it
-\item Initial results with the raw model: MSE of under 3 on the training set and around 18-20 on the testing set\\
-$\Rightarrow$ Improvements needed
-\end{itemize}
+	\begin{columns}[c]
+		\begin{column}{0.55\textwidth}
+			\textbf{Method selection}
+			\begin{itemize}
+				\item<+-> speed prediction is a non-linear regression task $\Rightarrow$ neural network
+				\item<+-> task involves feature extraction $\Rightarrow$ convolutional neural network (CNN)
+			\end{itemize}
+			\textbf{Initial architecture}
+			\begin{itemize}
+				\item<+-> using paper of \textit{NVIDIA} work group \cite{NVIDIA2016} of a CNN for self-driving cars adapted on our initial data
+				\item<+-> enough complexity and layers to handle the task and lots of possibilities to fine-tune it
+				\item<+-> Initial results with the raw model: $\mathcal{L} < 3$ on the training set and about $\mathcal{L} \approx 19$ on the test set\\
+				$\Rightarrow$ Improvements needed
+			\end{itemize}
+		\end{column}
+		\begin{column}{0.4\textwidth}
+			\includegraphics[width=\textwidth]{./imgs/NetworkOriginal.png}
+			{\footnotesize Original architecture of the \textit{NVIDIA} paper \cite{NVIDIA2016}}
+		\end{column}
+	\end{columns}
 \end{frame}
 
+\begin{comment}
 \begin{frame}[plain]
 \begin{figure}
 \centering
@@ -22,3 +31,4 @@ $\Rightarrow$ Improvements needed
 \caption{Original architecture of the NVIDIA paper \cite{NVIDIA2016}.}
 \end{figure}
 \end{frame}
+\end{comment}
