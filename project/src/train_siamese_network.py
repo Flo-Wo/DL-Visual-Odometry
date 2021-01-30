@@ -38,7 +38,7 @@ if __name__ == "__main__":
         save_splitting(splitting, net_name)
     test_ids = generate_test_splitting(data_size_test)
 
-    labels = generate_label_dict(path_labels, data_size)
+    labels =  generate_label_dict(path_labels, data_size)
     test_labels = generate_label_dict(path_labels_test, data_size_test)
 
     train_tensor, validation_tensor, test_tensor = setup_data_loader(DatasetOptFlo1Frames, splitting, labels,
