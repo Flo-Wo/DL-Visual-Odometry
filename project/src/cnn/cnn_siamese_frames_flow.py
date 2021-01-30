@@ -37,6 +37,10 @@ class CnnSiamese(nn.Module):
         self.drop = nn.Dropout2d(p=0.5)
         self.conv4 = conv_layer(48, 64, kernel_size=3, stride=1)
         self.conv5 = conv_layer(64, 64, kernel_size=3, stride=1)
+
+        self.weight_flow = nn.Linear(64 * 6 * 13, 64 * 6 * 13, bias=False)
+        self.weight_frame = nn.Linear(64 * 6 * 13, 64 * 6 * 13, bias=False)
+
         # now fully connected layers
         self.fc1 = fc_layer(64 * 6 * 13, 100)
         self.fc2 = fc_layer(100, 50)
@@ -87,8 +91,8 @@ class CnnSiamese(nn.Module):
         y = self.conv5(y)
 
         # here we need a reshape, to pass the tensor into a fc
-        logging.debug("shape = ", x.shape)
-        logging.debug("shape = ", y.shape)
+        #logging.debug("shape = ", x.shape)
+        #logging.debug("shape = ", y.shape)
         # result: shape =  torch.Size([10, 64, 53, 73]), according to
         # https://discuss.pytorch.org/t/transition-from-conv2d-to-linear-layer-equations/93850/2
         # we need to reshape the output (flatten layer in matlab)
@@ -98,7 +102,7 @@ class CnnSiamese(nn.Module):
         # now we add the features together as proposed in 
         # https://arxiv.org/pdf/2010.09925.pdf and in
         # https://www.mathworks.com/help/deeplearning/ug/train-a-siamese-network-to-compare-images.html,
-        z = x + 0.3 * y
+        z = 0.7 * x + 0.3 * y
 
         z = self.fc1(z)
         z = self.fc2(z)

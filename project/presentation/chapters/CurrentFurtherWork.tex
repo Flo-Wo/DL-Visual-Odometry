@@ -17,6 +17,27 @@ where $\mathcal{U}(a,b)$ is the uniform distribution in an interval $[a,b]$ for 
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Siamese approach for two consecutive frames}
-HERE SOME IDEAS AND/OR RESULTS ARE NEEDED
+\begin{frame}{Acquire more Data}
+\begin{itemize}
+	\item use mobile to create a video and track the velocity via GPS
+	\item test run already worked
+	\item data does not compare to the rest due to completely different brightness and angle
+	\item but it would allow to create a greater data set with more training and labeld test data
+\end{itemize}´
+\end{frame}
+
+\begin{frame}{Usage in real application}
+	\begin{itemize}
+		\item if we have good model we have written method that reads video and predicts velocity
+		\item we reach 30 fps which is faster than the 20 fps of the video so life prediction would be possible
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Evaluation with the test video}
+	\begin{itemize}
+		\item rough check how model performs on unseen video with the same parameters
+		\item no labels available so we can only compare key situations (stops, highway, ...)
+		\item some models achieve at least a qualitative accordance with the video (hier noch ein Bild)
+		\item best networks: altered original network and 
+	\end{itemize}
 \end{frame}

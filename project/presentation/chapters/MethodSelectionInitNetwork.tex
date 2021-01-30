@@ -1,6 +1,6 @@
 \section{Method selection and architecture}
 
-\begin{frame}{Convolutional neural network and initial architecture}
+\begin{frame}{Choosing an initial architecture}
 	\begin{columns}[c]
 		\begin{column}{0.55\textwidth}
 			\textbf{Method selection}
@@ -12,8 +12,7 @@
 			\begin{itemize}
 				\item<+-> using paper of \textit{NVIDIA} work group \cite{NVIDIA2016} of a CNN for self-driving cars adapted on our initial data
 				\item<+-> enough complexity and layers to handle the task and lots of possibilities to fine-tune it
-				\item<+-> Initial results with the raw model: $\mathcal{L} < 3$ on the training set and about $\mathcal{L} \approx 19$ on the test set\\
-				$\Rightarrow$ Improvements needed
+				\item<+-> Initial results with the raw model: $\mathcal{L} < 3$ on the training set and about $\mathcal{L} \approx 19$ (using an old splitting) on the test set
 			\end{itemize}
 		\end{column}
 		\begin{column}{0.4\textwidth}
@@ -23,12 +22,22 @@
 	\end{columns}
 \end{frame}
 
-\begin{comment}
-\begin{frame}[plain]
-\begin{figure}
-\centering
-\includegraphics[scale=0.3]{./imgs/NetworkOriginal.png}
-\caption{Original architecture of the NVIDIA paper \cite{NVIDIA2016}.}
-\end{figure}
+\begin{frame}{Our approaches to optimize the results}
+	\begin{enumerate}
+		\item \textbf{change components of the initial architecture}
+		\begin{itemize}
+			\item adding different pooling layers
+			\item use other activation functions
+		\end{itemize}
+		\item \textbf{change the architecture}
+		\begin{itemize}
+			\item expand structure to Siamese network
+			\item use different setups
+		\end{itemize}
+		\item \textbf{change the input data}
+		\begin{itemize}
+			\item use brightness augmentation
+			\item acquire more data
+		\end{itemize}
+	\end{enumerate}
 \end{frame}
-\end{comment}

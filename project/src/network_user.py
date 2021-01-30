@@ -179,7 +179,7 @@ def plot_training_process(file):
     plt.xscale('log')
     plt.xlim([1, epochs.shape[2]])
     plt.xlabel("Epoch")
-    plt.ylabel("MSE")
+    plt.ylabel("Variance")
     plt.show()
 
 
@@ -277,11 +277,11 @@ def plot_test_data_error(file, epoch):
 
 if __name__ == "__main__":
     #model_file = "./cnn/saved_models/LeakyReLU_25Epochs_BatchNorm_MaxPooling_WithDropout_MultLayer_SitSplitShuffle"
-    #model_file = "./cnn/saved_models/LeakyReLU_MixedSIAMESE_SitSplit"
+    model_file = "./cnn/saved_models/LeakyReLU_MixedSIAMESE_SitSplit_Concat"
     #model_file = "./cnn/saved_models/LeakyReLU_FramesSIAMESE_SitSplit"
     #model_file = "./cnn/saved_models/LeakyReLU_FramesCONV_SitSplit"
     #model_file = "./cnn/saved_models/LeakyReLU_FramesOfCONV_SitSplit"
-    model_file = "./cnn/saved_models/SuperSuperSimple_NoOffset"
+    #model_file = "./cnn/saved_models/SuperSuperSimple_NoOffset"
 
     plot_training_process(model_file)
     #plot_train_data_error(model_file, -1)
