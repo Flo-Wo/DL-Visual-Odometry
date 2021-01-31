@@ -5,7 +5,7 @@ Created on Wed Dec 30 09:28:42 2020
 
 @author: florianwolf
 """
-
+import torch
 import torch.nn as nn
 import logging
 
@@ -38,11 +38,8 @@ class CnnSiamese(nn.Module):
         self.conv4 = conv_layer(48, 64, kernel_size=3, stride=1)
         self.conv5 = conv_layer(64, 64, kernel_size=3, stride=1)
 
-        self.weight_flow = nn.Linear(64 * 6 * 13, 64 * 6 * 13, bias=False)
-        self.weight_frame = nn.Linear(64 * 6 * 13, 64 * 6 * 13, bias=False)
-
         # now fully connected layers
-        self.fc1 = fc_layer(64 * 6 * 13, 100)
+        self.fc1 = fc_layer(2*64 * 6 * 13, 100)
         self.fc2 = fc_layer(100, 50)
         self.fc3 = fc_layer(50, 10)
         # no activation function in the last layer
@@ -102,7 +99,7 @@ class CnnSiamese(nn.Module):
         # now we add the features together as proposed in 
         # https://arxiv.org/pdf/2010.09925.pdf and in
         # https://www.mathworks.com/help/deeplearning/ug/train-a-siamese-network-to-compare-images.html,
-        z = 0.7 * x + 0.3 * y
+        z = torch.cat((x,y), 1)
 
         z = self.fc1(z)
         z = self.fc2(z)

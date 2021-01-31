@@ -11,7 +11,7 @@ import pickle
 from data_loader import generate_block_splitting, generate_label_dict, DatasetOptFlo1Frames, path_labels, \
     generate_situation_splitting, generate_test_splitting, path_labels_test, DatasetFrames
 from network_trainer import setup_data_loader, train_network, network_exists, load_splitting, save_splitting
-from cnn.cnn_siamese_frames_flow import CnnSiamese
+from cnn.cnn_siamese_2frames import CnnSiamese
 from network_user import plot_training_process
 
 # some constants
@@ -27,7 +27,7 @@ OPTIMIZER_Adam_Siamese = torch.optim.Adam(MODEL_Siamese.parameters(), lr=1e-3)
 SCHEDULER_RedLROnPlateau_Siamese = torch.optim.lr_scheduler.ReduceLROnPlateau(OPTIMIZER_Adam_Siamese,
                                                                               factor=0.9, patience=1)
 
-net_name = "LeakyReLU_FramesSIAMESE_SitSplit"
+net_name = "LeakyReLU_FramesSIAMESE_SitSplit_1"
 
 if __name__ == "__main__":
     # splitting = generate_block_splitting(data_size, train_eval_ratio, block_size)
