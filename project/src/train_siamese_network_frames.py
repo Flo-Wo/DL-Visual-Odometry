@@ -27,7 +27,7 @@ OPTIMIZER_Adam_Siamese = torch.optim.Adam(MODEL_Siamese.parameters(), lr=1e-3)
 SCHEDULER_RedLROnPlateau_Siamese = torch.optim.lr_scheduler.ReduceLROnPlateau(OPTIMIZER_Adam_Siamese,
                                                                               factor=0.9, patience=1)
 
-net_name = "LeakyReLU_FramesSIAMESE_SitSplit"
+net_name = "LeakyReLU_FramesSIAMESE_SitSplit_1"
 
 if __name__ == "__main__":
     # splitting = generate_block_splitting(data_size, train_eval_ratio, block_size)
