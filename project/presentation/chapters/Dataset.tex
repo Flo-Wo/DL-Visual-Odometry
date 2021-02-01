@@ -27,14 +27,16 @@
 \begin{frame}{Analysis of the dataset}
 	\begin{columns}[c]
 		\begin{column}{.55\textwidth}
-			\textbf{Situation data:}
+			\textbf{Splitting of the dataset}
 			\begin{itemize}
-				\item<+-> test set with three different driving scenarios
-				\item<+-> splitting with respect to them
-				\begin{itemize}
-					\item divide dataset into different situations
-					\item splitting with $80\%$ test and $20\%$ validation data on each
-				\end{itemize}
+				\item<+-> Initial splitting: hard cut off after $80\%$ of the frames
+				\item<+-> Situational splitting: divide dataset into blocks of different driving scenarios,
+				splitting with $80\%$ test and $20\%$ validation data on each
+%				\setbeamertemplate{itemize items}[circle]
+%				\begin{itemize}
+%					\item divide dataset into blocks of different categories
+%					\item splitting with $80\%$ test and $20\%$ validation data on each
+%				\end{itemize}
 			\end{itemize}
 			\pause
 			\textbf{Evaluation:}

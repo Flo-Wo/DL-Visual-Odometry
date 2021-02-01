@@ -45,15 +45,15 @@
 \begin{frame}{Siamese Architecture: Setup}
 	\begin{itemize}
 		\item based on the initial architecture
-		\item using the same convolutional layers on frames and optical flow
-		\item results are added with weights and feed into the fully connected layers 
+		\item using the same convolutional layers on raw frames and optical flow
+		\item weighted sum of the results into fully connected layers
 	\end{itemize}
 	\begin{center}
 	\includegraphics[width=0.8\textwidth]{imgs/siamese_model.png}
 	\end{center}
 	\begin{itemize}
-		\item using same model with both frames to predict the velocity between those
-		\item advantage: no previous calculation of optical flow needed
+		\item Use model also for two consecutive frames $f_t$ and $f_{t+1}$\\
+		$\Rightarrow$ advantage: no previous calculation of optical flow needed
 	\end{itemize}
 \end{frame}
 
