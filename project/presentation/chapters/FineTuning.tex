@@ -83,10 +83,10 @@
 
 \subsection{Problems and possible solutions}
 \begin{frame}{Problems}
-We identified three problems with our approaches
+We identified two problems with our approaches
 \begin{enumerate}
-	\item big overfit when validation data is not randomly distributed in the data but a continuing block
-	\item predictions are very susceptible for brightnesses/illumination changes in the frames, therefore unstable calculations of the optical flow
+	\item overfitting, when validation data is not randomly distributed in the data but a of continuous blocks
+	\item predictions are very susceptible for brightnesses/illumination changes in the frames, because of unstable calculations of the optical flow
 \end{enumerate}
 \begin{columns}[c]
 	\begin{column}{0.5\textwidth}
@@ -104,37 +104,45 @@ We identified three problems with our approaches
 \end{columns}
 \end{frame}
 
-\begin{frame}{Problems}
+\begin{frame}{Problems and possible solutions}
+\textbf{Problems}
 \begin{itemize}
-	\item predictions are limited to data very similar to the training data
-	\item predictions do not generalize well
+	\item Predictions are limited to data very similar to the training data
+	\item Predictions do not generalize well
 \end{itemize}
-\textbf{most likely explanations:}
+\textbf{Most likely explanations:}
 \begin{itemize}
-	\item very limited dataset for a complex model
-	\item network is not prepared for unseen situations
-	\item changes in brightness and illumination
+	\item Very limited dataset for a complex model
+	\item Network is not prepared for unseen situations
+	\item Changes in brightness and illumination
 \end{itemize}
-\end{frame}
-
-\begin{frame}{Possible solutions}
-\textbf{Process of detecting speed from a video}
+\textbf{Solution:}
 \begin{itemize}
-	\item extracting features from each frame
-	\item check how the features have moved between two frames
-	\item evaluate if the movement comes from own speed or other sources
-\end{itemize}
-
-$\Rightarrow$ for good generalization a complex model is necessary
-
-\textbf{Solutions:}
-\begin{itemize}
-	\item acquire more data for various driving situations
-	\item use a technique to normalize different brightnesses
-	\item add randomly noise to the data to negate wrong features
-	\item use a much less complex model
+	\item Acquire more data for various driving situations and/or use a less complex model
+%	\item use a technique to normalize different brightnesses
+	\item Add noise to the data, more robustness in the optical flow calculation
+%	\item Use a less complex model
 \end{itemize}
 \end{frame}
+
+%\begin{frame}{Possible solutions}
+%\textbf{Process of detecting speed from a video}
+%\begin{itemize}
+%	\item extracting features from each frame
+%	\item check how the features have moved between two frames
+%	\item evaluate if the movement comes from own speed or other sources
+%\end{itemize}
+%
+%$\Rightarrow$ for good generalization a complex model is necessary
+%
+%\textbf{Solutions:}
+%\begin{itemize}
+%	\item acquire more data for various driving situations
+%	\item use a technique to normalize different brightnesses
+%	\item add randomly noise to the data to negate wrong features
+%	\item use a much less complex model
+%\end{itemize}
+%\end{frame}
 
 \begin{comment}	
 \begin{enumerate}

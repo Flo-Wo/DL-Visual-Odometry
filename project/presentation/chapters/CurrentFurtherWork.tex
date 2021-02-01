@@ -1,4 +1,44 @@
 \section{Current and further work}
+
+\subsection{Acquire more data}
+\begin{frame}{Acquire more data and evaluation of the test video}
+	\textbf{Method}
+	\begin{itemize}
+%		\item using simple methods it is still possible to create more data in good quality
+		\item video producing and velocity detection with common apps
+		\setbeamertemplate{itemize items}[circle]
+		\begin{itemize}
+		\item \textit{open street maps}: GPS tracking (\texttt{.gpx}-files)
+		\item \textit{open camera}: dashcam footage
+		\end{itemize}				
+%		(\textit{open camera} and \textit{open street maps})
+%		\item using GPS tracking for velocity detection (exportable as \texttt{.gpx}-file) and extrapolation
+%		\item using the time stamps and interpolation both files can be combined to one data set
+	\end{itemize}
+	\textbf{Advantages and Issues}
+	\begin{itemize}
+		\item very easy method to create a lot of data (if a car is available)
+		\item velocity has some uncertainties (needs to be extrapolated to cover all frames; uncertainties of GPS vs. car sensors)
+		\item frame rate differs a little from original data (24 fps vs 20 fps)
+	\end{itemize}
+%	\textbf{Evaluation with the test video}
+%	\begin{itemize}
+%		\item rough check how model performs on unseen video with the same parameters
+%		\item no labels available so we can only compare key situations (stops, highway, ...)
+%		\item some models achieve at least a qualitative accordance with the video (hier noch ein Bild)
+%		\item best networks: altered original network and 
+%	\end{itemize}
+\end{frame}
+
+%\begin{frame}{Evaluation with the test video}
+%	\begin{itemize}
+%		\item rough check how model performs on unseen video with the same parameters
+%		\item no labels available so we can only compare key situations (stops, highway, ...)
+%		\item some models achieve at least a qualitative accordance with the video (hier noch ein Bild)
+%		\item best networks: altered original network and 
+%	\end{itemize}
+%\end{frame}
+
 \subsection{Additional noise}
 \begin{frame}{Contrast and brightness augmentation}
 \begin{itemize}
@@ -15,30 +55,4 @@ To get some noise into the frames, we used
 \end{align*}
 where $\mathcal{U}(a,b)$ is the uniform distribution in an interval $[a,b]$ for $a < b$.
 \end{itemize}
-\end{frame}
-
-\begin{frame}{Acquire more data}
-	\textbf{Method}
-	\begin{itemize}
-		\item using simple methods it is still possible to create more data in good quality
-		\item video producing and velocity detection can be done with common apps
-		\item we were using \textit{open camera} and \textit{open street maps}
-		\item using GPS tracking for velocity detection (exportable as \texttt{.gpx}-file)
-		\item using the time stamps and interpolation both files can be combined to one data set
-	\end{itemize}
-	\textbf{Advantages and Issues}
-	\begin{itemize}
-		\item very easy method to create a lot of data
-		\item velocity has some uncertainties (needs to be interpolated to cover all frames; uncertainties of GPS)
-		\item frame rate differs a little from original data (24 fps vs 20 fps)
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{Evaluation with the test video}
-	\begin{itemize}
-		\item rough check how model performs on unseen video with the same parameters
-		\item no labels available so we can only compare key situations (stops, highway, ...)
-		\item some models achieve at least a qualitative accordance with the video (hier noch ein Bild)
-		\item best networks: altered original network and 
-	\end{itemize}
 \end{frame}
