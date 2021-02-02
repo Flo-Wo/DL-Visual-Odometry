@@ -44,9 +44,9 @@
 
 \begin{frame}{Siamese Architecture: Setup}
 	\begin{itemize}
-		\item based on the initial architecture
-		\item using the same convolutional layers on raw frames and optical flow
-		\item weighted sum of the results into fully connected layers
+		\item Based on the initial architecture
+		\item Using the same convolutional layers on raw frame and optical flow
+		\item Weighted sum of the results into fully connected layers
 	\end{itemize}
 	\begin{center}
 	\includegraphics[width=0.8\textwidth]{imgs/siamese_model.png}
@@ -83,10 +83,10 @@
 
 \subsection{Problems and possible solutions}
 \begin{frame}{Problems}
-We identified two problems with our approaches
+We identified two problems
 \begin{enumerate}
-	\item overfitting, when validation data is not randomly distributed in the data but a of continuous blocks
-	\item predictions are very susceptible for brightnesses/illumination changes in the frames, because of unstable calculations of the optical flow
+	\item Overfitting, when validation data is not randomly distributed in the data but a of continuous blocks
+	\item Predictions are very susceptible for brightnesses/illumination changes in the frames, because of unstable calculations of the optical flow
 \end{enumerate}
 \begin{columns}[c]
 	\begin{column}{0.5\textwidth}

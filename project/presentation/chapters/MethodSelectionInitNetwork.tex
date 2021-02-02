@@ -5,14 +5,15 @@
 		\begin{column}{0.55\textwidth}
 			\textbf{Method selection}
 			\begin{itemize}
-				\item<+-> speed prediction is a non-linear regression task $\Rightarrow$ neural network
-				\item<+-> task involves feature extraction $\Rightarrow$ convolutional neural network (CNN)
+				\item<+-> Speed prediction is a non-linear regression task $\Rightarrow$ neural network
+				\item<+-> Task involves feature extraction $\Rightarrow$ convolutional neural network (CNN)
 			\end{itemize}
 			\textbf{Initial architecture}
 			\begin{itemize}
-				\item<+-> using paper of \textit{NVIDIA} work group \cite{NVIDIA2016} of a CNN for self-driving cars adapted on our initial data
-				\item<+-> enough complexity and layers to handle the task and lots of possibilities to fine-tune it
-				\item<+-> Initial results with the raw model: $\mathcal{L} < 3$ on the training set and about $\mathcal{L} \approx 19$ (using an old splitting) on the test set
+				\item<+-> Using paper of \textit{NVIDIA} work group \cite{NVIDIA2016} of a CNN for self-driving cars adapted on our initial data
+				\item<+-> Enough complexity and layers to handle the task and lots of possibilities to fine-tune it
+				\item<+-> Initial results with the raw model: $\mathcal{L} < 3$ on the training set and about $\mathcal{L} \approx 19$ (using an old splitting) 
+				on the test set
 			\end{itemize}
 		\end{column}
 		\begin{column}{0.4\textwidth}
@@ -24,20 +25,20 @@
 
 \begin{frame}{Our approaches to optimize the results}
 	\begin{enumerate}
-		\item \textbf{change components of the initial architecture}
+		\item \textbf{Change components of the initial architecture}
 		\begin{itemize}
-			\item adding different pooling layers
-			\item use other activation functions
+			\item Adding different pooling layers
+			\item Use other activation functions
 		\end{itemize}
-		\item \textbf{change the architecture}
+		\item \textbf{Change the architecture}
 		\begin{itemize}
-			\item expand structure to Siamese network
-			\item use different setups
+			\item Expand structure to Siamese network
+			\item Use different setups
 		\end{itemize}
-		\item \textbf{change the input data}
+		\item \textbf{Change the input data}
 		\begin{itemize}
-			\item use brightness augmentation
-			\item acquire more data
+			\item Acquire more data
+			\item Use brightness augmentation
 		\end{itemize}
 	\end{enumerate}
 \end{frame}
