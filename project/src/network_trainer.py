@@ -57,7 +57,10 @@ def setup_data_loader(dataset_class, splitting, labels, params=standard_loader_p
     validation_tensor = torch.utils.data.DataLoader(validation_set, **params)
 
     if test_labels is not None and test_ids is not None:
-        test_set = dataset_class(test_ids, test_labels, test=True)
+        testtr_set = dataset_class([*splitting['train'], *test_ids["train"]], labels, test_labels)
+        train_tensor = torch.utils.data.DataLoader(testtr_set, **params)
+
+        test_set = dataset_class(test_ids["test"], labels, test_labels)
         test_tensor = torch.utils.data.DataLoader(test_set, **params)
     else:
         test_tensor = None

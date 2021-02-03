@@ -92,14 +92,15 @@ class DatasetFrames(torch.utils.data.Dataset):
         # Select sample
         ID = self.list_IDs[index]
 
-        if self.test:
-            X1 = torch.load(path_tensor_frames + test_path + "{:05d}.pt".format(ID - 1))
-            X2 = torch.load(path_tensor_frames + test_path + "{:05d}.pt".format(ID))
+        if ID < 0:
+            X1 = torch.load(path_tensor_frames + test_path + "{:05d}.pt".format((-ID) - 1))
+            X2 = torch.load(path_tensor_frames + test_path + "{:05d}.pt".format(-ID))
+            y = self.labels[-ID]
         else:
             # Load data and get label
             X1 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID - 1))
             X2 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
-        y = self.labels[ID]
+            y = self.labels[ID]
 
         return X1, X2, y, ID
 
@@ -116,11 +117,11 @@ class DatasetOptFlo1Frames(torch.utils.data.Dataset):
     # (siamese or linear combination)
     """Characterizes a dataset for PyTorch"""
 
-    def __init__(self, list_ids, labels, test=False):
+    def __init__(self, list_ids, labels, labelsT=[]):
         """Initialization with two dicts"""
         self.labels = labels
+        self.labelsT = labelsT
         self.list_IDs = list_ids
-        self.test = test
 
     def __len__(self):
         """Denotes the total number of samples"""
@@ -132,13 +133,14 @@ class DatasetOptFlo1Frames(torch.utils.data.Dataset):
         ID = self.list_IDs[index]
 
         # Load data and get label
-        if self.test:
-            X1 = torch.load(path_tensor_opt_fl + test_path + "{:05d}.pt".format(ID))
-            X2 = torch.load(path_tensor_frames + test_path + "{:05d}.pt".format(ID))
+        if ID < 0:
+            X1 = torch.load(path_tensor_opt_fl + test_path + "{:05d}.pt".format(-ID))
+            X2 = torch.load(path_tensor_frames + test_path + "{:05d}.pt".format(-ID))
+            y = self.labelsT[-ID]
         else:
             X1 = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(ID))
             X2 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
-        y = self.labels[ID]
+            y = self.labels[ID]
 
         return X1, X2, y, ID
 
@@ -358,6 +360,19 @@ def calculate_opt_flow(curr_frame, prev_frame):
 # #############################################################
 # TRAIN EVALUATION DICTIONARIES
 # #############################################################
+
+
+
+def generate_test_splitting_new(data_size, test_split_ratio=0.4):
+    test_block = data_size * test_split_ratio
+    all_indices = np.linspace(1, data_size, data_size, dtype=int)
+    train_index = all_indices < test_block
+    train_indices = [*(-all_indices[train_index])]
+    test_indices = [*(-all_indices[~train_index])]
+
+    partition = {'train': train_indices, 'test': test_indices}
+    return partition
+
 
 def generate_test_splitting(data_size):
     return np.linspace(1, data_size, data_size, dtype=int)
