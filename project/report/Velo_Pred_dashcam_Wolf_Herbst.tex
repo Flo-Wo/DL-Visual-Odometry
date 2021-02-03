@@ -15,6 +15,7 @@
 \usepackage{booktabs}
 \usepackage[hidelinks]{hyperref}
 \usepackage[capitalise]{cleveref}
+\usepackage{csquotes}
 
 \usepackage[backend=biber, style=numeric]{biblatex} %Zitate mit BibTeX  %, sorting=none "richtige" Reihenfolge der Nummern
 %, citestyle=alphabetic-verb
@@ -48,32 +49,32 @@ deep learning, computer vision, visual odometry, dense optical flow, siamese net
 \section{Introduction}
 Here are some motivational words needed
 \subsection{Aim of the project}
-Here we need to clarify the aim of the project and the levels of measurement
-
-ASSUMPTIONS ON MEASUREMENT OF THE RESULTS
-
-ASSUMPTION TRAINING ERROR UNDER 3 IS EXTREMLY GOOD
- 
+\label{subsec:AimAndMeasure}
+The goal of the project is to predict the speed (in $m/s$) of a velocity in each frame, using machine learning 
+techniques, as well as computer vision tools like optical flow. As a measure of success we use mean squared errors (MSE).
+Before we start to gather data, we have to make some assumptions. Our first and foremost question is how to evaluate a
+prediction. Therefore we assume, that a MSE less or equal to 10 is good, less or equal to 5 is better and a MSE of less
+or equal to 3 will be considered as correct\footnote{We got these benchmarks also from \url{https://github.com/commaai/speedchallenge}.}.
 
 \section{Data collection, analysis and preprocessing}
-For our data set, we used the comma ai speedchallenge\footnote{https://github.com/commaai/speedchallenge} data base. This data
+For our data set, we used the \enquote{comma ai speedchallenge}\footnote{https://github.com/commaai/speedchallenge} data base. This data
 set provides two dashcam videos: a training video, (20400 frames, shoot at 20 frames per second) including 
 ground truths and a testing video (10798 frames, shoot at 20 frames per second) without labels, which they use for applications 
 to check how well a submitted model is able to generalize.
 As we only have access to the labels of the test video frames, we decided to split the provided train data by the 80/20 principle into 
 training and testing subsets. Here we did not shuffle the data randomly, as we needed to always have two consecutive frames to 
 calculate the optical flow. We initially used a hard cut off after 80$\%$ of the frames, as we wanted to test our model on unseen data, 
-to measure how good our model is able to generalize. We will analyse this naive approach later, when we take a closer look
+to measure how good our model is able to generalize. We will analyse this initial approach later, when we take a closer look
 at the results.
 \subsection{Data analysis}
 To analyse the velocity distribution in the two subsets, we plotted the velocity per frame curve in 
 \cref{fig:SpeedPerFrameDistributionNewSplitting}. The first 80$\%$ of the video mostly represent highway scenarios 
 and the last 20$\%$ only consists of city driving scenes. 
-Therefore we did not expect our model to perform really well using the initial splitting, as the models trained and 
-tested on totally different road traffic scenarios.
+Therefore we did not expect our models to perform really well using the initial splitting, as the they are trained and 
+tested with totally different road traffic scenarios.
 
 \subsection{Preprocessing}
-Each of the provided frames has a size of $(640,480,3)$ pixels. Due to computational limitations, we decided to cut off the last 60 pixels from the lower border, to remove a black frame inside the car, which did not have any effect on the optical flow. Furthermore, we cut the frame size in half and calculated the optical flow using the Farneback pyramid method \cite{Farneback2003} with the following parameters
+Each of the provided frames has a size of $(640,480,3)$ pixels. Due to computational limitations, we decided to cut off the last 60 pixels from the lower border, to remove a black frame inside the car, which did not have any effect on the optical flow. Furthermore, we cut the frame size in half and calculated the optical flow using the \enquote{Farneback pyramid method} \cite{Farneback2003} with the following parameters
 \begin{align*}
 \text{pyramid levels} &:= 3\\
 \text{pyramid scaling} &:= 0.5\\
@@ -95,33 +96,33 @@ for the first channel.
 We wanted to see, if the model performs better using the dashcam frames as additional material. Therefore, we did the same down 
 sampling with the frames.
 
-%\begin{figure}
-%\centering
-%  \subfloat[Original frame]{\label{figur:1}\includegraphics[width=.35\columnwidth]{./imgs/frame2_original.png}} \hspace{0.1cm}
-%  \subfloat[Frame after down sampling]{\label{figur:2}\includegraphics[width=.35\columnwidth]{./imgs/frame2_cut_sampled.png}}\\
-%  \subfloat[Optical flow field, already down sampled]{\label{figur:3}\includegraphics[width=0.7\columnwidth]{./imgs/frame2_flow_field.png}}
-%  \label{figur}\caption{Preprocessing of the video frames.}
-%\end{figure}
-
 \section{Method selection and architecture}
 The prediction of the vehicles speed is a non-linear regression task , so the choice of a neural network is reasonable. 
 Recent architectures we discussed in the lecture (ResNet, GoogLeNet, etc.) have shown that using multiple stacked convolution layers
 combined with stacked dense layers, perform well on image classification tasks. Therefore the choice of a convolutional neural 
 network is justified.
 
-As a performance measure, we choose mean squared errors (MSE).
-
 \subsection{Initial Network}
 
-As an initial architecture we decided to give the model of https://arxiv.org/pdf/1604.07316v1.pdf a try. As the group used it
+As an initial architecture we decided to give the model of \cite{NVIDIA2016} a try. As the group used it
 for self-driving cars, the model has enough complexity to handle a task like ours and with the amount of layers, we had a lot of
 possibilities to fine-tune and improve the model.\\
 \\HERE SHOULD BE AN IMAGE OF THE NETWORKS ARCHITECTURE\\
-\\In a first approach, we tried the raw model gaining an MSE of around 18-20 on testing and under 3 on training. One can clearly 
+\\In a first approach we tried the raw model, gaining a MSE of around 18-20 on testing and under 3 on training. One can clearly 
 see, that the model really overfits the train dataset.
 
+\subsection{Siamese approach}
+
+In order to improve our results we expanded our model to also use the original image: Siamese approach
+
+Initial splitting blocks of 100 frames size with 80\% training data, 20\% test data; 20 epochs (train error: 0.411, test error: 2.70)
+
+New splitting: each driving scenario 80\% training data, 20\% test data: (train error: 0.23, test error: 29.7)
+
+
 \section{Tuning of the model}
-To speed up the training we used batch normalization layers https://arxiv.org/pdf/1502.03167.pdf and we tested different activation functions, to improve the performance of the model. 
+To speed up the training we used batch normalization layers \cite{BatchNorm2015} 
+and we tested different activation functions, to improve the performance of the model. 
 
 As proposed in the lecture, we used
 \begin{align*}
@@ -132,8 +133,8 @@ testing set. We ran the
 code multiple times, to ensure this result holds. This result was not really promising, so we wanted to decrease the error by 
 modifying the model even more.
 
-As we still had a lot of issues with overfits, we decided to include a dropout layer, according to https://jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf. We tried different numbers and positions for dropout layers, but using one layer with a dropout 
-probability of $p=0.5$ after the third concolutional layer seemed to work best.
+As we still had a lot of issues with overfits, we decided to include a dropout layer, according to \cite{Dropout2014}. We tried different numbers and positions for dropout layers, but using one layer with a dropout 
+probability of $p=0.5$ after the third convolutional layer seemed to work best.
 
 To solve the problem of dead neurons\footnote{One can clearly see in the definition of the ReLU 
 function, that neurons with a value below zero cannot participate in the learning process.} of the ReLU function, we 
@@ -144,7 +145,7 @@ x, x \geq 0\\
 c \cdot x, x <0
 \end{cases}
 \end{align*}
-with a hyperparameter $c = 0.01$. Using the leakyReLU function, we achieved a MSE of around 11 on the testing set and under 3 on the 
+with a hyperparameter $c = 0.01$. Using the leakyReLU function, we achieved a MSE of around 12 on the testing set and under 3 on the 
 training set. All of the models were trained with only eight epochs, as we still had problems with overfits.
 
 We identified three possible reasons for our poor results:
@@ -153,7 +154,7 @@ We identified three possible reasons for our poor results:
 \item[(ii)] Problems with different brightnesses in the frames (lack of generality), which leads to unstable calculations in the 
 optical flow, as the optical flow is quite sensitive to brightness. (Explain how in the train part the sky is quite dark and in the 
 city (end) the sky is bright)
-\item[(iii)] Too naive/ambigous splitting of the data into train and testing set, as both datasets seem to represent totally different
+\item[(iii)] Too naive/ambiguous splitting of the data into train and testing set, as both datasets seem to represent totally different
 scenarios in the road traffic.
 \end{enumerate}
 We came up with the following approaches to solve these problems
@@ -171,9 +172,9 @@ driving.
 
 \subsection{Pooling layers with initial splitting}
 We added two generic pooling layers to the network to reduce the number of parameters of the model. One after the second 
-convolutional layer and the second one before the fully connected layers start\footnote{Indeed, the number of 
+convolutional layer and the second one right before the fully connected layers start\footnote{Indeed, the number of 
 parameters decreased from a total of 636.225 trainable parameters to 156.225. Therefore the number of parameters decreased by a 
-factor of 4. We calculated these numbers using the tool pytorch summary.}.We tested maximum and average pooling with the following 
+factor of 4. We calculated these numbers using the tool \enquote{PyTorch summary}(\url{https://github.com/sksq96/pytorch-summary}).}.We tested maximum and average pooling with the following 
 parameters
 \begin{align*}
 \text{kernel size} &:= 2\times 2\\
@@ -181,11 +182,11 @@ parameters
 \text{padding} &:= 1\\
 \text{dilatation} &:= \text{None}
 \end{align*}
-The implementation of pooling layers helped a lot, as now the loss on the train and test data seem to decrease 
-nearly equally. Our results on the initial splitting are shown in \cref{tab:ResultsInitialSplitting}. We gave the network
+The implementation of pooling layers helped a lot, as now the loss on the train and test data seemed to decrease 
+nearly equally. Our results with the initial splitting are shown in \cref{tab:ResultsInitialSplitting}. We gave the network
 with max pooling a try with 15 epochs, as the loss on the train and test set was decreasing in a pretty stable manner. Using this
-network, we achieved for the first time a MSE of under 10 on the test set, which is according to the companies guideline a pretty 
-good result --- especially, as we trained the model mostly on highway scenes and tested it only in city driving scenarios.
+network, we achieved for the first time a MSE of under 10 on the test set, which is according to our assumptions in \cref{subsec:AimAndMeasure} a 
+pretty good result --- especially, as we trained the model mostly on highway scenes and tested it only in city driving scenarios.
 \begin{table}[!t]
 \normalsize
 \centering
@@ -219,13 +220,17 @@ category blocks into train and test data.
 \begin{figure}[h]
 \centering
 \includegraphics[scale=0.6]{./imgs/plot_speed_time_new_splitting.eps}
-\caption{Distribution of the velocities of all frames in the training video including the three categories.}
+\caption{Distribution of the velocities of all frames in the training video, including the three categories.}
 \label{fig:SpeedPerFrameDistributionNewSplitting}
 \end{figure}
 \subsection{Augmented brightness}
+STILL UNDER CONSTRUCTION
+\section{Training of the models}
+we used bla bla as optimizers and bla bla as schedulers, for each model we tried different combinations and bla bla
+
 
 \section{New Approach using siamese network for two consecutive frames without optical flow}
-
+inspired by https://arxiv.org/pdf/1709.08429.pdf
 
 \section{Error analysis and results}
 

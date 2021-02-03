@@ -31,7 +31,7 @@ def pooling(kernel_size_own,stride_own,padding_own):
 
 
 class CNNFlowOnlyWithPooling(nn.Module):
-    def __init__(self,num_input_channels):
+    def __init__(self,num_input_channels, last_layer=False):
         # call super method to create instance of the network class
         super(CNNFlowOnlyWithPooling,self).__init__()
         self.bn1 = nn.BatchNorm2d(num_input_channels)
@@ -42,18 +42,23 @@ class CNNFlowOnlyWithPooling(nn.Module):
         
         self.conv3 = conv_layer(36, 48, kernel_size=5, stride=2)
         # randomly pick some channels/feature maps and zero them out
-        self.drop = nn.Dropout2d(p=0.5)
+        self.drop1 = nn.Dropout2d(p=0.5)
         self.conv4 = conv_layer(48, 64, kernel_size=3, stride=1)
         self.conv5 = conv_layer(64, 64, kernel_size=3, stride=1)
-        # second pooling layer
         self.pool2 = pooling(kernel_size_own=2,stride_own=2,padding_own=1)
-        
         # now fully connected layers
         self.fc1 = fc_layer(64*1*3, 100)
         self.fc2 = fc_layer(100,50)
         self.fc3 = fc_layer(50,10)
         # no activation function in the last layer
         self.fc4 = nn.Linear(10,1)
+
+        self.last_layer = last_layer
+
+        if last_layer:
+            # linear last layer
+            self.fc5 = nn.Linear(1, 1)
+
         # init weights and bias' for the convolution layer
         # for the linear layers, pytorch chooses a uniform distribution for
         # w and b, which should be fine
@@ -71,20 +76,28 @@ class CNNFlowOnlyWithPooling(nn.Module):
     
     # implement forward function for the network
     def forward(self,x):
-        #print("shape = ",x.shape)
+#        print("shape = ",x.shape)
         x = self.bn1(x)
         x = self.conv1(x)
+<<<<<<< HEAD
         
+=======
+>>>>>>> net_trainer_approach
         x = self.conv2(x)
         x = self.pool1(x)
         
         x = self.conv3(x)
         # drop out layer
+<<<<<<< HEAD
         x = self.drop(x)      
+=======
+        x = self.drop1(x)
+>>>>>>> net_trainer_approach
         x = self.conv4(x)
-        
         x = self.conv5(x)
+
         x = self.pool2(x)
+<<<<<<< HEAD
         # here we need a reshape, to pass the tensor into a fc
 
         # result: shape =  torch.Size([10, 64, 53, 73]), according to
@@ -93,11 +106,17 @@ class CNNFlowOnlyWithPooling(nn.Module):
         
         # here we can clearly see how the poolings layers reduce the number of
         # output neurons after the convolutional layers
+=======
+
+>>>>>>> net_trainer_approach
         x = x.view(-1, 64*1*3)
         x = self.fc1(x)
         x = self.fc2(x)
         x = self.fc3(x)
         x = self.fc4(x)
+
+        if self.last_layer:
+            x = self.fc5(x)
         # remove all dimensions with size 1, so we get a tensor of the form
         # batchSize x 1 (in particular a scalar for each input image, which
         # is, what we want)

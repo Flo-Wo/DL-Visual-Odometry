@@ -1,0 +1,45 @@
+\documentclass[handout, 10pt, aspectratio=43]{beamer}
+%\documentclass[10pt, aspectratio=43]{beamer}
+\usepackage[english]{babel}
+\usepackage[backend=biber, style=numeric]{biblatex}
+\bibliography{../report/ML-literature.bib}
+
+\input{chapters/preamble}
+
+\title{Predicting a vehicles velocity using dashcam footage} %->->->->-> Check hyperref title <-<-<-<-<-
+\subtitle{A deep learning approach}
+\author[Florian Wolf, Franz Herbst]{Florian Wolf, Department of Mathematics and Statistics\\Franz Herbst, Department of Physics}
+\institute[Universität Konstanz]{
+    Machine Learning using \sout{Matlab} Python \\
+    Universität Konstanz
+} %You can change the Institution if you are from somewhere else
+\date{\today}
+%\logo{\includegraphics[width= 0.2\textwidth]{images/a-logo.png}}
+
+\begin{document}
+    \RaggedRight
+    \frame{\titlepage}
+    
+    \begin{frame}{Table of content}
+        \tableofcontents
+    \end{frame}
+    
+    \input{chapters/Introduction.tex}
+    \input{chapters/Dataset.tex}
+    \input{chapters/Preprocessing.tex}
+    \input{chapters/MethodSelectionInitNetwork.tex}
+    \input{chapters/FineTuning.tex}
+	\input{chapters/CurrentFurtherWork.tex}
+	\input{chapters/Summary.tex}
+    \begin{frame}{References} %default [allowframebreaks]
+    	\nocite{*}
+        \printbibliography
+     \end{frame}
+    % final frame
+	\begin{frame}[plain]
+		\begin{center}
+		\textbf{\LARGE{Thank you for your attention.}}
+		\end{center}
+	\end{frame}
+\end{document}
+

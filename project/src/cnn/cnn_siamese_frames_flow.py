@@ -6,7 +6,6 @@ Created on Wed Dec 30 09:28:42 2020
 @author: florianwolf
 """
 
-import torch
 import torch.nn as nn
 import logging
 
@@ -19,7 +18,7 @@ def activation_func():
 # additional arguments default values are taken directly from pytorch
 def conv_layer(num_in_channels, num_out_channels, kernel_size, stride=1, padding=0, dilation=1):
     return nn.Sequential(nn.Conv2d(num_in_channels, num_out_channels, kernel_size=kernel_size, stride=stride,
-                  padding=padding, dilation=dilation, bias=True), activation_func())
+                                   padding=padding, dilation=dilation, bias=True), activation_func())
 
 
 def fc_layer(num_input_channels, num_output_channels):
@@ -28,7 +27,7 @@ def fc_layer(num_input_channels, num_output_channels):
 
 # same architecture as the flow only cnn, but the forward function is different
 class CnnSiamese(nn.Module):
-    def __init__(self, num_input_channels):
+    def __init__(self, num_input_channels, last_layer=False):
         # call super method to create instance of the network class
         super(CnnSiamese, self).__init__()
         self.conv1 = conv_layer(num_input_channels, 24, kernel_size=5, stride=2)
@@ -38,13 +37,21 @@ class CnnSiamese(nn.Module):
         self.drop = nn.Dropout2d(p=0.5)
         self.conv4 = conv_layer(48, 64, kernel_size=3, stride=1)
         self.conv5 = conv_layer(64, 64, kernel_size=3, stride=1)
+
+        self.weight_flow = nn.Linear(64 * 6 * 13, 64 * 6 * 13, bias=False)
+        self.weight_frame = nn.Linear(64 * 6 * 13, 64 * 6 * 13, bias=False)
+
         # now fully connected layers
         self.fc1 = fc_layer(64 * 6 * 13, 100)
-        #self.fc1 = fc_layer(319488, 100)
         self.fc2 = fc_layer(100, 50)
         self.fc3 = fc_layer(50, 10)
         # no activation function in the last layer
         self.fc4 = nn.Linear(10, 1)
+        self.last_layer = last_layer
+
+        if last_layer:
+            # linear last layer
+            self.fc5 = nn.Linear(1, 1)
         # init weights and bias' for the convolution layer
         # for the linear layers, pytorch chooses a uniform distribution for
         # w and b, which should be fine
@@ -65,7 +72,6 @@ class CnnSiamese(nn.Module):
         # we use shared weight for feature extraction and add up the extracted
         # flow and image features, before transforming them into the fully 
         # connected layers
-
         x = self.conv1(x)
         y = self.conv1(y)
 
@@ -85,27 +91,27 @@ class CnnSiamese(nn.Module):
         y = self.conv5(y)
 
         # here we need a reshape, to pass the tensor into a fc
-        logging.debug("shape = ", x.shape)
-        logging.debug("shape = ", y.shape)
+        #logging.debug("shape = ", x.shape)
+        #logging.debug("shape = ", y.shape)
         # result: shape =  torch.Size([10, 64, 53, 73]), according to
         # https://discuss.pytorch.org/t/transition-from-conv2d-to-linear-layer-equations/93850/2
         # we need to reshape the output (flatten layer in matlab)
         x = x.view(-1, 64 * 6 * 13)
         y = y.view(-1, 64 * 6 * 13)
 
-        #x = x.view(-1, 319488)
-        #y = y.view(-1, 319488)
-
         # now we add the features together as proposed in 
         # https://arxiv.org/pdf/2010.09925.pdf and in
         # https://www.mathworks.com/help/deeplearning/ug/train-a-siamese-network-to-compare-images.html,
-        z = x + 0.3 * y
+        z = 0.7 * x + 0.3 * y
 
         z = self.fc1(z)
         z = self.fc2(z)
         z = self.fc3(z)
         z = self.fc4(z)
+
+        if self.last_layer:
+            z = self.fc5(z)
         # remove all dimensions with size 1, so we get a tensor of the form
         # batchSize x 1 (in particular a scalar for each input image, which
         # is, what we want)
-        return (z.squeeze(1))
+        return z.squeeze(1)

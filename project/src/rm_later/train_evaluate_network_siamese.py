@@ -8,10 +8,9 @@ Created on Tue Dec 29 10:19:53 2020
 
 import torch
 import logging, coloredlogs
-#from cnn.cnn_flow_only import CNNFlowOnly
 from cnn.cnn_siamese_frames_flow import CnnSiamese
-from utils_save_load import Dataset_of_frames, generate_label_dict, generate_train_eval_dict, \
-    generate_train_eval_dict_new_splitting
+from data_loader import generate_block_splitting, generate_label_dict, DatasetOptFlo1Frames
+
 from tqdm import tqdm
 
 coloredlogs.install()
@@ -96,7 +95,7 @@ def train_model(train_dataset, eval_dataset, num_input_channels, num_epochs):
         scheduler.step(train_loss / len(train_dataset))
 
     # save the models weights and bias' to use it later
-    torch.save(model.state_dict(), "./cnn/savedmodels/LeakyReLU_SIAMESE.pth")
+    torch.save(model.state_dict(), "cnn/saved_models/LeakyReLU_SIAMESE.pth")
     logging.debug("Model saved!")
     return (train_loss_list, eval_loss_list, epoch_list, lr_list)
 
@@ -108,7 +107,7 @@ def evaluate_data_and_write_txt_file(eval_dataset, num_input_channels, txt_path)
     model = CnnSiamese(num_input_channels)
     # load like 
     # https://stackoverflow.com/questions/49941426/attributeerror-collections-ordereddict-object-has-no-attribute-eval
-    model.load_state_dict(torch.load("./cnn/savedmodels/LeakyReLU_SIAMESE.pth"))
+    model.load_state_dict(torch.load("./cnn/saved_models/ReLU25EpochsBatchNormNoResidual_SIAMESE.pth"))
     # set model in evaluation mode
     model.eval()
     eval_loss = 0
@@ -136,17 +135,17 @@ if __name__ == "__main__":
     # 'num_workers': 6}
     # max_epochs = 100
     data_size = 20399
-    partition = generate_train_eval_dict_new_splitting(data_size, 0.8)
+    partition = generate_block_splitting(data_size, 0.8, 100)
 
     labels = generate_label_dict("./data/raw/train_label.txt", data_size)
 
     #print(labels)
     #exit(0)
     # Generators
-    training_set = Dataset_of_frames(partition['train'], labels)
+    training_set = DatasetOptFlo1Frames(partition['train'], labels)
     train_tensor = torch.utils.data.DataLoader(training_set, **params)
 
-    validation_set = Dataset_of_frames(partition['validation'], labels)
+    validation_set = DatasetOptFlo1Frames(partition['validation'], labels)
     eval_tensor = torch.utils.data.DataLoader(validation_set, **params)
 
     train_loss_list, eval_loss_list, epoch_list, lr_list = \

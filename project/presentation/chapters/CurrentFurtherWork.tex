@@ -1,0 +1,58 @@
+\section{Current and further work}
+
+\subsection{Acquire more data}
+\begin{frame}{Acquire more data and evaluation of the test video}
+	\textbf{Method}
+	\begin{itemize}
+%		\item using simple methods it is still possible to create more data in good quality
+		\item Video producing and velocity detection with common apps
+		\setbeamertemplate{itemize items}[circle]
+		\begin{itemize}
+		\item \textit{open street maps}: GPS tracking (\texttt{.gpx}-files)
+		\item \textit{open camera}: dashcam footage
+		\end{itemize}				
+%		(\textit{open camera} and \textit{open street maps})
+%		\item using GPS tracking for velocity detection (exportable as \texttt{.gpx}-file) and extrapolation
+%		\item using the time stamps and interpolation both files can be combined to one data set
+	\end{itemize}
+	\textbf{Advantages and Issues}
+	\begin{itemize}
+		\item Easy method to create a lot of data (if a car is available)
+		\item Velocity has some uncertainties (needs to be extrapolated to cover all frames; uncertainties of GPS vs. car sensors)
+		\item Frame rate differs a little from original data (24 fps vs 20 fps)
+	\end{itemize}
+%	\textbf{Evaluation with the test video}
+%	\begin{itemize}
+%		\item rough check how model performs on unseen video with the same parameters
+%		\item no labels available so we can only compare key situations (stops, highway, ...)
+%		\item some models achieve at least a qualitative accordance with the video (hier noch ein Bild)
+%		\item best networks: altered original network and 
+%	\end{itemize}
+\end{frame}
+
+%\begin{frame}{Evaluation with the test video}
+%	\begin{itemize}
+%		\item rough check how model performs on unseen video with the same parameters
+%		\item no labels available so we can only compare key situations (stops, highway, ...)
+%		\item some models achieve at least a qualitative accordance with the video (hier noch ein Bild)
+%		\item best networks: altered original network and 
+%	\end{itemize}
+%\end{frame}
+
+\subsection{Additional noise}
+\begin{frame}{Contrast and brightness augmentation}
+\begin{itemize}
+\item Additional noise to frames \textbf{before} calculating the flow field.
+\item Change the brightness and contrast of an image via
+\begin{align*}
+\text{frame}_{\mathrm{augmented}}(i,j) = \alpha(i,j) \cdot \text{frame}(i,j) + \beta(i,j)
+\end{align*}
+with functions $\alpha$ (contrast: $>1$ increase, $<1$ decrease) and $\beta$ (brightness).\\
+To get some noise into the frames, we used
+\begin{align*}
+\alpha &\sim \mathcal{U}(0,1)+0.35\\
+\beta &\sim \mathcal{U}(-5,35),
+\end{align*}
+where $\mathcal{U}(a,b)$ is the uniform distribution in an interval $[a,b]$ for $a < b$.
+\end{itemize}
+\end{frame}

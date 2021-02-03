@@ -30,25 +30,23 @@ class CNNFlowOnly(nn.Module):
         # call super method to create instance of the network class
         super(CNNFlowOnly,self).__init__()
         self.bn1 = nn.BatchNorm2d(num_input_channels)
-        self.conv1 = conv_layer(num_input_channels, 24, kernel_size=5, stride=2)
-        
+        self.drop1 = nn.Dropout(p=0.2)
+
+        self.conv1 = conv_layer(num_input_channels, 24, kernel_size=5, stride=2)        
         self.conv2 = conv_layer(24, 36, kernel_size=5, stride=2)
-        #self.bn2 = nn.BatchNorm2d(36)
         self.conv3 = conv_layer(36, 48, kernel_size=5, stride=2)
         # randomly pick some channels/feature maps and zero them out
-        self.drop = nn.Dropout2d(p=0.5)
-        #self.bn3 = nn.BatchNorm2d(48)
+        self.drop1 = nn.Dropout2d(p=0.3)
         self.conv4 = conv_layer(48, 64, kernel_size=3, stride=1)
-        #self.bn4 = nn.BatchNorm2d(64)
         self.conv5 = conv_layer(64, 64, kernel_size=3, stride=1)
-        #self.bn5 = nn.BatchNorm1d(64*6*13)
+        self.drop2 = nn.Dropout2d(p=0.3)
         # now fully connected layers
         self.fc1 = fc_layer(64*6*13, 100)
-        #self.bn6 = nn.BatchNorm1d(100)
         self.fc2 = fc_layer(100,50)
-        #self.bn7 = nn.BatchNorm1d(50)
+        
+        self.drop3 = nn.Dropout(p=0.3)
+        
         self.fc3 = fc_layer(50,10)
-        #self.bn8 = nn.BatchNorm1d(10)
         # no activation function in the last layer
         self.fc4 = nn.Linear(10,1)
         # init weights and bias' for the convolution layer
@@ -72,27 +70,22 @@ class CNNFlowOnly(nn.Module):
         x = self.bn1(x)
         x = self.conv1(x)
         x = self.conv2(x)
-        #x = self.bn2(x)
         x = self.conv3(x)
-        x = self.drop(x)
-        #x = self.bn3(x)
+        x = self.drop1(x)
         x = self.conv4(x)
-        #x = self.bn4(x)
         
         x = self.conv5(x)
+        x = self.drop2(x)
         # here we need a reshape, to pass the tensor into a fc
         #print("shape = ",x.shape)
         # result: shape =  torch.Size([10, 64, 53, 73]), according to
         # https://discuss.pytorch.org/t/transition-from-conv2d-to-linear-layer-equations/93850/2
         # we need to reshape the output (flatten layer in matlab)
         x = x.view(-1, 64*6*13)
-        #x = self.bn5(x)
         x = self.fc1(x)
-        #x = self.bn6(x)
         x = self.fc2(x)
-        #x = self.bn7(x)
+        x = self.drop3(x)
         x = self.fc3(x)
-        #x = self.bn8(x)
         x = self.fc4(x)
         # remove all dimensions with size 1, so we get a tensor of the form
         # batchSize x 1 (in particular a scalar for each input image, which

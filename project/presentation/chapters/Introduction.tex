@@ -1,0 +1,58 @@
+\section{Motivation and initial Dataset}
+
+
+\begin{frame}{The \enquote{comma ai speed challenge}\footnote{https://github.com/commaai/speedchallenge}}
+	\textbf{Motivation}
+	\begin{itemize}
+		\item Autonomous driving is currently one of the most prominent problems in machine learning
+		\item But quite hard to set up on a desktop pc
+		\item Predicting a vehicles velocity from video footage is a related, but also a much more simplified task
+	\end{itemize}
+	\pause
+	\textbf{Initial Dataset:}
+	\begin{itemize}
+		\item Training video with 20400 frames (20 fps)
+		\item Data file with velocity of the car at each frame
+		\item Test video with 10798 frames (20 fps)
+	\end{itemize}
+	\pause
+	\textbf{Evaluation:}
+	\begin{itemize}
+		\item The mean squared error (MSE) is used to measure performance
+		\begin{align*}
+			\mathcal{L} = \sum_i (p(x_i) - y_i)^2
+		\end{align*}
+	\end{itemize}
+\end{frame}
+
+\begin{comment}
+
+\begin{frame}{The \enquote{comma ai speed challenge}\footnote{https://github.com/commaai/speedchallenge}}
+\textbf{Motivation}
+\begin{itemize}
+\item HERE ARE SOME MOTIVATIONAL WORDS NEEDED
+\end{itemize}
+\textbf{Data collection:}
+\begin{itemize}
+\item \enquote{comma ai speed challenge} provides two videos:
+\setbeamertemplate{itemize items}[circle]
+\begin{itemize}
+\item Train video: 24000 frames, shoot at 20 frames per second, including ground truths
+\item Test video: 10798 frames, shoot at 20 frames per second, no ground truths, used to applications
+\end{itemize}
+\item Split train video after 80$\%$ with hard cut off (ability the generalize), to get train and test datasets
+\end{itemize}
+\textbf{Initial assumptions}
+\begin{itemize}
+\item<+-> Use mean squared error (MSE) as a performance measure
+\item<+-> How to evaluate a prediction? Assumptions:
+\setbeamertemplate{itemize items}[circle]
+\begin{itemize}
+\item MSE $\leq 10$: good
+\item MSE $\leq 5$: better
+\item MSE $\leq 3$: correct
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\end{comment}
