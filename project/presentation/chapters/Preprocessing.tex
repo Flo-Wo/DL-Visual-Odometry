@@ -28,11 +28,11 @@
 \begin{frame}{Optical flow using \enquote{Farneback pyramid method}\cite{Farneback2003}}
 
 \begin{itemize}
-\item Global method to solve the optical flow equation
+\item Image sequence $(f_t)_t$ with $f_t : \Omega \to \R^3$, for all $t$
+\item Goal: find Global (dense) flow field $V : \Omega \to \R^2, \omega \mapsto (V_x(\omega), V_y(\omega))$, which solves the optical flow equation
 \begin{align*}
 \partial_x f \cdot V_x + \partial_y f \cdot  V_y + \partial_t f  = 0
 \end{align*}
-for an image sequence $(f_t)_t$ with $f_t : \Omega \to \R^3$, for all $t$, and the (dense) flow field $V : \Omega \to \R^2, \omega \mapsto (V_x(\omega), V_y(\omega))$.
 \item Uses a downsampling pyramid, to solve the equation for different resolutions of the image
 \item Parameters for the Farneback method
 \begin{align*}
