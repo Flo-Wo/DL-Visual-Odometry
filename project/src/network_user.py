@@ -172,14 +172,15 @@ def plot_training_process(file):
 
     plt.plot(np.linspace(1, len(train_loss), len(train_loss)), train_loss, marker=".", label="training data")
     plt.plot(np.linspace(1, len(valid_loss), len(valid_loss)), valid_loss, marker=".", label="validation data")
-    plt.plot(np.linspace(1, len(test_loss), len(test_loss)), test_loss, marker=".", label="test data")
+    #plt.plot(np.linspace(1, len(test_loss), len(test_loss)), test_loss, marker=".", label="test data")
     plt.legend()
     plt.grid()
-    plt.yscale('log')
-    plt.xscale('log')
+    #plt.yscale('log')
+    #plt.xscale('log')
     plt.xlim([1, epochs.shape[2]])
     plt.xlabel("Epoch")
     plt.ylabel("Variance")
+    plt.tight_layout()
     plt.show()
 
 
@@ -201,6 +202,7 @@ def plot_train_data(file, epoch):
     plt.xlabel("Frame")
     plt.ylabel("Velocity (m/s)")
     plt.title("Epoch {:01d}".format(epoch))
+    plt.tight_layout()
     plt.show()
 
 
@@ -225,7 +227,7 @@ def plot_train_data_error(file, epoch):
     plt.xlabel("Frame")
     plt.ylabel("Error (m/s)")
     plt.title("Epoch {:01d}".format(epoch))
-
+    plt.tight_layout()
     plt.show()
 
 
@@ -251,6 +253,7 @@ def plot_test_data(file, epoch):
     plt.xlabel("Frame")
     plt.ylabel("Velocity (m/s)")
     plt.title("Epoch {:01d}".format(epoch))
+    plt.tight_layout()
     plt.show()
 
 
@@ -272,13 +275,17 @@ def plot_test_data_error(file, epoch):
     plt.xlabel("Frame")
     plt.ylabel("Error (m/s)")
     plt.title("Epoch {:01d}".format(epoch))
+    plt.tight_layout()
     plt.show()
 
 
 if __name__ == "__main__":
     #model_file = "./cnn/saved_models/LeakyReLU_25Epochs_BatchNorm_MaxPooling_WithDropout_MultLayer_SitSplitShuffle"
-    model_file = "./cnn/saved_models/LeakyReLU_MixedSIAMESE_SitSplit_Concat"
-    #model_file = "./cnn/saved_models/LeakyReLU_FramesSIAMESE_SitSplit"
+    #model_file = "./cnn/saved_models/LeakyReLU_MixedSIAMESE_SitSplit_Concat_1"
+    #model_file = "./cnn/saved_models/LeakyReLU_MixedSIAMESE_SitSplit_Concat"
+    #model_file = "./cnn/saved_models/LeakyReLU_MixedSIAMESE_SitSplit"
+    #model_file = "./cnn/saved_models/LeakyReLU_FramesSIAMESE_SitSplit_Concat"
+    model_file = "./cnn/saved_models/LeakyReLU_25Epochs_BatchNorm_MaxPooling_WithDropout_MultLayer_SitSplit_NoShuffle"
     #model_file = "./cnn/saved_models/LeakyReLU_FramesCONV_SitSplit"
     #model_file = "./cnn/saved_models/LeakyReLU_FramesOfCONV_SitSplit"
     #model_file = "./cnn/saved_models/SuperSuperSimple_NoOffset"
@@ -286,5 +293,5 @@ if __name__ == "__main__":
     plot_training_process(model_file)
     #plot_train_data_error(model_file, -1)
     plot_train_data(model_file, -1)
-    plot_test_data(model_file, -1)
+    #plot_test_data(model_file, -1)
     #plot_test_data_error(model_file, -1)

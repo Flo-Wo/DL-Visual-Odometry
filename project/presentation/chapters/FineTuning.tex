@@ -40,6 +40,22 @@
 	\end{table}
 \end{frame}
 
+\begin{frame}{Training of the optimized model}
+	\textbf{Performance (Max Pooling):}
+	\begin{columns}[c]
+		\begin{column}{0.5\textwidth}
+			\includegraphics[width=\textwidth]{imgs/normal_training_shuffle.png}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\includegraphics[width=\textwidth]{imgs/normal_performance_shuffle.png}
+		\end{column}
+	\end{columns}
+	\begin{itemize}
+		\item model converges on training data $\sqrt{\mathcal{L}} < 1$
+		\item test data only with qualitative fitting $\sqrt{\mathcal{L}} = 6.3$
+	\end{itemize}
+\end{frame}
+
 \subsection{Siamese approach}
 
 \begin{frame}{Siamese Architecture: Setup}
@@ -61,68 +77,101 @@
 	\textbf{Performance (Siamese network frame with optical flow):}
 	\begin{columns}[c]
 		\begin{column}{0.5\textwidth}
-			\includegraphics[width=\textwidth]{imgs/siamese_fof_trainingprocess.eps}
+			\includegraphics[width=\textwidth]{imgs/siamese_offrames_training.png}
 		\end{column}
 		\begin{column}{0.5\textwidth}
-			\includegraphics[width=\textwidth]{imgs/siamese_fof_performance.eps}
+			\includegraphics[width=\textwidth]{imgs/siamese_offrames_performance.png}
 		\end{column}
 	\end{columns}
+	\begin{itemize}
+		\item model converges on training data $\sqrt{\mathcal{L}} < 1$
+		\item test data only with qualitative fitting $\sqrt{\mathcal{L}} = 6.3$
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Siamese Architecture: Performance}
 	\textbf{Performance (Siamese network with two frames):}
 	\begin{columns}[c]
 		\begin{column}{0.5\textwidth}
-			\includegraphics[width=\textwidth]{imgs/siamese_training.eps}
+			\includegraphics[width=\textwidth]{imgs/siamese_frames_training.png}
 		\end{column}
 		\begin{column}{0.5\textwidth}
-			\includegraphics[width=\textwidth]{imgs/siamese_performance.eps}
+			\includegraphics[width=\textwidth]{imgs/siamese_frames_performance2.png}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Evaluation on the test video}
+	\begin{columns}[c]
+		\begin{column}{0.5\textwidth}
+			\textbf{Siamese network:}
+			\begin{center}
+				\includegraphics[width=\textwidth]{imgs/siamese_testvideo.eps}
+			\end{center}
+			\vspace{-0.5cm}
+			\begin{itemize}
+				\item 1: longer halt at crossroads
+				\item 2: highway driving: quite stable detection
+				\item 3: city driving: velocity to high but several stops detected
+			\end{itemize}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\textbf{Original (optimized) network:}
+			\begin{center}
+				\includegraphics[width=\textwidth]{imgs/normal_testvideo.eps}
+			\end{center}
+			\vspace{-0.5cm}
+			\begin{itemize}
+				\item 1: longer halt at crossroads
+				\item 2: highway driving: quite stable detection but velocity to slow
+				\item 3: city driving: velocity good and several stops detected
+			\end{itemize}
 		\end{column}
 	\end{columns}
 \end{frame}
 
 \subsection{Problems and possible solutions}
 \begin{frame}{Problems}
-We identified two problems
-\begin{enumerate}
-	\item Overfitting, when validation data is not randomly distributed in the data but a of continuous blocks
-	\item Predictions are very susceptible for brightnesses/illumination changes in the frames, because of unstable calculations of the optical flow
-\end{enumerate}
-\begin{columns}[c]
-	\begin{column}{0.5\textwidth}
-		\begin{center}
-		\includegraphics[width=\textwidth]{imgs/siamese_performance.eps}
-		random shuffled validation data
-		\end{center}
-	\end{column}
-	\begin{column}{0.5\textwidth}
-		\begin{center}
-		\includegraphics[width=\textwidth]{imgs/siamese_performance.eps}
-		block validation data
-		\end{center}
-	\end{column}
-\end{columns}
+	We identified two problems
+	\begin{enumerate}
+		\item Overfitting, when validation data is not randomly distributed in the data but a of continuous blocks
+		\item Predictions are very susceptible for brightnesses/illumination changes in the frames, because of unstable calculations of the optical flow
+	\end{enumerate}
+	\begin{columns}[c]
+		\begin{column}{0.5\textwidth}
+			\begin{center}
+			\includegraphics[width=\textwidth]{imgs/siamese_offrames_performance_shuffle.png}
+			random shuffled validation data
+			\end{center}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\begin{center}
+			\includegraphics[width=\textwidth]{imgs/siamese_offrames_performance.png}
+			block validation data
+			\end{center}
+		\end{column}
+	\end{columns}
 \end{frame}
 
 \begin{frame}{Problems and possible solutions}
-\textbf{Problems}
-\begin{itemize}
-	\item Predictions are limited to data very similar to the training data
-	\item Predictions do not generalize well
-\end{itemize}
-\textbf{Most likely explanations:}
-\begin{itemize}
-	\item Very limited dataset for a complex model
-	\item Network is not prepared for unseen situations
-	\item Changes in brightness and illumination
-\end{itemize}
-\textbf{Solution:}
-\begin{itemize}
-	\item Acquire more data for various driving situations and/or use a less complex model
-%	\item use a technique to normalize different brightnesses
-	\item Add noise to the data, more robustness in the optical flow calculation
-%	\item Use a less complex model
-\end{itemize}
+	\textbf{Problems}
+	\begin{itemize}
+		\item Predictions are limited to data very similar to the training data
+		\item Predictions do not generalize well
+	\end{itemize}
+	\textbf{Most likely explanations:}
+	\begin{itemize}
+		\item Very limited dataset for a complex model
+		\item Network is not prepared for unseen situations
+		\item Changes in brightness and illumination
+	\end{itemize}
+	\textbf{Solution:}
+	\begin{itemize}
+		\item Acquire more data for various driving situations and/or use a less complex model
+	%	\item use a technique to normalize different brightnesses
+		\item Add noise to the data, more robustness in the optical flow calculation
+	%	\item Use a less complex model
+	\end{itemize}
 \end{frame}
 
 %\begin{frame}{Possible solutions}
