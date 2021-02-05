@@ -44,15 +44,15 @@
 	\textbf{Performance (Max Pooling):}
 	\begin{columns}[c]
 		\begin{column}{0.5\textwidth}
-			\includegraphics[width=\textwidth]{imgs/normal_training_shuffle.png}
+			\includegraphics[width=\textwidth]{imgs/normal_performance.png}
 		\end{column}
 		\begin{column}{0.5\textwidth}
-			\includegraphics[width=\textwidth]{imgs/normal_performance_shuffle.png}
+			\includegraphics[width=\textwidth]{imgs/normal_training.png}
 		\end{column}
 	\end{columns}
 	\begin{itemize}
 		\item model converges on training data $\sqrt{\mathcal{L}} < 1$
-		\item test data only with qualitative fitting $\sqrt{\mathcal{L}} = 6.3$
+		\item test data only with qualitative fitting $\sqrt{\mathcal{L}} = 7.4$
 	\end{itemize}
 \end{frame}
 
@@ -99,6 +99,10 @@
 			\includegraphics[width=\textwidth]{imgs/siamese_frames_performance2.png}
 		\end{column}
 	\end{columns}
+	\begin{itemize}
+		\item model converges on training data $\sqrt{\mathcal{L}} < 1$
+		\item test data only with qualitative fitting $\sqrt{\mathcal{L}} = 8.9$
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{Evaluation on the test video}
@@ -108,26 +112,19 @@
 			\begin{center}
 				\includegraphics[width=\textwidth]{imgs/siamese_testvideo.eps}
 			\end{center}
-			\vspace{-0.5cm}
-			\begin{itemize}
-				\item 1: longer halt at crossroads
-				\item 2: highway driving: quite stable detection
-				\item 3: city driving: velocity to high but several stops detected
-			\end{itemize}
 		\end{column}
 		\begin{column}{0.5\textwidth}
 			\textbf{Original (optimized) network:}
 			\begin{center}
 				\includegraphics[width=\textwidth]{imgs/normal_testvideo.eps}
 			\end{center}
-			\vspace{-0.5cm}
-			\begin{itemize}
-				\item 1: longer halt at crossroads
-				\item 2: highway driving: quite stable detection but velocity to slow
-				\item 3: city driving: velocity good and several stops detected
-			\end{itemize}
 		\end{column}
 	\end{columns}
+	\begin{itemize}
+		\item 1: longer halt at crossroads
+		\item 2: highway driving
+		\item 3: city driving with several stops
+	\end{itemize}
 \end{frame}
 
 \subsection{Problems and possible solutions}
