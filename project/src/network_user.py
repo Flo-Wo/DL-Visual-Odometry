@@ -293,5 +293,5 @@ if __name__ == "__main__":
     plot_training_process(model_file)
     #plot_train_data_error(model_file, -1)
     plot_train_data(model_file, -1)
-    #plot_test_data(model_file, -1)
+    plot_test_data(model_file, -1)
     #plot_test_data_error(model_file, -1)
