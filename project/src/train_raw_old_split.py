@@ -50,8 +50,8 @@ if __name__ == "__main__":
     train_tensor, validation_tensor, test_tensor = setup_data_loader(DatasetOptFlo, splitting, labels)#,
                                                                      #test_ids=test_ids, test_labels=test_labels)
 
-    n, log = train_network(train_tensor, validation_tensor, 30, net_name, model=MODEL_Conv,
+    n, log = train_network(train_tensor, validation_tensor, 50, net_name, model=MODEL_Conv,
                            criterion=CRITERION_MSELoss, optimizer=OPTIMIZER_Adam_Conv,
-                           scheduler=SCHEDULER_RedLROnPlateau_Conv, test_tensor=test_tensor)
+                           scheduler=SCHEDULER_RedLROnPlateau_Conv, test_tensor=test_tensor, overwrite=True)
 
     plot_training_process(n)
