@@ -11,14 +11,14 @@
 	\begin{columns}[t]
 		\begin{column}{.45\textwidth}
 			\begin{center}
-				\only<1->{\includegraphics[width=\linewidth]{./imgs/frame2_evaluated.png}}
-				\small{Original frame}
+				\only<1->{\includegraphics[width=\linewidth]{./imgs/frame2_evaluated.png}
+				\small{Original frame}}
 			\end{center}
 		\end{column}
 		\begin{column}{.45\textwidth}
 			\begin{center}
-				\only<3->{\includegraphics[width=\linewidth]{./imgs/frame2_cut_sampled.png}}
-				\small{Cut off the last 60 pixels, downsampled}
+				\only<3->{\includegraphics[width=\linewidth]{./imgs/frame2_cut_sampled.png}
+				\small{Cut off the last 60 pixels, downsampled}}
 			\end{center}
 		\end{column}
 	\end{columns}
@@ -38,8 +38,7 @@
 %					\item splitting with $80\%$ test and $20\%$ validation data on each
 %				\end{itemize}
 			\end{itemize}
-			\pause
-			\textbf{Evaluation:}
+			\only<3->{\textbf{Evaluation:}}
 			\begin{itemize}
 				\item<+-> variance $\sqrt{\mathcal{L}} \gtrsim 16$: no fitting
 				\item<+-> $10 \lesssim \sqrt{\mathcal{L}} \lesssim 16$: average velocity fitted
@@ -52,7 +51,7 @@
 			\begin{center}
 				\only<1->{\includegraphics[width=0.85\textwidth, height=0.34\textheight]{./imgs/plot_speed_time_new_splitting.eps}
 				{\footnotesize driving situations in v-t-plot}}
-				\only<4->{\includegraphics[width=0.85\textwidth]{./imgs/example_performance.png}
+				\only<2->{\includegraphics[width=0.85\textwidth]{./imgs/example_performance.png}
 				{\footnotesize example performance on training set \\ training: $\sqrt{\mathcal{L}}=0.4$, test: $\sqrt{\mathcal{L}}=6.3$}}
 			\end{center}
 		\end{column}
