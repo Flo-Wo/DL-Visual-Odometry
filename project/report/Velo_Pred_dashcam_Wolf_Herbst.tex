@@ -16,14 +16,17 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage[capitalise]{cleveref}
 \usepackage{csquotes}
+\usepackage{blindtext}
 
-\usepackage[backend=biber, style=numeric]{biblatex} %Zitate mit BibTeX  %, sorting=none "richtige" Reihenfolge der Nummern
+\usepackage[backend=biber, style=numeric, sorting=none]{biblatex} %Zitate mit BibTeX  %, sorting=none "richtige"
+\addbibresource{ML-literature.bib}
+
+% Reihenfolge der Nummern
 %, citestyle=alphabetic-verb
-\bibliography{ML-literature}
 
 \begin{document}
 
-\title{Predicting a vehicles velocity using dashcam footage}
+\title{A machine learning approach to predict a vehicles velocity using dashcam video}
 
 \author{\IEEEauthorblockN{Florian Wolf}
 \IEEEauthorblockA{\textit{Department of Mathematics and Statistics, University Konstanz}\\
@@ -39,7 +42,7 @@ franz.herbst@uni-konstanz.de}
 \maketitle
 
 \begin{abstract}
-In this report bla bla bla
+
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -47,17 +50,41 @@ deep learning, computer vision, visual odometry, dense optical flow, siamese net
 \end{IEEEkeywords}
 
 \section{Introduction}
-Here are some motivational words needed
+
+Autonomous driving is considered to have a key role in the future of human mobility. Recently the topic has therefore gained great attention in research, economy and politics \cite{Maurer2016}. In this project we approached this topic in a related but more simplified setup and tried out several machine learning techniques and network architectures.
+
 \subsection{Aim of the project}
 \label{subsec:AimAndMeasure}
-The goal of the project is to predict the speed (in $m/s$) of a velocity in each frame, using machine learning 
-techniques, as well as computer vision tools like optical flow. As a measure of success we use mean squared errors (MSE).
-Before we start to gather data, we have to make some assumptions. Our first and foremost question is how to evaluate a
-prediction. Therefore we assume, that a MSE less or equal to 10 is good, less or equal to 5 is better and a MSE of less
-or equal to 3 will be considered as correct\footnote{We got these benchmarks also from \url{https://github.com/commaai/speedchallenge}.}.
+
+In this project we tried to predict the velocity of a car based on a dashcam video. This was inspired by  the \textit{coma\_ai} speed challenge\footnote{\url{https://github.com/commaai/speedchallenge}} published in 2018. To achieve this goal we used optical flow analysis to preprocess the data and neuronal networks with different structures (classical and siamese) to predict the velocity. In order to measure the quality of the predictions we used their mean squared errors of the measured velocity.
 
 \section{Data collection, analysis and preprocessing}
-For our data set, we used the \enquote{comma ai speedchallenge}\footnote{https://github.com/commaai/speedchallenge} data base. This data
+
+To start the project we used the database given in the \textit{coma\_ai} speed challenge project, which consists of a 17 minute training video (20400 frames) and the corresponding car velocity, as well as a 9 minute test video without labels to validate the model on an unknown dataset.
+
+\subsection{Data collection}
+
+Due to our limited computational power we mainly used this dataset to study different training techniques and model architectures. Still we could not expect good generalisation for this rather small pool of training data. We therefore developed a technique to acquire more data that needed minimal resources. We used the open source smartphone apps \textit{open camera} and \textit{open street maps} to cast a video while driving and map the velocity using GPS at the same time. So we were able to train our final model with 1 h 40 min of video data.
+
+\subsection{Data analysis}
+
+In order to evaluate our raw data with the model we analysed our dataset concerning the recorded images and driving scenarios. The original frames had a size of $640\times380\times3$ pixels (RGB). To reduce the computation time, we cut the borders of the frames to exclude parts not needed for detection and sampled them down to half of their pixel size.
+
+
+
+To analyse the velocity distribution in the two subsets, we plotted the velocity per frame curve in 
+\cref{fig:SpeedPerFrameDistributionNewSplitting}. The first 80$\%$ of the video mostly represent highway scenarios 
+and the last 20$\%$ only consists of city driving scenes. 
+Therefore we did not expect our models to perform really well using the initial splitting, as the they are trained and tested with totally different road traffic scenarios.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.6]{./imgs/plot_speed_time_new_splitting.eps}
+	\caption{Distribution of the velocities of all frames in the training video, including the three categories.}
+	\label{fig:SpeedPerFrameDistributionNewSplitting}
+\end{figure}
+
+For our data set, we used the \enquote{comma ai speedchallenge} data base. This data
 set provides two dashcam videos: a training video, (20400 frames, shoot at 20 frames per second) including 
 ground truths and a testing video (10798 frames, shoot at 20 frames per second) without labels, which they use for applications 
 to check how well a submitted model is able to generalize.
