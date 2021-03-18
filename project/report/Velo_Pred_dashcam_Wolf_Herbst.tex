@@ -72,7 +72,7 @@ In order to evaluate our raw data with the model we analysed our dataset concern
 
 To visualize the training process in different driving scenarios, we plotted the velocity in dependence of the frame number (\cref{fig:SpeedPerFrameDistributionNewSplitting}). After additional evaluation of the video we were able to classify three different driving scenarios: \textit{highway driving} with high and relatively steady velocities, \textit{stop and go} with low and fluctuating velocities as well as \textit{city driving} with very abrupt speed changes between medium and very low velocities. Every driving scenario is represented with about one third of the training data.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[scale=0.55]{./imgs/plot_speed_time_new_splitting.eps}
 	\caption{Distribution of the velocities of all frames in the training video, including the three categories.}
@@ -81,7 +81,7 @@ To visualize the training process in different driving scenarios, we plotted the
 
 We would then evaluate the predictions of each model $p(x_i)$ to the input data $x_i$ using the mean squared error \begin{align}
 	\mathcal{L} = \frac{1}{N} \sum\limits_{i=1}^{N} (p(x_i) - y_i)^2
-\end{align} to real value of the velocity $y_i$. To classify the resulting value we on one hand used the velocity plot and the following rough classifications\footnote{These rules do only apply on datasets with an equal distribution of all driving scenarios}: $\sqrt{\mathcal{L}} \gtrsim 16$ \textit{no fitting}, $16 \gtrsim \sqrt{\mathcal{L}} \gtrsim 10$ \textit{average velocity fitted}, $10 \gtrsim \sqrt{\mathcal{L}} \gtrsim 5$ \textit{scenarios detected}, $5 \gtrsim \sqrt{\mathcal{L}} \gtrsim 1$ \textit{variances within scenarios detected}, $1 \gtrsim \sqrt{\mathcal{L}}$ \textit{perfect fitting}.
+\end{align} to real value of the velocity $y_i$. To classify the resulting value we on one hand used the velocity plot and the following rough classification\footnote{These rules do only apply on datasets with an equal distribution of all driving scenarios}: $\sqrt{\mathcal{L}} \gtrsim 16$ \textit{no fitting}, $16 \gtrsim \sqrt{\mathcal{L}} \gtrsim 10$ \textit{average velocity fitted}, $10 \gtrsim \sqrt{\mathcal{L}} \gtrsim 5$ \textit{scenarios detected}, $5 \gtrsim \sqrt{\mathcal{L}} \gtrsim 1$ \textit{variances within scenarios detected}, $1 \gtrsim \sqrt{\mathcal{L}}$ \textit{perfect fitting}.
 
 For the training process we used a splitting of 80\% training data and 20\% validation data. Initially we did a hard splitting of the entire data, but this neglects the distribution of different driving scenarios in the video. Therefore we went on first splitting the data into driving scenarios with then assigning training data and validation data on each.
 
@@ -109,28 +109,32 @@ We wanted to see, if the model performs better using the dashcam frames as addit
 sampling with the frames.
 
 \section{Method selection and architecture}
-The prediction of the vehicles speed is a non-linear regression task , so the choice of a neural network is reasonable. 
-Recent architectures we discussed in the lecture (ResNet, GoogLeNet, etc.) have shown that using multiple stacked convolution layers
-combined with stacked dense layers, perform well on image classification tasks. Therefore the choice of a convolutional neural 
+The prediction of the vehicles speed is a non-linear regression task , so the choice of a neural network is reasonable. Recent architectures (ResNet, GoogLeNet, etc.) have shown that using multiple stacked convolution layers combined with stacked dense layers, perform well on image classification tasks. Therefore the choice of a convolutional neural 
 network is justified.
 
 \subsection{Initial Network}
 
-As an initial architecture we decided to give the model of \cite{NVIDIA2016} a try. As the group used it
-for self-driving cars, the model has enough complexity to handle a task like ours and with the amount of layers, we had a lot of
-possibilities to fine-tune and improve the model.\\
-\\HERE SHOULD BE AN IMAGE OF THE NETWORKS ARCHITECTURE\\
-\\In a first approach we tried the raw model, gaining a MSE of around 18-20 on testing and under 3 on training. One can clearly 
-see, that the model really overfits the train dataset.
+As an initial architecture we used the model presented by the NVIDIA work group \cite{NVIDIA2016}. As it was designed for self-driving cars, the model has enough complexity to handle a task like ours and allowed various possibilities to fine-tune and improve the model. The raw structure is shown in \cref{fig:initialNetwork}.
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.9\columnwidth]{imgs/InitialNetwork.png}
+	\caption{Initial Network}
+	\label{fig:initialNetwork}
+\end{figure}
+
+Using the initial model on the training data with a hard splitting we achieved a MSE of 18-20 in the validation set while having a MSE of less than 3 on the training set. The initial network therefore has some clear overfitting problems, which we tried to address with our fine tuning.
 
 \subsection{Siamese approach}
 
-In order to improve our results we expanded our model to also use the original image: Siamese approach
+In order to improve our results we also tried to expanded our model and use the original image as well. The corresponding model is shown in \cref{fig:siameseNetwork}.
 
-Initial splitting blocks of 100 frames size with 80\% training data, 20\% test data; 20 epochs (train error: 0.411, test error: 2.70)
-
-New splitting: each driving scenario 80\% training data, 20\% test data: (train error: 0.23, test error: 29.7)
-
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.9\columnwidth]{imgs/siamese_model.png}
+	\caption{Siamese Network}
+	\label{fig:siameseNetwork}
+\end{figure}
 
 \section{Tuning of the model}
 To speed up the training we used batch normalization layers \cite{BatchNorm2015} 
@@ -229,12 +233,6 @@ categories in
 \cref{fig:SpeedPerFrameDistributionNewSplitting}. 
 We shuffled the frames of each block randomly and used again the 80/20 rule to split each of the 
 category blocks into train and test data.
-\begin{figure}[h]
-\centering
-\includegraphics[scale=0.6]{./imgs/plot_speed_time_new_splitting.eps}
-\caption{Distribution of the velocities of all frames in the training video, including the three categories.}
-\label{fig:SpeedPerFrameDistributionNewSplitting}
-\end{figure}
 \subsection{Augmented brightness}
 STILL UNDER CONSTRUCTION
 \section{Training of the models}
