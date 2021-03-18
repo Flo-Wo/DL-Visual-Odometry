@@ -42,7 +42,7 @@ franz.herbst@uni-konstanz.de}
 \maketitle
 
 \begin{abstract}
-
+\blindtext[2]
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -60,45 +60,30 @@ In this project we tried to predict the velocity of a car based on a dashcam vid
 
 \section{Data collection, analysis and preprocessing}
 
-To start the project we used the database given in the \textit{coma\_ai} speed challenge project, which consists of a 17 minute training video (20400 frames) and the corresponding car velocity, as well as a 9 minute test video without labels to validate the model on an unknown dataset.
+To start the project we used the database given in the \textit{coma\_ai} speed challenge project, which consists of a 17 minute training video (20400 frames) and the corresponding car velocity, as well as a 9 minute test video without labels to validate the model on an unknown data set.
 
 \subsection{Data collection}
 
-Due to our limited computational power we mainly used this dataset to study different training techniques and model architectures. Still we could not expect good generalisation for this rather small pool of training data. We therefore developed a technique to acquire more data that needed minimal resources. We used the open source smartphone apps \textit{open camera} and \textit{open street maps} to cast a video while driving and map the velocity using GPS at the same time. So we were able to train our final model with 1 h 40 min of video data.
+Due to our limited computational power we mainly used this data set to study different training techniques and model architectures. Still we could not expect good generalization for this rather small pool of training data. We therefore developed a technique to acquire more data that needed minimal resources. We used the open source smartphone apps \textit{open camera} and \textit{open street maps} to cast a video while driving and map the velocity using GPS at the same time. So we were able to train our final model with 1 h 40 min of video data.
 
 \subsection{Data analysis}
 
-In order to evaluate our raw data with the model we analysed our dataset concerning the recorded images and driving scenarios. The original frames had a size of $640\times380\times3$ pixels (RGB). To reduce the computation time, we cut the borders of the frames to exclude parts not needed for detection and sampled them down to half of their pixel size.
+In order to evaluate our raw data with the model we analysed our dataset concerning the recorded images and driving scenarios. The original frames have a size of $640\times380\times3$ pixels (RGB). To reduce the computation time, we cut the borders of the frames to exclude parts not needed for detection and sampled them down to half of their pixel size.
 
-
-
-To analyse the velocity distribution in the two subsets, we plotted the velocity per frame curve in 
-\cref{fig:SpeedPerFrameDistributionNewSplitting}. The first 80$\%$ of the video mostly represent highway scenarios 
-and the last 20$\%$ only consists of city driving scenes. 
-Therefore we did not expect our models to perform really well using the initial splitting, as the they are trained and tested with totally different road traffic scenarios.
+To visualize the training process in different driving scenarios, we plotted the velocity in dependence of the frame number (\cref{fig:SpeedPerFrameDistributionNewSplitting}). After additional evaluation of the video we were able to classify three different driving scenarios: \textit{highway driving} with high and relatively steady velocities, \textit{stop and go} with low and fluctuating velocities as well as \textit{city driving} with very abrupt speed changes between medium and very low velocities. Every driving scenario is represented with about one third of the training data.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.6]{./imgs/plot_speed_time_new_splitting.eps}
+	\includegraphics[scale=0.55]{./imgs/plot_speed_time_new_splitting.eps}
 	\caption{Distribution of the velocities of all frames in the training video, including the three categories.}
 	\label{fig:SpeedPerFrameDistributionNewSplitting}
 \end{figure}
 
-For our data set, we used the \enquote{comma ai speedchallenge} data base. This data
-set provides two dashcam videos: a training video, (20400 frames, shoot at 20 frames per second) including 
-ground truths and a testing video (10798 frames, shoot at 20 frames per second) without labels, which they use for applications 
-to check how well a submitted model is able to generalize.
-As we only have access to the labels of the test video frames, we decided to split the provided train data by the 80/20 principle into 
-training and testing subsets. Here we did not shuffle the data randomly, as we needed to always have two consecutive frames to 
-calculate the optical flow. We initially used a hard cut off after 80$\%$ of the frames, as we wanted to test our model on unseen data, 
-to measure how good our model is able to generalize. We will analyse this initial approach later, when we take a closer look
-at the results.
-\subsection{Data analysis}
-To analyse the velocity distribution in the two subsets, we plotted the velocity per frame curve in 
-\cref{fig:SpeedPerFrameDistributionNewSplitting}. The first 80$\%$ of the video mostly represent highway scenarios 
-and the last 20$\%$ only consists of city driving scenes. 
-Therefore we did not expect our models to perform really well using the initial splitting, as the they are trained and 
-tested with totally different road traffic scenarios.
+We would then evaluate the predictions of each model $p(x_i)$ to the input data $x_i$ using the mean squared error \begin{align}
+	\mathcal{L} = \frac{1}{N} \sum\limits_{i=1}^{N} (p(x_i) - y_i)^2
+\end{align} to real value of the velocity $y_i$. To classify the resulting value we on one hand used the velocity plot and the following rough classifications\footnote{These rules do only apply on datasets with an equal distribution of all driving scenarios}: $\sqrt{\mathcal{L}} \gtrsim 16$ \textit{no fitting}, $16 \gtrsim \sqrt{\mathcal{L}} \gtrsim 10$ \textit{average velocity fitted}, $10 \gtrsim \sqrt{\mathcal{L}} \gtrsim 5$ \textit{scenarios detected}, $5 \gtrsim \sqrt{\mathcal{L}} \gtrsim 1$ \textit{variances within scenarios detected}, $1 \gtrsim \sqrt{\mathcal{L}}$ \textit{perfect fitting}.
+
+For the training process we used a splitting of 80\% training data and 20\% validation data. Initially we did a hard splitting of the entire data, but this neglects the distribution of different driving scenarios in the video. Therefore we went on first splitting the data into driving scenarios with then assigning training data and validation data on each.
 
 \subsection{Preprocessing}
 Each of the provided frames has a size of $(640,480,3)$ pixels. Due to computational limitations, we decided to cut off the last 60 pixels from the lower border, to remove a black frame inside the car, which did not have any effect on the optical flow. Furthermore, we cut the frame size in half and calculated the optical flow using the \enquote{Farneback pyramid method} \cite{Farneback2003} with the following parameters
