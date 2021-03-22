@@ -57,21 +57,21 @@ Autonomous driving is considered to have a key role in the future of human mobil
 \subsection{Aim of the project}
 \label{subsec:AimAndMeasure}
 
-In this project we tried to predict the velocity of a car based on a dashcam video. This was inspired by  the \textit{coma\_ai} speed challenge\footnote{\url{https://github.com/commaai/speedchallenge}} published in 2018. To achieve this goal we used optical flow analysis to preprocess the data and neuronal networks with different structures (classical and siamese) to predict the velocity. In order to measure the quality of the predictions we used their mean squared errors of the measured velocity.
+In this project we tried to predict the velocity of a car based on a dashcam video. This was inspired by  the \emph{comma}\footnote{\url{https://comma.ai/}} speed challenge\footnote{\url{https://github.com/commaai/speedchallenge}} published in 2018. To achieve this goal we used optical flow analysis to preprocess the data and neuronal networks with different structures (classical and siamese) to predict the velocity. In order to measure the quality of the predictions we used their mean squared errors of the measured velocity.
 
 \section{Data collection, analysis and preprocessing}
 
-To start the project we used the database given in the \textit{coma\_ai} speed challenge project, which consists of a 17 minute training video (20400 frames) and the corresponding car velocity, as well as a 9 minute test video without labels to validate the model on an unknown data set.
+To start the project we used the database given in the \emph{comma} speed challenge project, which consists of a 17 minute training video (20400 frames) and the corresponding car velocity, as well as a 9 minute test video without labels to validate the model on an unknown data set.
 
 \subsection{Data collection}
 
-Due to our limited computational power we mainly used this data set to study different training techniques and model architectures. Still we could not expect good generalization for this rather small pool of training data. We therefore developed a technique to acquire more data that needed minimal resources. We used the open source smartphone apps \textit{open camera} and \textit{open street maps} to cast a video while driving and map the velocity using GPS at the same time. So we were able to train our final model with 1 h 40 min of video data.
+Due to our limited computational power we mainly used this data set to study different training techniques and model architectures. Still we could not expect good generalization for this rather small pool of training data. We therefore developed a technique to acquire more data that needed minimal resources. We used the open source smartphone apps \emph{open camera} and \emph{open street maps} to cast a video while driving and map the velocity using GPS at the same time. So we were able to train our final model with 1 hour 40 minutes of video data.
 
 \subsection{Data analysis}
 
 In order to evaluate our raw data with the model we analysed our dataset concerning the recorded images and driving scenarios. The original frames have a size of $640\times380\times3$ pixels (RGB). To reduce the computation time, we cut the borders of the frames to exclude parts not needed for detection and sampled them down to half of their pixel size.
 
-To visualize the training process in different driving scenarios, we plotted the velocity in dependence of the frame number (\cref{fig:SpeedPerFrameDistributionNewSplitting}). After additional evaluation of the video we were able to classify three different driving scenarios: \textit{highway driving} with high and relatively steady velocities, \textit{stop and go} with low and fluctuating velocities as well as \textit{city driving} with very abrupt speed changes between medium and very low velocities. Every driving scenario is represented with about one third of the training data.
+To visualize the training process in different driving scenarios, we plotted the velocity in dependence of the frame number (\cref{fig:SpeedPerFrameDistributionNewSplitting}). After additional evaluation of the video we were able to classify three different driving scenarios: \emph{highway driving} with high and relatively steady velocities, \emph{stop and go} with low and fluctuating velocities as well as \emph{city driving} with very abrupt speed changes between medium and very low velocities. Every driving scenario is represented with about one third of the training data.
 
 \begin{figure}[ht]
 	\centering
@@ -80,11 +80,21 @@ To visualize the training process in different driving scenarios, we plotted the
 	\label{fig:SpeedPerFrameDistributionNewSplitting}
 \end{figure}
 
-We would then evaluate the predictions of each model $p(x_i)$ to the input data $x_i$ using the mean squared error \begin{align}
+We would then evaluate the predictions of each model $p(x_i)$ to the input data $x_i$ using the mean squared error
+\begin{align}
 	\mathcal{L} = \frac{1}{N} \sum\limits_{i=1}^{N} (p(x_i) - y_i)^2
-\end{align} to real value of the velocity $y_i$. To classify the resulting value we on one hand used the velocity plot and the following rough classification\footnote{These rules do only apply on datasets with an equal distribution of all driving scenarios}: $\sqrt{\mathcal{L}} \gtrsim 16$ \textit{no fitting}, $16 \gtrsim \sqrt{\mathcal{L}} \gtrsim 10$ \textit{average velocity fitted}, $10 \gtrsim \sqrt{\mathcal{L}} \gtrsim 5$ \textit{scenarios detected}, $5 \gtrsim \sqrt{\mathcal{L}} \gtrsim 1$ \textit{variances within scenarios detected}, $1 \gtrsim \sqrt{\mathcal{L}}$ \textit{perfect fitting}.
+\end{align}
+to real value of the velocity $y_i$. To classify the resulting value, we used the velocity plot and the 
+following rough classification\footnote{These rules do only apply on datasets with an equal distribution 
+of all driving scenarios}: $\sqrt{\mathcal{L}} \gtrsim 16$ \textit{no fitting}, $16 \gtrsim 
+\sqrt{\mathcal{L}} \gtrsim 10$ \emph{average velocity fitted}, $10 \gtrsim \sqrt{\mathcal{L}} \gtrsim 5$
+\emph{scenarios detected}, $5 \gtrsim \sqrt{\mathcal{L}} \gtrsim 1$ \emph{variances within scenarios 
+detected}, $1 \gtrsim \sqrt{\mathcal{L}}$ \emph{perfect fitting}.
 
-For the training process we used a splitting of 80\% training data and 20\% validation data. Initially we did a hard splitting of the entire data, but this neglects the distribution of different driving scenarios in the video. Therefore we went on first splitting the data into driving scenarios with then assigning training data and validation data on each.
+For the training process we used a splitting of 80\% training data and 20\% validation data. Initially 
+we did a hard splitting of the entire data, but this neglects the distribution of different driving 
+scenarios in the video. Therefore we went on first splitting the data into the driving scenarios with 
+then assigning training data and validation data on each.
 
 \subsection{Preprocessing}
 
