@@ -168,7 +168,6 @@ As an initial architecture we used the model presented by the \emph{NVIDIA} work
 \cite{NVIDIA2016}.This network was designed for self-driving cars, so the model has enough complexity to 
 handle a task like ours and allowed various possibilities to fine-tune and improve the architecture. The 
 raw structure is shown in \cref{fig:initialNetwork}.
-
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.9\columnwidth]{imgs/InitialNetwork.png}
@@ -176,7 +175,6 @@ raw structure is shown in \cref{fig:initialNetwork}.
 	then flattened and mapped into several fully connected layers.}
 	\label{fig:initialNetwork}
 \end{figure}
-
 Using the initial model on the training data with a hard splitting, we achieved a MSE of 18-20 in the validation set, while having a MSE of less than 3 on the training set. The initial network therefore has some clear overfitting problems, which we tried to address with our fine tuning.
 
 \subsection{Siamese Network}
@@ -192,16 +190,15 @@ In order to improve our results we also tried to expanded our model and use the 
 	feature vectors are concatenated and then mapped into several fully connected layers.}
 	\label{fig:siameseNetwork}
 \end{figure}
-
-We could use this architecture in two different ways: feeding two consecutive frames into the model or one image and one optical flow field. In order to keep the structure correspondent we sampled down the regarding images to the size of the optical flow field.
+We could use this architecture in two different ways: feeding two consecutive frames into the model or one image and one optical flow field. In order to keep the structure correspondent, we sampled down the regarding images to the size of the optical flow field.
 
 \section{Fine tuning}
 
 \subsection{Batch normalisation and activation functions}
-As we did in the lecture, we included batch normalization layers \cite{BatchNorm2015}, to speed up
+Similar to the lecture, we included batch normalization layers \cite{BatchNorm2015}, to speed up
 the training and improve the networks performance.
 
-We also tested different activation functions. Like proposed in the lecture, we initially used the ReLu
+We also tested different activation functions. As proposed in the lecture, we initially used the ReLu
 function
 \begin{align*}
 \mathrm{ReLu}: \mathbb{R} \to \mathbb{R}_0^+, x \mapsto \max\{0,x\}.
