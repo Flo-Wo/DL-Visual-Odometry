@@ -172,7 +172,8 @@ raw structure is shown in \cref{fig:initialNetwork}.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.9\columnwidth]{imgs/InitialNetwork.png}
-	\caption{Initial Network using a series of convolutional layers which are then flattened and }
+	\caption{Initial Network using a series of convolutional layers. The resulting feature vector is 
+	then flattened and mapped into several fully connected layers.}
 	\label{fig:initialNetwork}
 \end{figure}
 
@@ -186,7 +187,9 @@ In order to improve our results we also tried to expanded our model and use the 
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.9\columnwidth]{imgs/siamese_model.png}
-	\caption{Siamese Network}
+	\caption{Siamese architecture based on the fined tuned original network. The two inputs pass 
+	several convolutional layers with shared weights and a drop out layer. The resulting
+	feature vectors are concatenated and then mapped into several fully connected layers.}
 	\label{fig:siameseNetwork}
 \end{figure}
 
@@ -229,7 +232,7 @@ layer with a probability of $p=0.5$ after the third convolutional layer seemed t
 We added two generic pooling layers to the network to reduce the number of parameters of the model. One after the second 
 convolutional layer and the second one right before the fully connected layers start\footnote{Indeed, the number of 
 parameters decreased from a total of 636.225 trainable parameters to 156.225. Therefore the number of parameters decreased by a 
-factor of 4. We calculated these numbers using the tool \enquote{PyTorch summary} (\url{https://github.com/sksq96/pytorch-summary}).}.We tested maximum and average pooling with the following 
+factor of 4. We calculated these numbers using the tool \emph{PyTorch summary} (\url{https://github.com/sksq96/pytorch-summary}).}.We tested maximum and average pooling with the following 
 parameters
 \begin{align*}
 \text{kernel size} &:= 2\times 2\\
