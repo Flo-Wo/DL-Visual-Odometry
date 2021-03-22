@@ -238,12 +238,21 @@ we used bla bla as optimizers and bla bla as schedulers, for each model we tried
 
 \section{Error analysis and results}
 
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.99\columnwidth]{imgs/TrainingProcess.eps}
+	\caption{Comparison of the results using the models: tuned original network and siamese model with frames and optical flow; \textit{top}: training and validation error per epoch; \textit{bottom}: predictions after the last epoch with correct values in red}
+	\label{fig:resultsSummary}
+\end{figure}
+
 We identified three possible reasons for our poor results:
 \begin{enumerate}[label=(\roman*)]
 	\item predictions are limited to specific video parameters: predictions are bound to camera perspective, changes in brightness
 	\item lack of generalization: perfect fitting on randomly shuffled validation data, qualitative fitting for block splitting and rough fitting for different videos
 	\item very complex model trained with very little data
 \end{enumerate}
+
+
 
 %\begin{enumerate}
 %	\item[(i)] Too complex model, as the paper used it for autonomous driving or we put too little information into the model.
