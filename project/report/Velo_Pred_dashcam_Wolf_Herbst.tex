@@ -86,14 +86,27 @@ We would then evaluate the predictions of each model $p(x_i)$ to the input data 
 \end{align}
 to real value of the velocity $y_i$. To classify the resulting value, we used the velocity plot and the 
 following rough classification\footnote{These rules do only apply on datasets with an equal distribution 
-of all driving scenarios}: 
-\begin{itemize}
-\item $\sqrt{\mathcal{L}} \gtrsim 16$: \textit{no fitting}
-\item $16 \gtrsim \sqrt{\mathcal{L}} \gtrsim 10$: \emph{average velocity fitted}
-\item $10 \gtrsim \sqrt{\mathcal{L}} \gtrsim 5$: \emph{scenarios detected}
-\item $5 \gtrsim \sqrt{\mathcal{L}} \gtrsim 1$: \emph{variances within scenarios detected}
-\item $1 \gtrsim \sqrt{\mathcal{L}}$: \emph{perfect fitting}
-\end{itemize}
+of all driving scenarios}:
+\begin{table}[h!]
+\normalsize
+\centering
+\begin{tabular}{r l}
+$\sqrt{\mathcal{L}} \gtrsim 16$: & no fitting\\
+$16 \gtrsim \sqrt{\mathcal{L}} \gtrsim 10$: & average velocity fitted\\
+$10 \gtrsim \sqrt{\mathcal{L}} \gtrsim 5$: & scenarios detected\\
+$5 \gtrsim \sqrt{\mathcal{L}} \gtrsim 1$: & variances within scenarios detected\\
+$1 \gtrsim \sqrt{\mathcal{L}}$: & perfect fitting
+\end{tabular}
+\caption{Classification of the result based on the square root of the MSE.}
+\end{table}
+
+%\begin{itemize}
+%\item $\sqrt{\mathcal{L}} \gtrsim 16$: \textit{no fitting}
+%\item $16 \gtrsim \sqrt{\mathcal{L}} \gtrsim 10$: \emph{average velocity fitted}
+%\item $10 \gtrsim \sqrt{\mathcal{L}} \gtrsim 5$: \emph{scenarios detected}
+%\item $5 \gtrsim \sqrt{\mathcal{L}} \gtrsim 1$: \emph{variances within scenarios detected}
+%\item $1 \gtrsim \sqrt{\mathcal{L}}$: \emph{perfect fitting}
+%\end{itemize}
 For the training process we used a splitting of 80\% training data and 20\% validation data. Initially 
 we did a hard splitting of the entire data, but this neglects the distribution of different driving 
 scenarios in the video. Therefore we went on first splitting the data into the driving scenarios with 
