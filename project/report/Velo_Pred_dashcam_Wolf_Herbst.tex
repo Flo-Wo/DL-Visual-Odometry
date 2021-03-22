@@ -98,39 +98,52 @@ then assigning training data and validation data on each.
 
 \subsection{Preprocessing}
 
-After the previously explained preparation steps we needed to find a method to extract information about the motion of the vehicle to be able to predict its velocity. There are two ways of doing this: either fit two following frames into a network, which will be discussed later, or calculate what has changed between two frames and fit the results into a model.
+After the previously explained preparation steps, we needed to find a method to extract information 
+about the motion of the vehicle to be able to predict its velocity. There are two ways of doing this: 
+either fit two following frames into a network, which will be discussed later, or calculate the relative 
+motion, the so-called \emph{optical flow}, between two frames and fit the results into a model.
 
-To do this we used the \enquote{Farneback pyramid method} \cite{Farneback2003} to calculate the optical flow.
-
-
-with  the following parameters
+We used the \enquote{Farneback pyramid method} \cite{Farneback2003} with  the following parameters to 
+calculate the optical flow
 \begin{align*}
 \text{pyramid levels} &:= 3\\
 \text{pyramid scaling} &:= 0.5\\
 \text{window size} &:= 6\\
 \text{pixel neighborhood size} &:= 5\\
-\text{SD of the gaussian filter} &:= 1.1
+\text{SD of the gaussian filter} &:= 1.1.
 \end{align*}
-We choose three pyramid levels, because we wanted the calculations to be more accurate. To decrease the training duration, we halved the size of the optical flow frames again, resulting in a resolution of
-$(160,105,3)$ pixels per frame. As we used a window size of six pixels, a comparison between the original optical flow and the down 
-sampled one lead to the result, that we do not loose a lot of information.
+We choose three pyramid levels, because we wanted the calculations to be more accurate. To decrease the 
+training duration, we halved the size of the optical flow frames again, resulting in a resolution of
+$(160,105,3)$ pixels per frame. As we used a window size of six pixels, a comparison between the 
+original optical flow and the down sampled one lead to the result, that we do not loose a lot of 
+information.
 
 The optical flow calculation returns the magnitude and
-the angle of the flow vectors, which we transformed into polar coordinates. To get an RGB image representing the
-optical flow of two consecutive frames, we normalized the magnitudes and put them into the third channel of the frame. The values
-of the second channel were all set to the value $255$. We then multiplied the angle with the factor $180/(2\pi)$ and set this value 
+the angle of the flow vectors (overall a two-dimensional vector field), which we transformed into polar 
+coordinates.
+
+To get an RGB image representing the
+optical flow of two consecutive frames, we normalized the magnitudes and put them into the third channel 
+of the frame. The values
+of the second channel were all set to the value $255$. We then multiplied the angle with the factor 
+$180/(2\pi)$ and set this value 
 for the first channel.
 
-We wanted to see, if the model performs better using the dashcam frames as additional material. Therefore, we did the same down 
-sampling with the frames.
+We wanted to see, if the model performs better using the dashcam frames as additional material. 
+Therefore, we did the same down sampling with the raw frames.
 
 \section{Method selection and architecture}
-The prediction of the vehicles speed is a non-linear regression task , so the choice of a neural network is reasonable. Recent architectures (ResNet, GoogLeNet, etc.) have shown that using multiple stacked convolution layers combined with stacked dense layers, perform well on image classification tasks. Therefore the choice of a convolutional neural 
-network is justified.
+The prediction of the vehicles speed is a non-linear regression task, so the choice of a neural network 
+is reasonable. Recent architectures (ResNet, GoogLeNet, etc.) have shown that using multiple stacked 
+convolution layers combined with stacked dense layers, perform well on image classification tasks. 
+Therefore the choice of a convolutional neural network is justified.
 
 \subsection{Initial Network}
 
-As an initial architecture we used the model presented by the NVIDIA work group \cite{NVIDIA2016}. As it was designed for self-driving cars, the model has enough complexity to handle a task like ours and allowed various possibilities to fine-tune and improve the model. The raw structure is shown in \cref{fig:initialNetwork}.
+As an initial architecture we used the model presented by the \emph{NVIDIA} work group in 
+\cite{NVIDIA2016}.This network was designed for self-driving cars, so the model has enough complexity to 
+handle a task like ours and allowed various possibilities to fine-tune and improve the architecture. The 
+raw structure is shown in \cref{fig:initialNetwork}.
 
 \begin{figure}[ht]
 	\centering
@@ -139,7 +152,7 @@ As an initial architecture we used the model presented by the NVIDIA work group 
 	\label{fig:initialNetwork}
 \end{figure}
 
-Using the initial model on the training data with a hard splitting we achieved a MSE of 18-20 in the validation set while having a MSE of less than 3 on the training set. The initial network therefore has some clear overfitting problems, which we tried to address with our fine tuning.
+Using the initial model on the training data with a hard splitting, we achieved a MSE of 18-20 in the validation set, while having a MSE of less than 3 on the training set. The initial network therefore has some clear overfitting problems, which we tried to address with our fine tuning.
 
 \subsection{Siamese Network}
 
