@@ -43,11 +43,18 @@ franz.herbst@uni-konstanz.de}
 \maketitle
 
 \begin{abstract}
-\blindtext[2]
+Calculating the velocity of a moving camera relative to its surrounding, the so-called visual odometry 
+problem, is a very challenging task and heavily studied in the area of computer vision. Especially
+in the area of self-driving cars a fast and dependable velocity calculation is a high priority.
+In this report we will give a deep learning approach to solve the visual odometry problem, using 
+optical flow fields combined with convolutional neuronal networks, as well as siamese neuronal networks.
+We use a data set with real world dashcam footage and even extend the data by gathering our own
+driving videos.
 \end{abstract}
 
 \begin{IEEEkeywords}
-deep learning, computer vision, visual odometry, dense optical flow, siamese network
+deep learning, computer vision, visual odometry, convolutional neuronal network, siamese network,
+optical flow
 \end{IEEEkeywords}
 
 \section{Introduction}
@@ -175,9 +182,9 @@ The raw structure is shown in \cref{fig:initialNetwork}.
 	\label{fig:initialNetwork}
 \end{figure}
 
-Using the initial model on the training data with a hard splitting, we achieved a MSE of 18-20 in the 
-validation set, while having a MSE of less than 3 on the training set. The initial network therefore has 
-some clear overfitting problems, which we tried to address with our fine tuning.
+Using the initial model on the training data with a hard splitting, we achieved a MSE between 18 and 20 
+in the validation set, while having a MSE of less than 3 on the training set. The initial network 
+therefore has some clear overfitting problems, which we tried to address with our fine tuning.
 
 \subsection{Siamese Network}
 
