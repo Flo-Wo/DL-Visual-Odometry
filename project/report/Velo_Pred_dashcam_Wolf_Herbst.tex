@@ -126,7 +126,7 @@ image $f$ and second, solve the optical flow equation
 \partial_x f \cdot V_x + \partial_y \cdot V_y + \partial_t f = 0
 \end{align*}
 for different resolutions of the image (pyramid structure). This methods yields a dense optical flow 
-field.
+field $V$ with $\mathrm{im}(V) \subset \mathbb{R}^2$.
 
 We used the following parameters for our calculations:
 \begin{align*}
@@ -163,11 +163,10 @@ convolution layers combined with stacked dense layers, perform well on image cla
 Therefore the choice of a convolutional neural network is justified.
 
 \subsection{Initial Network}
-
 As an initial architecture we used the model presented by the \emph{NVIDIA} work group in 
-\cite{NVIDIA2016}.This network was designed for self-driving cars, so the model has enough complexity to 
-handle a task like ours and allowed various possibilities to fine-tune and improve the architecture. The 
-raw structure is shown in \cref{fig:initialNetwork}.
+\cite{NVIDIA2016}. This network was designed for self-driving cars, so the model has enough complexity 
+to handle a task like ours and allowed various possibilities to fine-tune and improve the architecture. 
+The raw structure is shown in \cref{fig:initialNetwork}.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.9\columnwidth]{imgs/InitialNetwork.png}
@@ -175,7 +174,10 @@ raw structure is shown in \cref{fig:initialNetwork}.
 	then flattened and mapped into several fully connected layers.}
 	\label{fig:initialNetwork}
 \end{figure}
-Using the initial model on the training data with a hard splitting, we achieved a MSE of 18-20 in the validation set, while having a MSE of less than 3 on the training set. The initial network therefore has some clear overfitting problems, which we tried to address with our fine tuning.
+
+Using the initial model on the training data with a hard splitting, we achieved a MSE of 18-20 in the 
+validation set, while having a MSE of less than 3 on the training set. The initial network therefore has 
+some clear overfitting problems, which we tried to address with our fine tuning.
 
 \subsection{Siamese Network}
 
@@ -330,7 +332,7 @@ We came up with the following approaches to solve these problems
 
 
 
-\section{Further ideas for improvements}
+\section{Further ideas}
 
 \subsection{Augmented brightness}
 STILL UNDER CONSTRUCTION
