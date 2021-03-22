@@ -159,7 +159,8 @@ Using the initial model on the training data with a hard splitting, we achieved 
 
 \subsection{Siamese Network}
 
-In order to improve our results we also tried to expanded our model and use the original image as well. The corresponding model is shown in \cref{fig:siameseNetwork}.
+In order to improve our results we also tried to expanded our model and use the original image as well. The corresponding model is shown in \cref{fig:siameseNetwork} and inspired by the architecture used in
+\cite{Wang2017}.
 
 \begin{figure}[ht]
 	\centering
@@ -168,9 +169,7 @@ In order to improve our results we also tried to expanded our model and use the 
 	\label{fig:siameseNetwork}
 \end{figure}
 
-We could use this architecture in two different ways: feeding two consecutive frames into the model or one image and one optical flow field. In order to keep the structure correspondent we sampled down the regarding images to the size of the optical flow field. 
-
-REFERENCE MISSING: inspired by https://arxiv.org/pdf/1709.08429.pdf
+We could use this architecture in two different ways: feeding two consecutive frames into the model or one image and one optical flow field. In order to keep the structure correspondent we sampled down the regarding images to the size of the optical flow field.
 
 \section{Fine tuning}
 
@@ -249,7 +248,7 @@ the initial splitting. We trained each of the models for eight epochs.}
 \section{Training process}
 
 \subsection{Optimizer and scheduler}
-For all of our networks we used \emph{ADAM} REFERENCE MISSING as an optimizer. SCHEDULER
+For all of our networks we used \emph{ADAM} \cite{Adam2014} as an optimizer. SCHEDULER
 
 %\begin{comment}
 %\subsection{New splitting and siamese network}
@@ -310,7 +309,7 @@ We came up with the following approaches to solve these problems
 
 
 
-\section{Further work}
+\section{Further ideas for improvements}
 
 \subsection{Augmented brightness}
 STILL UNDER CONSTRUCTION
