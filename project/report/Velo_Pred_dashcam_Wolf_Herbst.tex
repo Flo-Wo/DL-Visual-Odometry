@@ -86,11 +86,14 @@ We would then evaluate the predictions of each model $p(x_i)$ to the input data 
 \end{align}
 to real value of the velocity $y_i$. To classify the resulting value, we used the velocity plot and the 
 following rough classification\footnote{These rules do only apply on datasets with an equal distribution 
-of all driving scenarios}: $\sqrt{\mathcal{L}} \gtrsim 16$ \textit{no fitting}, $16 \gtrsim 
-\sqrt{\mathcal{L}} \gtrsim 10$ \emph{average velocity fitted}, $10 \gtrsim \sqrt{\mathcal{L}} \gtrsim 5$
-\emph{scenarios detected}, $5 \gtrsim \sqrt{\mathcal{L}} \gtrsim 1$ \emph{variances within scenarios 
-detected}, $1 \gtrsim \sqrt{\mathcal{L}}$ \emph{perfect fitting}.
-
+of all driving scenarios}: 
+\begin{itemize}
+\item $\sqrt{\mathcal{L}} \gtrsim 16$: \textit{no fitting}
+\item $16 \gtrsim \sqrt{\mathcal{L}} \gtrsim 10$: \emph{average velocity fitted}
+\item $10 \gtrsim \sqrt{\mathcal{L}} \gtrsim 5$: \emph{scenarios detected}
+\item $5 \gtrsim \sqrt{\mathcal{L}} \gtrsim 1$: \emph{variances within scenarios detected}
+\item $1 \gtrsim \sqrt{\mathcal{L}}$: \emph{perfect fitting}
+\end{itemize}
 For the training process we used a splitting of 80\% training data and 20\% validation data. Initially 
 we did a hard splitting of the entire data, but this neglects the distribution of different driving 
 scenarios in the video. Therefore we went on first splitting the data into the driving scenarios with 
@@ -165,25 +168,24 @@ In order to improve our results we also tried to expanded our model and use the 
 	\label{fig:siameseNetwork}
 \end{figure}
 
-We could use this architecture in two different ways: feeding two consecutive frames into the model or one image and one optical flow field. In order to keep the structure correspondent we sampled down the regarding images to the size of the optical flow field. inspired by https://arxiv.org/pdf/1709.08429.pdf
+We could use this architecture in two different ways: feeding two consecutive frames into the model or one image and one optical flow field. In order to keep the structure correspondent we sampled down the regarding images to the size of the optical flow field. 
+
+REFERENCE MISSING: inspired by https://arxiv.org/pdf/1709.08429.pdf
 
 \section{Fine tuning}
 
-\subsection{Batch Normalisation}
+\subsection{Batch normalisation and activation functions}
+As we did in the lecture, we included batch normalization layers \cite{BatchNorm2015}, to speed up
+the training and improve the networks performance.
 
-To speed up the training we used batch normalization layers \cite{BatchNorm2015} 
-
-\subsection{Activation Function}
-and we tested different activation functions, to improve the performance of the model. 
-
-We used ReLu
+We also tested different activation functions. Like proposed in the lecture, we initially used the ReLu
+function
 \begin{align*}
-\mathrm{ReLu}: \mathbb{R} \to \mathbb{R}_0^+, x \mapsto \max\{0,x\}
+\mathrm{ReLu}: \mathbb{R} \to \mathbb{R}_0^+, x \mapsto \max\{0,x\}.
 \end{align*}
-as the initial activation function. Using the ReLU function and 15 epochs for training, we achieved a MSE of around 15 on the 
-testing set. We ran the 
-code multiple times, to ensure this result holds. This result was not really promising, so we wanted to decrease the error by 
-modifying the model even more.
+Using the ReLU function and 15 epochs for training, we achieved a MSE of around 15 on the 
+testing set. We ran the code multiple times, to ensure this result holds. This result was not really 
+promising, so we wanted to decrease the error by modifying the model even more.
 
 To solve the problem of dead neurons\footnote{One can clearly see in the definition of the ReLU 
 function, that neurons with a value below zero cannot participate in the learning process.} of the ReLU function, we 
