@@ -17,6 +17,7 @@
 \usepackage[capitalise]{cleveref}
 \usepackage{csquotes}
 \usepackage{blindtext}
+\usepackage{enumitem}
 
 \usepackage[backend=biber, style=numeric, sorting=none]{biblatex} %Zitate mit BibTeX  %, sorting=none "richtige"
 \addbibresource{ML-literature.bib}
@@ -86,7 +87,13 @@ We would then evaluate the predictions of each model $p(x_i)$ to the input data 
 For the training process we used a splitting of 80\% training data and 20\% validation data. Initially we did a hard splitting of the entire data, but this neglects the distribution of different driving scenarios in the video. Therefore we went on first splitting the data into driving scenarios with then assigning training data and validation data on each.
 
 \subsection{Preprocessing}
-Each of the provided frames has a size of $(640,480,3)$ pixels. Due to computational limitations, we decided to cut off the last 60 pixels from the lower border, to remove a black frame inside the car, which did not have any effect on the optical flow. Furthermore, we cut the frame size in half and calculated the optical flow using the \enquote{Farneback pyramid method} \cite{Farneback2003} with the following parameters
+
+After the previously explained preparation steps we needed to find a method to extract information about the motion of the vehicle to be able to predict its velocity. There are two ways of doing this: either fit two following frames into a network, which will be discussed later, or calculate what has changed between two frames and fit the results into a model.
+
+To do this we used the \enquote{Farneback pyramid method} \cite{Farneback2003} to calculate the optical flow.
+
+
+with  the following parameters
 \begin{align*}
 \text{pyramid levels} &:= 3\\
 \text{pyramid scaling} &:= 0.5\\
@@ -94,8 +101,7 @@ Each of the provided frames has a size of $(640,480,3)$ pixels. Due to computati
 \text{pixel neighborhood size} &:= 5\\
 \text{SD of the gaussian filter} &:= 1.1
 \end{align*}
-We choose three pyramid levels, because we wanted the calculations to be more accurate. To decrease the training duration, we halved 
-the size of the optical flow frames again, resulting in a resolution of
+We choose three pyramid levels, because we wanted the calculations to be more accurate. To decrease the training duration, we halved the size of the optical flow frames again, resulting in a resolution of
 $(160,105,3)$ pixels per frame. As we used a window size of six pixels, a comparison between the original optical flow and the down 
 sampled one lead to the result, that we do not loose a lot of information.
 
@@ -119,13 +125,13 @@ As an initial architecture we used the model presented by the NVIDIA work group 
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.9\columnwidth]{imgs/InitialNetwork.png}
-	\caption{Initial Network}
+	\caption{Initial Network using a series of convolutional layers which are then flattened and }
 	\label{fig:initialNetwork}
 \end{figure}
 
 Using the initial model on the training data with a hard splitting we achieved a MSE of 18-20 in the validation set while having a MSE of less than 3 on the training set. The initial network therefore has some clear overfitting problems, which we tried to address with our fine tuning.
 
-\subsection{Siamese approach}
+\subsection{Siamese Network}
 
 In order to improve our results we also tried to expanded our model and use the original image as well. The corresponding model is shown in \cref{fig:siameseNetwork}.
 
@@ -136,11 +142,18 @@ In order to improve our results we also tried to expanded our model and use the 
 	\label{fig:siameseNetwork}
 \end{figure}
 
-\section{Tuning of the model}
+We could use this architecture in two different ways: feeding two consecutive frames into the model or one image and one optical flow field. In order to keep the structure correspondent we sampled down the regarding images to the size of the optical flow field. inspired by https://arxiv.org/pdf/1709.08429.pdf
+
+\section{Fine tuning}
+
+\subsection{Batch Normalisation}
+
 To speed up the training we used batch normalization layers \cite{BatchNorm2015} 
+
+\subsection{Activation Function}
 and we tested different activation functions, to improve the performance of the model. 
 
-As proposed in the lecture, we used
+We used ReLu
 \begin{align*}
 \mathrm{ReLu}: \mathbb{R} \to \mathbb{R}_0^+, x \mapsto \max\{0,x\}
 \end{align*}
@@ -148,9 +161,6 @@ as the initial activation function. Using the ReLU function and 15 epochs for tr
 testing set. We ran the 
 code multiple times, to ensure this result holds. This result was not really promising, so we wanted to decrease the error by 
 modifying the model even more.
-
-As we still had a lot of issues with overfits, we decided to include a dropout layer, according to \cite{Dropout2014}. We tried different numbers and positions for dropout layers, but using one layer with a dropout 
-probability of $p=0.5$ after the third convolutional layer seemed to work best.
 
 To solve the problem of dead neurons\footnote{One can clearly see in the definition of the ReLU 
 function, that neurons with a value below zero cannot participate in the learning process.} of the ReLU function, we 
@@ -164,27 +174,11 @@ c \cdot x, x <0
 with a hyperparameter $c = 0.01$. Using the leakyReLU function, we achieved a MSE of around 12 on the testing set and under 3 on the 
 training set. All of the models were trained with only eight epochs, as we still had problems with overfits.
 
-We identified three possible reasons for our poor results:
-\begin{enumerate}
-\item[(i)] Too complex model, as the paper used it for autonomous driving or we put too little information into the model.
-\item[(ii)] Problems with different brightnesses in the frames (lack of generality), which leads to unstable calculations in the 
-optical flow, as the optical flow is quite sensitive to brightness. (Explain how in the train part the sky is quite dark and in the 
-city (end) the sky is bright)
-\item[(iii)] Too naive/ambiguous splitting of the data into train and testing set, as both datasets seem to represent totally different
-scenarios in the road traffic.
-\end{enumerate}
-We came up with the following approaches to solve these problems
-\begin{enumerate}
-\item[(i)] Simplify the model by using Pooling (we will try average and max pooling), to get more compression and we tried on the
-other hand to feed in more information into the model, by using a linear combination of the optical flow and the raw frames itself, and
-we tried using a siamese network, to put simultaneously the of and raw frames into the convolutional layers.
-\item[(ii)] We wanted to try adding some additional noise into the frames before calculating the optical flow, to make the calculation
-more robust against brightness changes. As intentionally adding 
-noise to a frame is quite atypical in computer vision, this idea looked quite interesting.
-\item[(iii)] Use another splitting. To get a better ratio between highway and city driving scenarios, we decided to split the data into
-blocks of 100 frames and take the first 80 for training and the last 20 for testing. Therefore our model should have seen some city
-driving.
-\end{enumerate}
+\subsection{Dropout Layer}
+As we still had a lot of issues with overfits, we decided to include a dropout layer, according to \cite{Dropout2014}. We tried different numbers and positions for dropout layers, but using one layer with a dropout 
+probability of $p=0.5$ after the third convolutional layer seemed to work best.
+
+
 
 \subsection{Pooling layers with initial splitting}
 We added two generic pooling layers to the network to reduce the number of parameters of the model. One after the second 
@@ -221,30 +215,66 @@ Average pooling & 7.70 & 11.40 & 6.08 & 13.09\\
 the initial splitting. We trained each of the models for eight epochs.}
 \label{tab:ResultsInitialSplitting}
 \end{table}
-\subsection{New splitting and siamese network}
-We decided to take a closer look at the different road traffic scenarios in the video and segmented the 
-frames into three category. The first category
-consists of highway driving scenes (from minute 0:00 to minute 7:30), the second one contains frames of 
-the car being
-in a stop and go scenario on the highway (from minute 7:31 to minute 15:00) and the third category 
-consists of
-city driving scenes (from minute 15:01 to the end). We visualized the velocity distribution and the 
-categories in 
-\cref{fig:SpeedPerFrameDistributionNewSplitting}. 
-We shuffled the frames of each block randomly and used again the 80/20 rule to split each of the 
-category blocks into train and test data.
-\subsection{Augmented brightness}
-STILL UNDER CONSTRUCTION
-\section{Training of the models}
+
+\section{Trainingprocess}
 we used bla bla as optimizers and bla bla as schedulers, for each model we tried different combinations and bla bla
 
+%\begin{comment}
+%\subsection{New splitting and siamese network}
+%We decided to take a closer look at the different road traffic scenarios in the video and segmented the 
+%frames into three category. The first category
+%consists of highway driving scenes (from minute 0:00 to minute 7:30), the second one contains frames of 
+%the car being
+%in a stop and go scenario on the highway (from minute 7:31 to minute 15:00) and the third category 
+%consists of
+%city driving scenes (from minute 15:01 to the end). We visualized the velocity distribution and the 
+%categories in 
+%\cref{fig:SpeedPerFrameDistributionNewSplitting}. 
+%We shuffled the frames of each block randomly and used again the 80/20 rule to split each of the 
+%category blocks into train and test data.
+%\end{comment}
 
-\section{New Approach using siamese network for two consecutive frames without optical flow}
-inspired by https://arxiv.org/pdf/1709.08429.pdf
+
 
 \section{Error analysis and results}
 
+We identified three possible reasons for our poor results:
+\begin{enumerate}[label=(\roman*)]
+	\item predictions are limited to specific video parameters: predictions are bound to camera perspective, changes in brightness
+	\item lack of generalization: perfect fitting on randomly shuffled validation data, qualitative fitting for block splitting and rough fitting for different videos
+	\item very complex model trained with very little data
+\end{enumerate}
+
+%\begin{enumerate}
+%	\item[(i)] Too complex model, as the paper used it for autonomous driving or we put too little information into the model.
+%	\item[(ii)] Problems with different brightnesses in the frames (lack of generality), which leads to unstable calculations in the 
+%	optical flow, as the optical flow is quite sensitive to brightness. (Explain how in the train part the sky is quite dark and in the 
+%	city (end) the sky is bright)
+%	\item[(iii)] Too naive/ambiguous splitting of the data into train and testing set, as both datasets seem to represent totally different
+%	scenarios in the road traffic.
+%\end{enumerate}
+We came up with the following approaches to solve these problems
+\begin{enumerate}[label=(\roman*)]
+%	\item Simplify the model by using Pooling (we will try average and max pooling), to get more compression and we tried on the
+%	other hand to feed in more information into the model, by using a linear combination of the optical flow and the raw frames itself, and
+%	we tried using a siamese network, to put simultaneously the of and raw frames into the convolutional layers.
+	\item We wanted to try adding some additional noise into the frames before calculating the optical flow, to make the calculation
+	more robust against brightness changes. As intentionally adding 
+	noise to a frame is quite atypical in computer vision, this idea looked quite interesting.
+	\item Use another splitting. To get a better ratio between highway and city driving scenarios, we decided to split the data into
+	blocks of 100 frames and take the first 80 for training and the last 20 for testing. Therefore our model should have seen some city
+	driving.
+\end{enumerate}
+
+
+
+
 \section{Further work}
+
+\subsection{Augmented brightness}
+STILL UNDER CONSTRUCTION
+
+\subsection{Increase data}
 
 Use MUCH MUCH MUCH MUCH MUCH more data!
 
