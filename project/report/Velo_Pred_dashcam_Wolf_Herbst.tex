@@ -119,8 +119,16 @@ about the motion of the vehicle to be able to predict its velocity. There are tw
 either fit two following frames into a network, which will be discussed later, or calculate the relative 
 motion, the so-called \emph{optical flow}, between two frames and fit the results into a model.
 
-We used the \enquote{Farneback pyramid method} \cite{Farneback2003} with  the following parameters to 
-calculate the optical flow
+We used the \enquote{Farneback pyramid method} \cite{Farneback2003} to calculate the optical flow.
+The idea of this method can be split up into two main steps: First, use a polynomial expansion of the 
+image $f$ and second, solve the optical flow equation
+\begin{align*}
+\partial_x f \cdot V_x + \partial_y \cdot V_y + \partial_t f = 0
+\end{align*}
+for different resolutions of the image (pyramid structure). This methods yields a dense optical flow 
+field.
+
+We used the following parameters for our calculations:
 \begin{align*}
 \text{pyramid levels} &:= 3\\
 \text{pyramid scaling} &:= 0.5\\
