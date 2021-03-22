@@ -196,20 +196,20 @@ x, x \geq 0\\
 c \cdot x, x <0
 \end{cases}
 \end{align*}
-with a hyperparameter $c = 0.01$. Using the leakyReLU function, we achieved a MSE of around 12 on the testing set and under 3 on the 
-training set. All of the models were trained with only eight epochs, as we still had problems with overfits.
+with a hyperparameter $c = 0.01$. Using the leakyReLU function, we achieved a MSE of around 12 on the 
+testing set and under 3 on the training set. All of the models were trained with only eight epochs, as 
+we still had problems with overfitting the data.
 
 \subsection{Dropout Layer}
-As we still had a lot of issues with overfits, we decided to include a dropout layer, according to \cite{Dropout2014}. We tried different numbers and positions for dropout layers, but using one layer with a dropout 
-probability of $p=0.5$ after the third convolutional layer seemed to work best.
-
-
+As we still had a lot of overfitting issues, we decided to include a dropout layer, according to 
+\cite{Dropout2014}. We tried different positions and different amounts of dropout layers, but using one 
+layer with a probability of $p=0.5$ after the third convolutional layer seemed to work best.
 
 \subsection{Pooling layers with initial splitting}
 We added two generic pooling layers to the network to reduce the number of parameters of the model. One after the second 
 convolutional layer and the second one right before the fully connected layers start\footnote{Indeed, the number of 
 parameters decreased from a total of 636.225 trainable parameters to 156.225. Therefore the number of parameters decreased by a 
-factor of 4. We calculated these numbers using the tool \enquote{PyTorch summary}(\url{https://github.com/sksq96/pytorch-summary}).}.We tested maximum and average pooling with the following 
+factor of 4. We calculated these numbers using the tool \enquote{PyTorch summary} (\url{https://github.com/sksq96/pytorch-summary}).}.We tested maximum and average pooling with the following 
 parameters
 \begin{align*}
 \text{kernel size} &:= 2\times 2\\
@@ -217,11 +217,14 @@ parameters
 \text{padding} &:= 1\\
 \text{dilatation} &:= \text{None}
 \end{align*}
-The implementation of pooling layers helped a lot, as now the loss on the train and test data seemed to decrease 
-nearly equally. Our results with the initial splitting are shown in \cref{tab:ResultsInitialSplitting}. We gave the network
-with max pooling a try with 15 epochs, as the loss on the train and test set was decreasing in a pretty stable manner. Using this
-network, we achieved for the first time a MSE of under 10 on the test set, which is according to our assumptions in \cref{subsec:AimAndMeasure} a 
-pretty good result --- especially, as we trained the model mostly on highway scenes and tested it only in city driving scenarios.
+The implementation of pooling layers helped a lot, as now the loss on the train and test data seemed to 
+decrease nearly equally. Our results with the initial splitting are shown 
+\cref{tab:ResultsInitialSplitting}. We gave the network
+with max pooling a try with 15 epochs, as the loss on the train and test set was decreasing in a pretty 
+stable manner. Using this network, we achieved for the first time a MSE of under 10 on the test set,
+which is, according to our assumptions in \cref{subsec:AimAndMeasure}, a 
+pretty good result --- especially, as we trained the model mostly on highway scenes and tested it only 
+in city driving scenarios.
 \begin{table}[!t]
 \normalsize
 \centering
@@ -240,6 +243,8 @@ Average pooling & 7.70 & 11.40 & 6.08 & 13.09\\
 the initial splitting. We trained each of the models for eight epochs.}
 \label{tab:ResultsInitialSplitting}
 \end{table}
+
+\subsection*{Siamese approach}
 
 \section{Trainingprocess}
 we used bla bla as optimizers and bla bla as schedulers, for each model we tried different combinations and bla bla
