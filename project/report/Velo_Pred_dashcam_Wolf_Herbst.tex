@@ -27,7 +27,7 @@
 
 \begin{document}
 
-\title{A machine learning approach to predict a vehicles velocity using dashcam video}
+\title{A machine learning approach to predict a vehicles velocity using dashcam video footage}
 
 \author{\IEEEauthorblockN{Florian Wolf}
 \IEEEauthorblockA{\textit{Department of Mathematics and Statistics, University Konstanz}\\
@@ -72,11 +72,11 @@ To start the project we used the database given in the \emph{comma} speed challe
 
 \subsection{Data collection}
 
-Due to our limited computational power we mainly used this data set to study different training techniques and model architectures. Still we could not expect good generalization for this rather small pool of training data. We therefore developed a technique to acquire more data that needed minimal resources. We used the open source smartphone apps \emph{open camera} and \emph{open street maps} to cast a video while driving and map the velocity using GPS at the same time. So we were able to train our final model with 1 hour 40 minutes of video data.
+Due to our limited computational power, we mainly used this data set to study different training techniques and model architectures. Still we could not expect good generalization for this rather small pool of training data. We therefore developed a technique to acquire more data that needed minimal resources. We used the open source smartphone apps \emph{open camera} and \emph{open street maps} to cast a video while driving and map the velocity using GPS at the same time. So we were able to train our final model with 1 hour 40 minutes of video data.
 
 \subsection{Data analysis}
 
-In order to evaluate our raw data with the model we analysed our dataset concerning the recorded images and driving scenarios. The original frames have a size of $640\times380\times3$ pixels (RGB). To reduce the computation time, we cut the borders of the frames to exclude parts not needed for detection and sampled them down to half of their pixel size.
+In order to evaluate our raw data with the model, we analysed our dataset concerning the recorded images and driving scenarios. The original frames have a size of $640\times380\times3$ pixels (RGB). To reduce the computation time, we cut the borders of the frames to exclude parts not needed for detection and sampled them down to half of their pixel size.
 
 To visualize the training process in different driving scenarios, we plotted the velocity in dependence of the frame number (\cref{fig:SpeedPerFrameDistributionNewSplitting}). After additional evaluation of the video we were able to classify three different driving scenarios: \emph{highway driving} with high and relatively steady velocities, \emph{stop and go} with low and fluctuating velocities as well as \emph{city driving} with very abrupt speed changes between medium and very low velocities. Every driving scenario is represented with about one third of the training data.
 
@@ -235,11 +235,13 @@ As we still had a lot of overfitting issues, we decided to include a dropout lay
 layer with a probability of $p=0.5$ after the third convolutional layer seemed to work best.
 
 \subsection{Pooling layers with initial splitting}
-We added two generic pooling layers to the network to reduce the number of parameters of the model. One after the second 
-convolutional layer and the second one right before the fully connected layers start\footnote{Indeed, the number of 
-parameters decreased from a total of 636.225 trainable parameters to 156.225. Therefore the number of parameters decreased by a 
-factor of 4. We calculated these numbers using the tool \emph{PyTorch summary} (\url{https://github.com/sksq96/pytorch-summary}).}.We tested maximum and average pooling with the following 
-parameters
+We added two generic pooling layers to the network, to reduce the number of parameters\footnote{Indeed, 
+the number of parameters decreased from a total of 636.225 trainable parameters to 156.225 --- a 
+decrease by a factor of 4. We calculated these numbers using the tool \emph{PyTorch summary} 
+(\url{https://github.com/sksq96/pytorch-summary}).} of the model and 
+therefore force the network to compress the data even further. One after the second 
+convolutional layer and the second one right before the fully connected layers start.
+We tested maximum and average pooling with the following parameters
 \begin{align*}
 \text{kernel size} &:= 2\times 2\\
 \text{stride} &:= 2\\
