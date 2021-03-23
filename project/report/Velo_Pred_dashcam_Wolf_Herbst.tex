@@ -46,7 +46,7 @@ franz.herbst@uni-konstanz.de}
 Calculating the velocity of a moving camera relative to its surrounding, the so-called visual odometry 
 problem, is a very challenging task and heavily studied in the area of computer vision. Especially
 in the field of self-driving cars, a fast and dependable velocity calculation is a high priority.
-In this report we will give a deep learning approach to solve the visual odometry problem, using 
+In this report we will give a machine learning approach to solve the visual odometry problem, using 
 optical flow fields combined with convolutional neuronal networks, as well as siamese neuronal networks.
 We use a data set with real world dashcam footage and even extend the data by gathering our own
 driving videos.
@@ -187,7 +187,7 @@ in the validation set, while having a MSE of less than 3 on the training set. Th
 therefore has some clear overfitting problems, which we tried to address with our fine tuning.
 
 \subsection{Siamese Network}
-
+\label{subsec:SiameseNetork}
 In order to improve our results we also tried to expanded our model and use the original image as well. The corresponding model is shown in \cref{fig:siameseNetwork} and inspired by the architecture used in
 \cite{Wang2017}.
 
@@ -276,11 +276,16 @@ the initial splitting. We trained each of the models for eight epochs.}
 \end{table}
 
 \subsection{Siamese approach}
-
-\section{Training process}
+As already mentioned in \cref{subsec:SiameseNetork}, we used the optimized initial network and extended
+it to a siamese network. Therefore we used shared weights for the convolutional layers, concatenated 
+the two resulting feature vectors and mapped them into the fully connected layers. The results are shown
+in REFERENCE MISSING.
 
 \subsection{Optimizer and scheduler}
-For all of our networks we used \emph{ADAM} \cite{Adam2014} as an optimizer. SCHEDULER
+For all of our networks we used the \emph{ADAM} \cite{Adam2014} algorithm as a (stochastic) optimizer. 
+For scheduling we tried the \emph{ReduceLROnPlateau}-scheduler of the \emph{PyTorch}\footnote{
+\url{https://pytorch.org/docs/stable/index.html}} module and later
+switched to the \emph{MultiStepLR}-scheduler.
 
 %\begin{comment}
 %\subsection{New splitting and siamese network}
