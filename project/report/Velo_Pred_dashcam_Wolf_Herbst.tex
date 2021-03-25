@@ -79,12 +79,12 @@ Due to our limited computational power, we mainly used this data set to study di
 In order to evaluate our raw data with the model, we analysed our dataset concerning the recorded images and driving scenarios. The original frames have a size of $(640,380,3)$ pixels (RGB). To reduce the computation time, we cut the borders of the frames to exclude parts not needed for detection and sampled them down to half of their pixel size.
 
 \begin{figure}[ht]
-	\vspace{-0.25cm}
+	\vspace{-0.2cm}
 	\centering
-	\includegraphics[width=0.7\columnwidth]{./imgs/plot_speed_time_new_splitting.eps}
+	\includegraphics[width=0.8\columnwidth]{./imgs/plot_speed_time_new_splitting.eps}
 	\caption{Distribution of the velocities of all frames in the training video, including the three categories.}
 	\label{fig:SpeedPerFrameDistributionNewSplitting}
-	\vspace{-0.25cm}
+	\vspace{-0.2cm}
 \end{figure}
 
 To visualize the training process in different driving scenarios, we plotted the velocity in dependence of the frame number (\cref{fig:SpeedPerFrameDistributionNewSplitting}). After additional evaluation of the video we were able to classify three different driving scenarios: \emph{highway driving} with high and relatively steady velocities, \emph{stop and go} with low and fluctuating velocities, as well as \emph{city driving} with very abrupt speed changes between medium and very low velocities. Every driving scenario is represented with around one third of the training data.
@@ -287,7 +287,7 @@ In order to compare the potential and accuracy of the different predictions we f
 	\centering
 	\includegraphics[width=0.99\columnwidth]{imgs/TrainingProcess.eps}
 	\caption{Comparison of the results using the models: tuned original network (after 50 epochs: $\sqrt{\mathcal{L}} = 7.46$) and siamese model with frames (after 30 epochs: $\sqrt{\mathcal{L}} = 8.82$) and optical flow (after 50 epochs: $\sqrt{\mathcal{L}} = 6.39$); \textit{top}: training and validation error per epoch; 
-	\emph{bottom}: predictions after the last epoch with correct values in red}
+	\emph{bottom}: predictions after the last epoch with correct values in red.}
 	\label{fig:resultsSummary}
 %	\vspace*{-0.2cm}
 \end{figure}
@@ -299,7 +299,7 @@ Our optimized original model using only the optical flow showed a better perform
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.99\columnwidth]{imgs/both_testvideo.eps}
-	\caption{the networks performance on the test video with the different driving scenarios labeled: 1) longer halt at crossroad, 2) highway driving, 3) city driving with several stops indicated}
+	\caption{The networks performance on the test video with the different driving scenarios labeled: 1) longer halt at crossroad, 2) highway driving, 3) city driving with several stops indicated.}
 	\label{fig:resultsTestvideo}
 \end{figure}
 
