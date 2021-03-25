@@ -80,12 +80,12 @@ Due to our limited computational power, we mainly used this data set to study di
 In order to evaluate our raw data with the model, we analysed our dataset concerning the recorded images and driving scenarios. The original frames have a size of $(640,380,3)$ pixels (RGB). To reduce the computation time, we cut the borders of the frames to exclude parts not needed for detection and sampled them down to half of their pixel size.
 
 \begin{figure}[ht]
-	\vspace{-0.5cm}
+	\vspace{-0.25cm}
 	\centering
 	\includegraphics[width=0.7\columnwidth]{./imgs/plot_speed_time_new_splitting.eps}
 	\caption{Distribution of the velocities of all frames in the training video, including the three categories.}
 	\label{fig:SpeedPerFrameDistributionNewSplitting}
-	\vspace{-0.2cm}
+	\vspace{-0.35cm}
 \end{figure}
 
 To visualize the training process in different driving scenarios, we plotted the velocity in dependence of the frame number (\cref{fig:SpeedPerFrameDistributionNewSplitting}). After additional evaluation of the video we were able to classify three different driving scenarios: \emph{highway driving} with high and relatively steady velocities, \emph{stop and go} with low and fluctuating velocities, as well as \emph{city driving} with very abrupt speed changes between medium and very low velocities. Every driving scenario is represented with around one third of the training data.
@@ -310,13 +310,21 @@ Our optimized original model using only the optical flow showed a better perform
 Especially the performance of the optimized original model was very satisfying, considering the small amount of training data. On the other hand, the siamese network did not show the expected 
 optimization of the predictions.
 
-Additionally, we identified several problems, that need to be solved, to achieve a better performance:
+Additionally, we identified two problems, that need to be solved, to achieve a better performance:
 \begin{enumerate}[label=(\roman*)]
-	\item \textbf{Predictions are limited to specific video parameters}, especially to camera perspective and changes in brightness. This issue occurred, when we tried testing our models using our 
-	own acquired data. As a solution, rescaling and moving frame cutouts for training, might be a possible approach as well as brightness augmentation.
-	\item \textbf{Lack of generalization}: As we also experimented with different splittings of training and validation data, we figured out that using randomly shuffled validation data results in a 
-	very good fitting which becomes a qualitative fitting for block splitting and a very rough fitting for different videos. This might be solved by using more data from various different sources.
-	\item \textbf{Very complex model trained with very little data}: this issue is rather connected with the second and might as well be solved with a larger data set.
+	\item \textbf{Limitations to specific video parameters}: When we tested our models with our own
+	data, we observed that the camera perspective and changes in brightness are really limiting
+	the predictions. As a solution, rescaling and moving frame cutouts for training might be a 
+	possible approach, as well as brightness augmentation. We tried brightness and contrast 
+	augmentation by adding noise to the frames before calculating the optical flow field,
+	but this method only marginally improved the performance.
+	\item \textbf{Lack of generalization}: We also experimented with different splittings of
+	training and validation data and especially randomly shuffled data results in a very good fitting.
+	Using a randomly shuffled 	block splitting, one could expect a solid qualitative fitting, but 
+	only a very rough fitting for different videos. This might be solved by using more data from various 
+	different sources.
+	%\item \textbf{Complex model trained with little data}: This issue is rather connected with 
+	%the second problem and might as well be solved with a larger data set.
 \end{enumerate}
 
 
