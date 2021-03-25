@@ -52,23 +52,23 @@ We use a data set with real world dashcam footage and even extend the data by ga
 driving videos.
 \end{abstract}
 
-%\begin{IEEEkeywords}
-%deep learning, computer vision, visual odometry, convolutional neuronal network, siamese network,
-%optical flow
-%\end{IEEEkeywords}
+\begin{IEEEkeywords}
+deep learning, computer vision, visual odometry, convolutional neuronal network, siamese network,
+optical flow
+\end{IEEEkeywords}
 
 \section{Introduction}
 
-Autonomous driving is considered to have a key role in the future of human mobility. Recently the topic has therefore gained great attention in research, economy and politics \cite{Maurer2016}. In this project we approached this topic in a related but more simplified setup and tried out several machine learning techniques and network architectures.
+Autonomous driving is considered to have a key role in the future of human mobility. Recently the topic has therefore gained great attention in research, economy and politics \cite{Maurer2016}. In this project, we approach this topic in a related, but more simplified setup and present several machine learning techniques and network architectures.
 
 \subsection{Aim of the project}
 \label{subsec:AimAndMeasure}
 
-In this project we tried to predict the velocity of a car based on a dashcam video. This was inspired by  the \emph{comma}\footnote{\url{https://comma.ai/}} speed challenge\footnote{\url{https://github.com/commaai/speedchallenge}} published in 2018. To achieve this goal we used optical flow analysis to preprocess the data and neuronal networks with different structures (classical and siamese) to predict the velocity. In order to measure the quality of the predictions we used their mean squared errors of the real velocity.
+The goal of this project is to predict the velocity of a car based on a dashcam video, inspired by the \emph{comma}\footnote{\url{https://comma.ai/}} speed challenge\footnote{\url{https://github.com/commaai/speedchallenge}} published in 2018. To achieve this goal, we use optical flow analysis to preprocess the data and neuronal networks with different structures (classical and siamese) to predict the velocity. In order to measure the quality of the predictions, we use the mean squared error (MSE) of the measured velocity.
 
 \section{Data collection, analysis and preprocessing}
 
-To start the project we used the database given in the \emph{comma} speed challenge project, which consists of a 17 minute training video (20400 frames) and the corresponding car velocity, as well as a 9 minute test video without labels to validate the model on an unknown data set.
+To start the project we used the database given in the \emph{comma} speed challenge project, which consists of a 17 minute training video (20400 frames) and the corresponding car velocity, as well as a 9 minute test video without labels, to validate the model on an unknown data set.
 
 \subsection{Data collection}
 
@@ -77,7 +77,7 @@ Due to our limited computational power, we mainly used this data set to study di
 \subsection{Data analysis}
 \label{subsec:dataAnalysis}
 
-In order to evaluate our raw data with the model, we analysed our dataset concerning the recorded images and driving scenarios. The original frames have a size of $640\times380\times3$ pixels (RGB). To reduce the computation time, we cut the borders of the frames to exclude parts not needed for detection and sampled them down to half of their pixel size.
+In order to evaluate our raw data with the model, we analysed our dataset concerning the recorded images and driving scenarios. The original frames have a size of $(640,380,3)$ pixels (RGB). To reduce the computation time, we cut the borders of the frames to exclude parts not needed for detection and sampled them down to half of their pixel size.
 
 \begin{figure}[ht]
 	\vspace{-0.5cm}
@@ -88,13 +88,13 @@ In order to evaluate our raw data with the model, we analysed our dataset concer
 	\vspace{-0.2cm}
 \end{figure}
 
-To visualize the training process in different driving scenarios, we plotted the velocity in dependence of the frame number (\cref{fig:SpeedPerFrameDistributionNewSplitting}). After additional evaluation of the video we were able to classify three different driving scenarios: \emph{highway driving} with high and relatively steady velocities, \emph{stop and go} with low and fluctuating velocities as well as \emph{city driving} with very abrupt speed changes between medium and very low velocities. Every driving scenario is represented with about one third of the training data.
+To visualize the training process in different driving scenarios, we plotted the velocity in dependence of the frame number (\cref{fig:SpeedPerFrameDistributionNewSplitting}). After additional evaluation of the video we were able to classify three different driving scenarios: \emph{highway driving} with high and relatively steady velocities, \emph{stop and go} with low and fluctuating velocities, as well as \emph{city driving} with very abrupt speed changes between medium and very low velocities. Every driving scenario is represented with around one third of the training data.
 
-We would then evaluate the predictions of each model $p(x_i)$ to the input data $x_i$ using the mean squared error to the real value of the velocity $y_i$.
-\begin{align}
+We would then evaluate the predictions of each model $p(x_i)$ to the input data $x_i$ using the mean squared error with respect to the real value of the velocity $y_i$.
+\begin{align*}
 	\mathcal{L} = \frac{1}{N} \sum_{i=1}^{N} (p(x_i) - y_i)^2
-\end{align}
-To classify the resulting value, we used the velocity plot and the 
+\end{align*}
+In order to classify the resulting value, we used the velocity plot and the 
 following rough classification\footnote{These rules do only apply on datasets with an equal distribution 
 of all driving scenarios}:
 \begin{table}[h!]
@@ -117,26 +117,26 @@ $1 \gtrsim \sqrt{\mathcal{L}}$: & perfect fitting
 %\item $5 \gtrsim \sqrt{\mathcal{L}} \gtrsim 1$: \emph{variances within scenarios detected}
 %\item $1 \gtrsim \sqrt{\mathcal{L}}$: \emph{perfect fitting}
 %\end{itemize}
-For the training process we used a splitting of 80\% training data and 20\% validation data. Initially 
-we did a hard splitting of the entire data, but this neglects the distribution of different driving 
+For the training process we used a splitting of 80\% training data and 20\% validation data. Initially, 
+we choose a hard splitting of the entire data, but this neglects the distribution of different driving 
 scenarios in the video. Therefore we went on first splitting the data into the driving scenarios with 
 then assigning training data and validation data on each.
 
 \subsection{Preprocessing}
 
 After the previously explained preparation steps, we needed to find a method to extract information 
-about the motion of the vehicle to be able to predict its velocity. There are two ways of doing this: 
+about the motion of the vehicle, to be able to predict its velocity. There are two ways of doing this: 
 either fit two following frames into a network, which will be discussed later, or calculate the relative 
-motion, the so-called \emph{optical flow}, between two frames and fit the results into a model.
+motion between two frames, the so-called \emph{optical flow}, and fit the results into a model.
 
-We used the \enquote{Farneback pyramid method} \cite{Farneback2003} to calculate the optical flow.
+To calculate the optical flow, we used the \emph{Farneback pyramid method} \cite{Farneback2003}.
 The idea of this method can be split up into two main steps: First, use a polynomial expansion of the 
 image $f$ and second, solve the optical flow equation
 \begin{align*}
 \partial_x f \cdot V_x + \partial_y \cdot V_y + \partial_t f = 0
 \end{align*}
 for different resolutions of the image (pyramid structure). This methods yields a dense optical flow 
-field $V$ with $\mathrm{im}(V) \subset \mathbb{R}^2$.
+field $V$ with $\mathrm{im}(V) \subset \mathbb{R}^2$ (a two-dimensional vector field).
 
 We used the following parameters for our calculations:
 \begin{align*}
@@ -153,11 +153,11 @@ original optical flow and the down sampled one lead to the result, that we do no
 information.
 
 The optical flow calculation returns the magnitude and
-the angle of the flow vectors (overall a two-dimensional vector field), which we transformed into polar 
+the angle of the flow vectors, which we transformed into polar 
 coordinates.
 
 To get an RGB image representing the
-optical flow of two consecutive frames, we normalized the magnitudes and put them into the third channel 
+optical flow between two consecutive frames, we normalized the magnitudes and put them into the third channel 
 of the frame. The values
 of the second channel were all set to the value $255$. We then multiplied the angle with the factor 
 $180/(2\pi)$ and set this value 
@@ -188,8 +188,8 @@ therefore has some clear overfitting problems, which we tried to address with ou
 
 \subsection{Siamese Network}
 \label{subsec:SiameseNetork}
-In order to improve our results we also tried to expanded the optimized initial network (\cref{sec:fineTuning}) and extended
-it to a siamese network which would allow us to use also the original images as training data. Therefore we used shared weights for the convolutional layers, concatenated 
+In order to improve our results, we also tried to extend the optimized initial network (\cref{sec:fineTuning}) 
+to a siamese network, which would allow us to use also the original images as training data. Therefore we used shared weights for the convolutional layers, concatenated 
 the two resulting feature vectors and mapped them into the fully connected layers as shown in \cref{fig:siameseNetwork}. This method was inspired by the architecture used in
 \cite{Wang2017}. 
 \begin{figure}[ht]
@@ -200,7 +200,8 @@ the two resulting feature vectors and mapped them into the fully connected layer
 	feature vectors are concatenated and then mapped into several fully connected layers.}
 	\label{fig:siameseNetwork}
 \end{figure}
-We used this architecture in two different ways: feeding two consecutive frames into the model or one image and one optical flow field. In order to keep the structure correspondent, we sampled down the regarding images to the size of the optical flow field.
+We used this architecture in two different ways: feeding either two consecutive frames into the model, or one image and one optical flow field frame. In order to keep the structure correspondent, we 
+sampled down the regarding images to the size of the optical flow field.
 
 \section{Fine tuning}
 \label{sec:fineTuning}
@@ -229,21 +230,20 @@ x, x \geq 0\\
 c \cdot x, x <0
 \end{cases}
 \end{align*}
-with a hyperparameter $c = 0.01$. Using the leakyReLU function, we achieved a MSE of around 12 on the 
+with a hyperparameter $c{=}0.01$. Using the leakyReLU function, we achieved a MSE of around 12 on the 
 testing set and under 3 on the training set. All of the models were trained with only eight epochs, as 
 we still had problems with overfitting the data.
 
 \subsection{Dropout Layer}
 As we still had a lot of overfitting issues, we decided to include a dropout layer, according to 
 \cite{Dropout2014}. We tried different positions and different amounts of dropout layers, but using one 
-layer with a probability of $p=0.5$ after the third convolutional layer seemed to work best.
+layer with a probability of $p{=}0.5$ after the third convolutional layer seemed to work best.
 
 \subsection{Pooling layers with initial splitting}
-We added two generic pooling layers to the network, to reduce the number of parameters\footnote{Indeed, 
+In order to force the network to compress the data even further, we added two generic pooling layers to the network, to reduce the number of parameters\footnote{Indeed, 
 the number of parameters decreased from a total of 636.225 trainable parameters to 156.225 --- a 
 decrease by a factor of 4. We calculated these numbers using the tool \emph{PyTorch summary} 
-(\url{https://github.com/sksq96/pytorch-summary}).} of the model and 
-therefore force the network to compress the data even further. One after the second 
+(\url{https://github.com/sksq96/pytorch-summary}).} of the model. One after the second 
 convolutional layer and the second one right before the fully connected layers start.
 We tested maximum and average pooling with the following parameters
 \begin{align*}
@@ -251,9 +251,9 @@ We tested maximum and average pooling with the following parameters
 \text{padding} &:= 1 &\text{\ \ \ }\text{dilatation} &:= \text{None}
 \end{align*}
 The implementation of pooling layers helped a lot, as now the loss on the train and test data seemed to 
-decrease nearly equally. Our results with the initial splitting are shown 
-\cref{tab:ResultsInitialSplitting}. We gave the network
-with max pooling a try with 15 epochs, as the loss on the train and test set was decreasing in a pretty 
+decrease nearly proportionally. Our results with the initial splitting are shown 
+\cref{tab:ResultsInitialSplitting}. We also tried the network
+with maximum pooling with 15 epochs, as the loss on the train and test set was decreasing in a pretty 
 stable manner. Using this network, we achieved for the first time a MSE of under 10 on the test set,
 which is, according to our assumptions in \cref{subsec:AimAndMeasure}, a 
 pretty good result --- especially, as we trained the model mostly on highway scenes and tested it only 
@@ -296,7 +296,7 @@ In order to compare the potential and accuracy of the different predictions we f
 
 We can identify that the two siamese approaches perform very similarly on the training set while producing only a very raw fitting of the driving scenarios on the validation set. The validation loss of both models converges at about 30 epochs while the training data is almost perfectly fitted. So both models, especially the model using only two frames, still produce a large overfitting. This also results in a very bad performance on the test video, as depicted in \cref{fig:resultsTestvideo}. The model was not even able to decide between different driving scenarios there.
 
-Our optimized original model using only the optical flow showed a better performance. As shown in \ref{fig:resultsSummary} the results did converge much slower but at about the same speed for both training and validation set. We stopped our calculations after 50 epochs but the model did not converge finally yet. We can also determine that the predictions are nearly perfect for city driving and stop and go traffic but only very rough for highway driving. Looking at the predictions on the test set the network was able to distinguish between all three different driving scenarios and did even detect all of the stops during the city driving. Still the absolute velocity may be a little underestimated.
+Our optimized original model using only the optical flow showed a better performance. As shown in \ref{fig:resultsSummary} the results did converge much slower but at about the same speed for both training and validation set. We stopped our calculations after 50 epochs but the model did not converge finally yet. We can also determine that the predictions are nearly perfect for city driving and stop and go traffic but only very rough for highway driving. Looking at the predictions on the test set the network was able to distinguish between all three different driving scenarios and did even detect all of the stops during the city driving. Still the absolute velocity may be not entirely correct especially for highway driving.
 
 \begin{figure}[ht]
 	\centering
@@ -307,12 +307,15 @@ Our optimized original model using only the optical flow showed a better perform
 
 \section{Discussion and possible optimizations}
 
-Especially the performance of the optimized original model was very satisfying concerning the small amount of training data. While on the other hand the siamese did not show the expected optimization of the predictions.
+Especially the performance of the optimized original model was very satisfying, considering the small amount of training data. On the other hand, the siamese network did not show the expected 
+optimization of the predictions.
 
-Additionally to those observations we figured out several problems that need to be solved in order to achieve a better performance:
+Additionally, we identified several problems, that need to be solved, to achieve a better performance:
 \begin{enumerate}[label=(\roman*)]
-	\item \textbf{Predictions limited to specific video parameters}, especially to camera perspective and changes in brightness. This issue occurred when we tried our model using the data we acquired ourselves. As a solution rescaling and moving frame cutouts for training might be a possible approach as well as brightness augmentation.
-	\item \textbf{Lack of generalization}: As we also experimented with different splittings of training and validation data, we figured out that using randomly shuffled validation data results in a very good fitting which becomes a qualitative fitting for block splitting and a very rough fitting for different videos. This might be solved by using more data from various different sources.
+	\item \textbf{Predictions are limited to specific video parameters}, especially to camera perspective and changes in brightness. This issue occurred, when we tried testing our models using our 
+	own acquired data. As a solution, rescaling and moving frame cutouts for training, might be a possible approach as well as brightness augmentation.
+	\item \textbf{Lack of generalization}: As we also experimented with different splittings of training and validation data, we figured out that using randomly shuffled validation data results in a 
+	very good fitting which becomes a qualitative fitting for block splitting and a very rough fitting for different videos. This might be solved by using more data from various different sources.
 	\item \textbf{Very complex model trained with very little data}: this issue is rather connected with the second and might as well be solved with a larger data set.
 \end{enumerate}
 
