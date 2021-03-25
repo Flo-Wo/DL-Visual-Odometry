@@ -27,7 +27,7 @@
 
 \begin{document}
 
-\title{A machine learning approach to predict a vehicles velocity using dashcam video}
+\title{A machine learning approach to predict a vehicles velocity using dashcam video footage}
 
 \author{\IEEEauthorblockN{Florian Wolf}
 \IEEEauthorblockA{\textit{Department of Mathematics and Statistics, University Konstanz}\\
@@ -43,11 +43,18 @@ franz.herbst@uni-konstanz.de}
 \maketitle
 
 \begin{abstract}
-\blindtext[2]
+Calculating the velocity of a moving camera relative to its surrounding, the so-called visual odometry 
+problem, is a very challenging task and heavily studied in the area of computer vision. Especially
+in the field of self-driving cars, a fast and dependable velocity calculation is a high priority.
+In this report we will give a machine learning approach to solve the visual odometry problem, using 
+optical flow fields combined with convolutional neuronal networks, as well as siamese neuronal networks.
+We use a data set with real world dashcam footage and even extend the data by gathering our own
+driving videos.
 \end{abstract}
 
 \begin{IEEEkeywords}
-deep learning, computer vision, visual odometry, dense optical flow, siamese network
+deep learning, computer vision, visual odometry, convolutional neuronal network, siamese network,
+optical flow
 \end{IEEEkeywords}
 
 \section{Introduction}
@@ -65,11 +72,12 @@ To start the project we used the database given in the \emph{comma} speed challe
 
 \subsection{Data collection}
 
-Due to our limited computational power we mainly used this data set to study different training techniques and model architectures. Still we could not expect good generalization for this rather small pool of training data. We therefore developed a technique to acquire more data that needed minimal resources. We used the open source smartphone apps \emph{open camera} and \emph{open street maps} to cast a video while driving and map the velocity using GPS at the same time. So we were able to train our final model with 1 hour 40 minutes of video data.
+Due to our limited computational power, we mainly used this data set to study different training techniques and model architectures. Still we could not expect good generalization for this rather small pool of training data. We therefore developed a technique to acquire more data that needed minimal resources. We used the open source smartphone apps \emph{open camera} and \emph{open street maps} to cast a video while driving and map the velocity using GPS at the same time. So we were able to train our final model with 1 hour 40 minutes of video data.
 
 \subsection{Data analysis}
+\label{subsec:dataAnalysis}
 
-In order to evaluate our raw data with the model we analysed our dataset concerning the recorded images and driving scenarios. The original frames have a size of $640\times380\times3$ pixels (RGB). To reduce the computation time, we cut the borders of the frames to exclude parts not needed for detection and sampled them down to half of their pixel size.
+In order to evaluate our raw data with the model, we analysed our dataset concerning the recorded images and driving scenarios. The original frames have a size of $640\times380\times3$ pixels (RGB). To reduce the computation time, we cut the borders of the frames to exclude parts not needed for detection and sampled them down to half of their pixel size.
 
 To visualize the training process in different driving scenarios, we plotted the velocity in dependence of the frame number (\cref{fig:SpeedPerFrameDistributionNewSplitting}). After additional evaluation of the video we were able to classify three different driving scenarios: \emph{highway driving} with high and relatively steady velocities, \emph{stop and go} with low and fluctuating velocities as well as \emph{city driving} with very abrupt speed changes between medium and very low velocities. Every driving scenario is represented with about one third of the training data.
 
@@ -86,14 +94,27 @@ We would then evaluate the predictions of each model $p(x_i)$ to the input data 
 \end{align}
 to real value of the velocity $y_i$. To classify the resulting value, we used the velocity plot and the 
 following rough classification\footnote{These rules do only apply on datasets with an equal distribution 
-of all driving scenarios}: 
-\begin{itemize}
-\item $\sqrt{\mathcal{L}} \gtrsim 16$: \textit{no fitting}
-\item $16 \gtrsim \sqrt{\mathcal{L}} \gtrsim 10$: \emph{average velocity fitted}
-\item $10 \gtrsim \sqrt{\mathcal{L}} \gtrsim 5$: \emph{scenarios detected}
-\item $5 \gtrsim \sqrt{\mathcal{L}} \gtrsim 1$: \emph{variances within scenarios detected}
-\item $1 \gtrsim \sqrt{\mathcal{L}}$: \emph{perfect fitting}
-\end{itemize}
+of all driving scenarios}:
+\begin{table}[h!]
+\normalsize
+\centering
+\begin{tabular}{r l}
+$\sqrt{\mathcal{L}} \gtrsim 16$: & no fitting\\
+$16 \gtrsim \sqrt{\mathcal{L}} \gtrsim 10$: & average velocity fitted\\
+$10 \gtrsim \sqrt{\mathcal{L}} \gtrsim 5$: & scenarios detected\\
+$5 \gtrsim \sqrt{\mathcal{L}} \gtrsim 1$: & variances within scenarios detected\\
+$1 \gtrsim \sqrt{\mathcal{L}}$: & perfect fitting
+\end{tabular}
+\caption{Classification of the result based on the square root of the MSE.}
+\end{table}
+
+%\begin{itemize}
+%\item $\sqrt{\mathcal{L}} \gtrsim 16$: \textit{no fitting}
+%\item $16 \gtrsim \sqrt{\mathcal{L}} \gtrsim 10$: \emph{average velocity fitted}
+%\item $10 \gtrsim \sqrt{\mathcal{L}} \gtrsim 5$: \emph{scenarios detected}
+%\item $5 \gtrsim \sqrt{\mathcal{L}} \gtrsim 1$: \emph{variances within scenarios detected}
+%\item $1 \gtrsim \sqrt{\mathcal{L}}$: \emph{perfect fitting}
+%\end{itemize}
 For the training process we used a splitting of 80\% training data and 20\% validation data. Initially 
 we did a hard splitting of the entire data, but this neglects the distribution of different driving 
 scenarios in the video. Therefore we went on first splitting the data into the driving scenarios with 
@@ -106,8 +127,16 @@ about the motion of the vehicle to be able to predict its velocity. There are tw
 either fit two following frames into a network, which will be discussed later, or calculate the relative 
 motion, the so-called \emph{optical flow}, between two frames and fit the results into a model.
 
-We used the \enquote{Farneback pyramid method} \cite{Farneback2003} with  the following parameters to 
-calculate the optical flow
+We used the \enquote{Farneback pyramid method} \cite{Farneback2003} to calculate the optical flow.
+The idea of this method can be split up into two main steps: First, use a polynomial expansion of the 
+image $f$ and second, solve the optical flow equation
+\begin{align*}
+\partial_x f \cdot V_x + \partial_y \cdot V_y + \partial_t f = 0
+\end{align*}
+for different resolutions of the image (pyramid structure). This methods yields a dense optical flow 
+field $V$ with $\mathrm{im}(V) \subset \mathbb{R}^2$.
+
+We used the following parameters for our calculations:
 \begin{align*}
 \text{pyramid levels} &:= 3\\
 \text{pyramid scaling} &:= 0.5\\
@@ -142,43 +171,46 @@ convolution layers combined with stacked dense layers, perform well on image cla
 Therefore the choice of a convolutional neural network is justified.
 
 \subsection{Initial Network}
-
 As an initial architecture we used the model presented by the \emph{NVIDIA} work group in 
-\cite{NVIDIA2016}.This network was designed for self-driving cars, so the model has enough complexity to 
-handle a task like ours and allowed various possibilities to fine-tune and improve the architecture. The 
-raw structure is shown in \cref{fig:initialNetwork}.
-
+\cite{NVIDIA2016}. This network was designed for self-driving cars, so the model has enough complexity 
+to handle a task like ours and allowed various possibilities to fine-tune and improve the architecture. 
+The raw structure is shown in \cref{fig:initialNetwork}.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.9\columnwidth]{imgs/InitialNetwork.png}
-	\caption{Initial Network using a series of convolutional layers which are then flattened and }
+	\caption{Initial Network using a series of convolutional layers. The resulting feature vector is 
+	then flattened and mapped into several fully connected layers.}
 	\label{fig:initialNetwork}
 \end{figure}
 
-Using the initial model on the training data with a hard splitting, we achieved a MSE of 18-20 in the validation set, while having a MSE of less than 3 on the training set. The initial network therefore has some clear overfitting problems, which we tried to address with our fine tuning.
+Using the initial model on the training data with a hard splitting, we achieved a MSE between 18 and 20 
+in the validation set, while having a MSE of less than 3 on the training set. The initial network 
+therefore has some clear overfitting problems, which we tried to address with our fine tuning.
 
 \subsection{Siamese Network}
-
-In order to improve our results we also tried to expanded our model and use the original image as well. The corresponding model is shown in \cref{fig:siameseNetwork}.
-
+\label{subsec:SiameseNetork}
+In order to improve our results we also tried to expanded the optimized initial network (\cref{sec:fineTuning}) and extended
+it to a siamese network which would allow us to use also the original images as training data. Therefore we used shared weights for the convolutional layers, concatenated 
+the two resulting feature vectors and mapped them into the fully connected layers as shown in \cref{fig:siameseNetwork}. This method was inspired by the architecture used in
+\cite{Wang2017}. 
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.9\columnwidth]{imgs/siamese_model.png}
-	\caption{Siamese Network}
+	\caption{Siamese architecture based on the fined tuned original network. The two inputs pass 
+	several convolutional layers with shared weights and a drop out layer. The resulting
+	feature vectors are concatenated and then mapped into several fully connected layers.}
 	\label{fig:siameseNetwork}
 \end{figure}
-
-We could use this architecture in two different ways: feeding two consecutive frames into the model or one image and one optical flow field. In order to keep the structure correspondent we sampled down the regarding images to the size of the optical flow field. 
-
-REFERENCE MISSING: inspired by https://arxiv.org/pdf/1709.08429.pdf
+We could use this architecture in two different ways: feeding two consecutive frames into the model or one image and one optical flow field. In order to keep the structure correspondent, we sampled down the regarding images to the size of the optical flow field.
 
 \section{Fine tuning}
+\label{sec:fineTuning}
 
 \subsection{Batch normalisation and activation functions}
-As we did in the lecture, we included batch normalization layers \cite{BatchNorm2015}, to speed up
+Similar to the lecture, we included batch normalization layers \cite{BatchNorm2015}, to speed up
 the training and improve the networks performance.
 
-We also tested different activation functions. Like proposed in the lecture, we initially used the ReLu
+We also tested different activation functions. As proposed in the lecture, we initially used the ReLu
 function
 \begin{align*}
 \mathrm{ReLu}: \mathbb{R} \to \mathbb{R}_0^+, x \mapsto \max\{0,x\}.
@@ -206,11 +238,13 @@ As we still had a lot of overfitting issues, we decided to include a dropout lay
 layer with a probability of $p=0.5$ after the third convolutional layer seemed to work best.
 
 \subsection{Pooling layers with initial splitting}
-We added two generic pooling layers to the network to reduce the number of parameters of the model. One after the second 
-convolutional layer and the second one right before the fully connected layers start\footnote{Indeed, the number of 
-parameters decreased from a total of 636.225 trainable parameters to 156.225. Therefore the number of parameters decreased by a 
-factor of 4. We calculated these numbers using the tool \enquote{PyTorch summary} (\url{https://github.com/sksq96/pytorch-summary}).}.We tested maximum and average pooling with the following 
-parameters
+We added two generic pooling layers to the network, to reduce the number of parameters\footnote{Indeed, 
+the number of parameters decreased from a total of 636.225 trainable parameters to 156.225 --- a 
+decrease by a factor of 4. We calculated these numbers using the tool \emph{PyTorch summary} 
+(\url{https://github.com/sksq96/pytorch-summary}).} of the model and 
+therefore force the network to compress the data even further. One after the second 
+convolutional layer and the second one right before the fully connected layers start.
+We tested maximum and average pooling with the following parameters
 \begin{align*}
 \text{kernel size} &:= 2\times 2\\
 \text{stride} &:= 2\\
@@ -242,31 +276,16 @@ Average pooling & 7.70 & 11.40 & 6.08 & 13.09\\
 \caption{MSE results of the network using different pooling strategies, one dropout layers, two different activation functions and 
 the initial splitting. We trained each of the models for eight epochs.}
 \label{tab:ResultsInitialSplitting}
-\end{table}
+\end{table} 
 
-\subsection*{Siamese approach}
-
-\section{Trainingprocess}
-we used bla bla as optimizers and bla bla as schedulers, for each model we tried different combinations and bla bla
-
-%\begin{comment}
-%\subsection{New splitting and siamese network}
-%We decided to take a closer look at the different road traffic scenarios in the video and segmented the 
-%frames into three category. The first category
-%consists of highway driving scenes (from minute 0:00 to minute 7:30), the second one contains frames of 
-%the car being
-%in a stop and go scenario on the highway (from minute 7:31 to minute 15:00) and the third category 
-%consists of
-%city driving scenes (from minute 15:01 to the end). We visualized the velocity distribution and the 
-%categories in 
-%\cref{fig:SpeedPerFrameDistributionNewSplitting}. 
-%We shuffled the frames of each block randomly and used again the 80/20 rule to split each of the 
-%category blocks into train and test data.
-%\end{comment}
-
-
+\subsection{Optimizer and scheduler}
+For all of our networks we used the \emph{ADAM} \cite{Adam2014} algorithm as a (stochastic) optimizer. 
+For scheduling we tried the \emph{ReduceLROnPlateau}-scheduler of the \emph{PyTorch}\footnote{
+\url{https://pytorch.org/docs/stable/index.html}} module and later
+switched to the \emph{MultiStepLR}-scheduler.
 
 \section{Error analysis and results}
+In order to compare the potential and accuracy of the different predictions we focused on two major points: Firstly comparing the training and validation loss and how they would converge as well as secondly using the velocity-frame chart of the predictions to classify the results as described in \cref{subsec:dataAnalysis}. These results are shown in \cref{fig:resultsSummary}. Finally we looked at the performance on the test video to get an indication how the models would perform on a completely unknown data set (\cref{fig:resultsTestvideo}).
 
 \begin{figure}[ht]
 	\centering
@@ -281,6 +300,13 @@ We identified three possible reasons for our poor results:
 	\item lack of generalization: perfect fitting on randomly shuffled validation data, qualitative fitting for block splitting and rough fitting for different videos
 	\item very complex model trained with very little data
 \end{enumerate}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.99\columnwidth]{imgs/both_testvideo.eps}
+	\caption{Performance of the different networks on the unlabeled test video}
+	\label{fig:resultsTestvideo}
+\end{figure}
 
 
 
@@ -308,7 +334,7 @@ We came up with the following approaches to solve these problems
 
 
 
-\section{Further work}
+\section{Further ideas}
 
 \subsection{Augmented brightness}
 STILL UNDER CONSTRUCTION
