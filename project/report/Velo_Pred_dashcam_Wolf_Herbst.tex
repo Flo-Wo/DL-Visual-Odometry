@@ -312,9 +312,9 @@ Especially the performance of the optimized original model was very satisfying c
 
 Additionally to those observations we figured out several problems that need to be solved in order to achieve a better performance:
 \begin{enumerate}[label=(\roman*)]
-	\item \textbf{Predictions limited to specific video parameters}, especially to camera perspective and changes in brightness. This issue occurred when we tried our model using the data we acquired ourselves. As a solution rescaling and moving frame cutouts for training might be a possible approach.
+	\item \textbf{Predictions limited to specific video parameters}, especially to camera perspective and changes in brightness. This issue occurred when we tried our model using the data we acquired ourselves. As a solution rescaling and moving frame cutouts for training might be a possible approach as well as brightness augmentation.
 	\item \textbf{Lack of generalization}: As we also experimented with different splittings of training and validation data, we figured out that using randomly shuffled validation data results in a very good fitting which becomes a qualitative fitting for block splitting and a very rough fitting for different videos. This might be solved by using more data from various different sources.
-	\item \textbf{very complex model trained with very little data}: this issue is rather connected with the second and might as well be solved with a larger data set.
+	\item \textbf{Very complex model trained with very little data}: this issue is rather connected with the second and might as well be solved with a larger data set.
 \end{enumerate}
 
 
