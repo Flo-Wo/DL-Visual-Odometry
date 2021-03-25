@@ -163,6 +163,9 @@ of the second channel were all set to the value $255$. We then multiplied the an
 $180/(2\pi)$ and set this value 
 for the first channel.
 
+We wanted to see, if the model performs better using the dashcam frames as additional material. 
+Therefore, we did the same down sampling with the raw frames.
+
 \section{Method selection and architecture}
 The prediction of the vehicles speed is a non-linear regression task, so the choice of a neural network 
 is reasonable. Recent architectures (ResNet, GoogLeNet, etc.) have shown that using multiple stacked 
@@ -205,8 +208,6 @@ sampled down the regarding images to the size of the optical flow field.
 
 \section{Fine tuning}
 \label{sec:fineTuning}
-
-We experimented with various different options to fine tune the original model which will be discussed and compared:
 
 \subsection{Batch normalisation and activation functions}
 Similar to the lecture, we included batch normalization layers \cite{BatchNorm2015}, to speed up
@@ -284,19 +285,26 @@ For scheduling, we tried the \emph{ReduceLROnPlateau}-scheduler of the \emph{PyT
 switched to the \emph{MultiStepLR}-scheduler.
 
 \section{Error analysis and results}
-In order to compare the potential and accuracy of the different predictions we focused on two major points: Firstly comparing the training and validation loss and how they would converge as well as secondly using the velocity-frame chart of the predictions to classify the results as described in \cref{subsec:dataAnalysis}. These results are shown in \cref{fig:resultsSummary}. Finally we also compared the performance on the test video to get an indication how the models would perform on a completely unknown data set (\cref{fig:resultsTestvideo}).
+In order to compare the potential and accuracy of the different predictions, we focused on two major points: First, comparing the training and validation loss and how they would converge. Second, 
+using the velocity-frame chart of the predictions to classify the results as described in \cref{subsec:dataAnalysis}. These results are shown in \cref{fig:resultsSummary}. Finally we looked at the 
+performance on the test video, to get an indication how the models would perform on a completely unknown data set (\cref{fig:resultsTestvideo}).
 
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.99\columnwidth]{imgs/TrainingProcess.eps}
-	\caption{Comparison of the results using the models: tuned original network (after 50 epochs: $\sqrt{\mathcal{L}} = 7.46$) and siamese model with frames (after 30 epochs: $\sqrt{\mathcal{L}} = 8.82$) and optical flow (after 50 epochs: $\sqrt{\mathcal{L}} = 6.39$); \textit{top}: training and validation error per epoch; 
+	\caption{Comparison of the results using the models: tuned original network and siamese model with frames and optical flow; \textit{top}: training and validation error per epoch; 
 	\emph{bottom}: predictions after the last epoch with correct values in red}
 	\label{fig:resultsSummary}
 \end{figure}
 
-We can identify that the two siamese approaches perform very similarly on the training set while producing only a very raw fitting of the driving scenarios on the validation set. The validation loss of both models converges at about 30 epochs while the training data is almost perfectly fitted. So both models, especially the model using only two frames, still produce a large overfitting. This also results in a very bad performance on the test video, as depicted in \cref{fig:resultsTestvideo}. The model was not even able to decide between different driving scenarios there.
+We can identify that the two siamese approaches perform very similarly on the training set, while producing only a very rough fitting of the driving scenarios on the validation set. The validation 
+loss of both models converges at about 30 epochs, while the training data is almost perfectly fitted. So both models, especially the model using only two frames, still produce a large overfitting. 
+This also results in a very bad performance on the test video, as depicted in \cref{fig:resultsTestvideo}. The model was not even able to decide between different driving scenarios.
 
-Our optimized original model using only the optical flow showed a better performance. As shown in \ref{fig:resultsSummary} the results did converge much slower but at about the same speed for both training and validation set. We stopped our calculations after 50 epochs but the model did not converge finally yet. We can also determine that the predictions are nearly perfect for city driving and stop and go traffic but only very rough for highway driving. Looking at the predictions on the test set the network was able to distinguish between all three different driving scenarios and did even detect all of the stops during the city driving. Still the absolute velocity may be not entirely correct especially for highway driving.
+Our optimized original model using only the optical flow showed a better performance. As shown in \cref{fig:resultsSummary} the results did converge much slower, but proportionally for both training 
+and validation set. We stopped our calculations after 50 epochs, but the model did not converge finally yet. We can also determine, that the predictions are nearly perfect for city driving and stop 
+and go traffic but only very rough for highway driving. Looking at the predictions on the test set, the network was able to distinguish between all three different driving scenarios and did even 
+detect all of the stops during the city driving.
 
 \begin{figure}[ht]
 	\centering
