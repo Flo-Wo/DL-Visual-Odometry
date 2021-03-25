@@ -79,12 +79,11 @@ Due to our limited computational power, we mainly used this data set to study di
 In order to evaluate our raw data with the model, we analysed our dataset concerning the recorded images and driving scenarios. The original frames have a size of $(640,380,3)$ pixels (RGB). To reduce the computation time, we cut the borders of the frames to exclude parts not needed for detection and sampled them down to half of their pixel size.
 
 \begin{figure}[ht]
-	\vspace{-0.25cm}
+	\vspace{-0.6cm}
 	\centering
-	\includegraphics[width=0.7\columnwidth]{./imgs/plot_speed_time_new_splitting.eps}
+	\includegraphics[width=0.8\columnwidth]{./imgs/plot_speed_time_new_splitting.eps}
 	\caption{Distribution of the velocities of all frames in the training video, including the three categories.}
 	\label{fig:SpeedPerFrameDistributionNewSplitting}
-	\vspace{-0.25cm}
 \end{figure}
 
 To visualize the training process in different driving scenarios, we plotted the velocity in dependence of the frame number (\cref{fig:SpeedPerFrameDistributionNewSplitting}). After additional evaluation of the video we were able to classify three different driving scenarios: \emph{highway driving} with high and relatively steady velocities, \emph{stop and go} with low and fluctuating velocities, as well as \emph{city driving} with very abrupt speed changes between medium and very low velocities. Every driving scenario is represented with around one third of the training data.
