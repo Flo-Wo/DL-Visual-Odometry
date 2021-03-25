@@ -52,10 +52,10 @@ We use a data set with real world dashcam footage and even extend the data by ga
 driving videos.
 \end{abstract}
 
-\begin{IEEEkeywords}
-deep learning, computer vision, visual odometry, convolutional neuronal network, siamese network,
-optical flow
-\end{IEEEkeywords}
+%\begin{IEEEkeywords}
+%deep learning, computer vision, visual odometry, convolutional neuronal network, siamese network,
+%optical flow
+%\end{IEEEkeywords}
 
 \section{Introduction}
 
@@ -79,20 +79,22 @@ Due to our limited computational power, we mainly used this data set to study di
 
 In order to evaluate our raw data with the model, we analysed our dataset concerning the recorded images and driving scenarios. The original frames have a size of $640\times380\times3$ pixels (RGB). To reduce the computation time, we cut the borders of the frames to exclude parts not needed for detection and sampled them down to half of their pixel size.
 
-To visualize the training process in different driving scenarios, we plotted the velocity in dependence of the frame number (\cref{fig:SpeedPerFrameDistributionNewSplitting}). After additional evaluation of the video we were able to classify three different driving scenarios: \emph{highway driving} with high and relatively steady velocities, \emph{stop and go} with low and fluctuating velocities as well as \emph{city driving} with very abrupt speed changes between medium and very low velocities. Every driving scenario is represented with about one third of the training data.
-
 \begin{figure}[ht]
+	\vspace{-0.5cm}
 	\centering
-	\includegraphics[scale=0.55]{./imgs/plot_speed_time_new_splitting.eps}
+	\includegraphics[width=0.7\columnwidth]{./imgs/plot_speed_time_new_splitting.eps}
 	\caption{Distribution of the velocities of all frames in the training video, including the three categories.}
 	\label{fig:SpeedPerFrameDistributionNewSplitting}
+	\vspace{-0.2cm}
 \end{figure}
 
-We would then evaluate the predictions of each model $p(x_i)$ to the input data $x_i$ using the mean squared error
+To visualize the training process in different driving scenarios, we plotted the velocity in dependence of the frame number (\cref{fig:SpeedPerFrameDistributionNewSplitting}). After additional evaluation of the video we were able to classify three different driving scenarios: \emph{highway driving} with high and relatively steady velocities, \emph{stop and go} with low and fluctuating velocities as well as \emph{city driving} with very abrupt speed changes between medium and very low velocities. Every driving scenario is represented with about one third of the training data.
+
+We would then evaluate the predictions of each model $p(x_i)$ to the input data $x_i$ using the mean squared error to the real value of the velocity $y_i$.
 \begin{align}
-	\mathcal{L} = \frac{1}{N} \sum\limits_{i=1}^{N} (p(x_i) - y_i)^2
+	\mathcal{L} = \frac{1}{N} \sum_{i=1}^{N} (p(x_i) - y_i)^2
 \end{align}
-to real value of the velocity $y_i$. To classify the resulting value, we used the velocity plot and the 
+To classify the resulting value, we used the velocity plot and the 
 following rough classification\footnote{These rules do only apply on datasets with an equal distribution 
 of all driving scenarios}:
 \begin{table}[h!]
@@ -138,7 +140,7 @@ field $V$ with $\mathrm{im}(V) \subset \mathbb{R}^2$.
 
 We used the following parameters for our calculations:
 \begin{align*}
-\text{pyramid levels} &:= 3\\
+\text{pyramid levels} &:= 3 \\
 \text{pyramid scaling} &:= 0.5\\
 \text{window size} &:= 6\\
 \text{pixel neighborhood size} &:= 5\\
@@ -201,7 +203,7 @@ the two resulting feature vectors and mapped them into the fully connected layer
 	feature vectors are concatenated and then mapped into several fully connected layers.}
 	\label{fig:siameseNetwork}
 \end{figure}
-We could use this architecture in two different ways: feeding two consecutive frames into the model or one image and one optical flow field. In order to keep the structure correspondent, we sampled down the regarding images to the size of the optical flow field.
+We used this architecture in two different ways: feeding two consecutive frames into the model or one image and one optical flow field. In order to keep the structure correspondent, we sampled down the regarding images to the size of the optical flow field.
 
 \section{Fine tuning}
 \label{sec:fineTuning}
@@ -246,10 +248,8 @@ therefore force the network to compress the data even further. One after the sec
 convolutional layer and the second one right before the fully connected layers start.
 We tested maximum and average pooling with the following parameters
 \begin{align*}
-\text{kernel size} &:= 2\times 2\\
-\text{stride} &:= 2\\
-\text{padding} &:= 1\\
-\text{dilatation} &:= \text{None}
+\text{kernel size} &:= 2\times 2 &\text{\ \ \ \ } \text{stride} &:= 2\\
+\text{padding} &:= 1 &\text{\ \ \ }\text{dilatation} &:= \text{None}
 \end{align*}
 The implementation of pooling layers helped a lot, as now the loss on the train and test data seemed to 
 decrease nearly equally. Our results with the initial splitting are shown 
@@ -280,7 +280,7 @@ the initial splitting. We trained each of the models for eight epochs.}
 
 \subsection{Optimizer and scheduler}
 For all of our networks we used the \emph{ADAM} \cite{Adam2014} algorithm as a (stochastic) optimizer. 
-For scheduling we tried the \emph{ReduceLROnPlateau}-scheduler of the \emph{PyTorch}\footnote{
+For scheduling, we tried the \emph{ReduceLROnPlateau}-scheduler of the \emph{PyTorch}\footnote{
 \url{https://pytorch.org/docs/stable/index.html}} module and later
 switched to the \emph{MultiStepLR}-scheduler.
 
@@ -290,67 +290,51 @@ In order to compare the potential and accuracy of the different predictions we f
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.99\columnwidth]{imgs/TrainingProcess.eps}
-	\caption{Comparison of the results using the models: tuned original network and siamese model with frames and optical flow; \textit{top}: training and validation error per epoch; \textit{bottom}: predictions after the last epoch with correct values in red}
+	\caption{Comparison of the results using the models: tuned original network and siamese model with frames and optical flow; \textit{top}: training and validation error per epoch; 
+	\emph{bottom}: predictions after the last epoch with correct values in red}
 	\label{fig:resultsSummary}
 \end{figure}
 
-We identified three possible reasons for our poor results:
-\begin{enumerate}[label=(\roman*)]
-	\item predictions are limited to specific video parameters: predictions are bound to camera perspective, changes in brightness
-	\item lack of generalization: perfect fitting on randomly shuffled validation data, qualitative fitting for block splitting and rough fitting for different videos
-	\item very complex model trained with very little data
-\end{enumerate}
+We can identify that the two siamese approaches perform very similarly on the training set while producing only a very raw fitting of the driving scenarios on the validation set. The validation loss of both models converges at about 30 epochs while the training data is almost perfectly fitted. So both models, especially the model using only two frames, still produce a large overfitting. This also results in a very bad performance on the test video, as depicted in \cref{fig:resultsTestvideo}. The model was not even able to decide between different driving scenarios.
+
+Our optimized original model using only the optical flow showed a better performance. As shown in \ref{fig:resultsSummary} the results did converge much slower but at about the same speed for both training and validation set. We stopped our calculations after 50 epochs but the model did not converge finally yet. We can also determine that the predictions are nearly perfect for city driving and stop and go traffic but only very rough for highway driving. Looking at the predictions on the test set the network was able to distinguish between all three different driving scenarios and did even detect all of the stops during the city driving.
 
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.99\columnwidth]{imgs/both_testvideo.eps}
-	\caption{Performance of the different networks on the unlabeled test video}
+	\caption{the networks performance on the test video with the different driving scenarios labeled: 1) longer halt at crossroad, 2) highway driving, 3) city driving with several stops indicated}
 	\label{fig:resultsTestvideo}
 \end{figure}
 
+\section{Discussion and possible optimizations}
 
+Especially the performance of the optimized original model was very satisfying concerning the small amount of training data. While on the other hand the siamese did not show the expected optimization of the predictions.
 
-%\begin{enumerate}
-%	\item[(i)] Too complex model, as the paper used it for autonomous driving or we put too little information into the model.
-%	\item[(ii)] Problems with different brightnesses in the frames (lack of generality), which leads to unstable calculations in the 
-%	optical flow, as the optical flow is quite sensitive to brightness. (Explain how in the train part the sky is quite dark and in the 
-%	city (end) the sky is bright)
-%	\item[(iii)] Too naive/ambiguous splitting of the data into train and testing set, as both datasets seem to represent totally different
-%	scenarios in the road traffic.
-%\end{enumerate}
-We came up with the following approaches to solve these problems
+Additionally to those observations we figured out several problems that need to be solved in order to achieve a better performance:
 \begin{enumerate}[label=(\roman*)]
-%	\item Simplify the model by using Pooling (we will try average and max pooling), to get more compression and we tried on the
-%	other hand to feed in more information into the model, by using a linear combination of the optical flow and the raw frames itself, and
-%	we tried using a siamese network, to put simultaneously the of and raw frames into the convolutional layers.
-	\item We wanted to try adding some additional noise into the frames before calculating the optical flow, to make the calculation
-	more robust against brightness changes. As intentionally adding 
-	noise to a frame is quite atypical in computer vision, this idea looked quite interesting.
-	\item Use another splitting. To get a better ratio between highway and city driving scenarios, we decided to split the data into
-	blocks of 100 frames and take the first 80 for training and the last 20 for testing. Therefore our model should have seen some city
-	driving.
+	\item \textbf{Predictions limited to specific video parameters}, especially to camera perspective and changes in brightness. This issue occurred when we tried our model using the data we acquired ourselves. As a solution rescaling and moving frame cutouts for training might be a possible approach.
+	\item \textbf{Lack of generalization}: As we also experimented with different splittings of training and validation data, we figured out that using randomly shuffled validation data results in a very good fitting which becomes a qualitative fitting for block splitting and a very rough fitting for different videos. This might be solved by using more data from various different sources.
+	\item \textbf{very complex model trained with very little data}: this issue is rather connected with the second and might as well be solved with a larger data set.
 \end{enumerate}
 
 
+%\subsection{Augmented brightness}
+%The calculation of the optical flow field is in general quite sensitive to noise and brightness changes. To make these calculations more robust, we
+%tried to add some additional noise to the frames, before calculating the flow field. To change the brightness and contrast of an image, we used
+%the formula
+%\begin{align*}
+%\mathrm{frame}_{\mathrm{augmented}}(i,j) = \alpha(i,j) \cdot \mathrm{frame}(i,j) + \beta(i,j).
+%\end{align*}
+%The function $\alpha$ controls the contrast augmentation ($>1$ increase, $<1$ decrease) and the function $\beta$ controls the brightness. To 
+%get some noise into the frames, we used
+%\begin{align*}
+%\alpha \sim \mathcal{U}(0,1)+0.35,\; \beta \sim \mathcal{U}(-5,35),
+%\end{align*}
+%where $\mathcal{U}(a,b)$ denotes the uniform distribution in an interval $[a,b]$ for $a,b\in \mathbb{R}$ with $a < b$. 
 
-
-\section{Further ideas}
-
-\subsection{Augmented brightness}
-STILL UNDER CONSTRUCTION
-
-\subsection{Increase data}
-
-Use MUCH MUCH MUCH MUCH MUCH more data!
-
-Create Validation Data that is not connected to training data and still covers all situations
-
-
-\section*{Acknowledgment}
-We like to thank bla bla bla
-
-
-
+%In nearly all of our tests, the upper augmentation process seemed to have only marginal effects on the performance of the networks. We 
+%also tried different distribution intervals and also normally distributed functions $\alpha$ and $\beta$, but
+%our networks seemed to already be quite invariant to these changes.
 
 \printbibliography
 
