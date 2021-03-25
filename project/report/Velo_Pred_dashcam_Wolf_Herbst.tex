@@ -193,7 +193,7 @@ the two resulting feature vectors and mapped them into the fully connected layer
 	\centering
 	\includegraphics[width=0.9\columnwidth]{imgs/siamese_model.png}
 	\caption{Siamese architecture based on the fined tuned original network. The two inputs pass 
-	several convolutional layers with shared weights and a drop out layer. The resulting
+	several convolutional layers with shared weights and a dropout layer. The resulting
 	feature vectors are concatenated and then mapped into several fully connected layers.}
 	\label{fig:siameseNetwork}
 \end{figure}
@@ -286,7 +286,10 @@ In order to compare the potential and accuracy of the different predictions we f
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.99\columnwidth]{imgs/TrainingProcess.eps}
-	\caption{Comparison of the results using the models: tuned original network (after 50 epochs: $\sqrt{\mathcal{L}} = 7.46$) and siamese model with frames (after 30 epochs: $\sqrt{\mathcal{L}} = 8.82$) and optical flow (after 50 epochs: $\sqrt{\mathcal{L}} = 6.39$); \textit{top}: training and validation error per epoch; 
+	\caption{Comparison of the results using the models: tuned original network (after 50 epochs: $
+	\sqrt{\mathcal{L}} = 7.46$) and siamese model with two frames (after 30 epochs: $\sqrt{\mathcal{L}} 
+	= 8.82$) and optical flow (after 50 epochs: $\sqrt{\mathcal{L}} = 6.39$); \textit{top}: training and 
+	validation error per epoch; 
 	\emph{bottom}: predictions after the last epoch with correct values in red.}
 	\label{fig:resultsSummary}
 %	\vspace*{-0.2cm}
