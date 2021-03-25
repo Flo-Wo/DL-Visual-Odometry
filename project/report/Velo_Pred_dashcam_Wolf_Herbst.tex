@@ -361,7 +361,11 @@ get some noise into the frames, we used
 \begin{align*}
 \alpha \sim \mathcal{U}(0,1)+0.35,\; \beta \sim \mathcal{U}(-5,35),
 \end{align*}
-where $\mathcal{U}(a,b)$ denotes the uniform distribution in an interval $[a,b]$ for $a,b\in \mathbb{R}$ with $a < b$.
+where $\mathcal{U}(a,b)$ denotes the uniform distribution in an interval $[a,b]$ for $a,b\in \mathbb{R}$ with $a < b$. 
+
+In nearly all of our tests, the upper augmentation process seemed to have only marginal effects on the performance of the networks. We 
+also tried different distribution intervals and also normally distributed functions $\alpha$ and $\beta$, but
+our networks seemed to already be quite invariant to these changes.
 \subsection{Increase data}
 
 Use MUCH MUCH MUCH MUCH MUCH more data!
