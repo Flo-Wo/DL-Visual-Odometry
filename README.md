@@ -14,3 +14,7 @@ In this report we will give a machine learning approach to solve the visual odom
 optical flow fields combined with convolutional neuronal networks, as well as siamese neuronal networks.
 We use a data set with real world dashcam footage and even extend the data by gathering our own
 driving videos.
+
+## Content of this repo
+This repo includes our source code, the final version of the technical report and our presentation. Under `project/presentation/demos` 
+you can also find two short demo videos with results of our networks.
