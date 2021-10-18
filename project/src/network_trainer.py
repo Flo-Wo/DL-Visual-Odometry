@@ -18,26 +18,17 @@ from os import path
 
 from cnn.cnn_siamese_frames_flow import CnnSiamese
 from data_loader import DatasetOptFlo1Frames
-# time module, to get date and time
 
-from matplotlib import pyplot as plt
-<<<<<<< HEAD
 from data_loader import generate_label_dict, generate_train_eval_dict,\
     load_double_images, sample_down, cut_bottom, picture_bottom_offset,\
     picture_opt_fl_size, picture_final_size, \
     calculate_opt_flow#, DatasetOptFlo
 
 
-# from cnn.cnn_flow_only_with_pooling import CNNFlowOnlyWithPooling
-# from cnn.cnn_flow_only import CNNFlowOnly
-=======
-
-import time
-
 def get_lr(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
->>>>>>> net_trainer_approach
+
 
 # #############################################################
 # LOGGING INITIALISATION
@@ -54,7 +45,7 @@ logging.basicConfig(
 # Configure Data Loaders
 # #############################################################
 
-<<<<<<< HEAD
+
 class NetworkTrainer:
     data_size = 20399
 
@@ -178,10 +169,9 @@ class NetworkTrainer:
             theory_velocity = np.loadtxt(label_path)
         else:
             label = False
-=======
+
 # parameters for data loader
 standard_loader_params = {'batch_size': 64 , 'shuffle': True}
->>>>>>> net_trainer_approach
 
 standard_dataset_class = DatasetOptFlo1Frames
 
@@ -205,36 +195,8 @@ def setup_data_loader(dataset_class, splitting, labels, params=standard_loader_p
     return train_tensor, validation_tensor, test_tensor
 
 
-<<<<<<< HEAD
-# if __name__ == "__main__":
-#     path_labels = "./data/raw/train_label.txt"
-
-#     network_save_file = "leakyReLU8EpochsBatchNormMaxPooling"
-
-#     test_split_ratio = 0.8
-#     block_size = 3400
-
-#     dataLoader_params = {'batch_size': 64, 'shuffle': True}
-
-#     nwt = NetworkTrainer(20399, DatasetOptFlo, CNNFlowOnlyWithPooling)
-
-
-#     tr_tensor, eval_tensor = nwt.configure_data_loader(path_labels,
-#                             test_split_ratio, block_size, dataLoader_params)
-#     metadata = nwt.train_model(tr_tensor, eval_tensor, 3, 12, network_save_file)
-
-#     #nwt.plot_velocity_chart("data/raw/train_predicts.txt", label="Data Siamese", color="red")
-#     #nwt.plot_velocity_chart("data/raw/train_predicts_2.txt", label="Leaky Relu", color="orange", kernel_size=100)
-#     #nwt.plot_velocity_chart("data/raw/train_label.txt", label="Leaky Relu", color="green")
-
-#     #plt.legend()
-#     #plt.show()
-
-#     #nwt.process_video("data/raw/train.mp4", "./cnn/savedmodels/LeakyReLU15EpochsBatchNormMaxPoolingWithDropOut.pth", 3,
-#     #                  "data/raw/train_predicts_2")
-=======
 # #############################################################
-# Network Trainer
+# Network Trainer --> used for the super simple network
 # #############################################################
 
 # standard model
@@ -402,4 +364,4 @@ def train_network(train_tensor, validation_tensor, num_epochs, save_file, model=
         logging.info("Model saved!")
     
     return network_folder + save_file, logging_folder + f'{save_file}.log'
->>>>>>> net_trainer_approach
+

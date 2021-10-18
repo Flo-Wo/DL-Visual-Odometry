@@ -6,10 +6,6 @@ Created on Sun Jan 03.01.2021
 """
 
 import torch
-<<<<<<< HEAD
-#from torch.utils.data import Dataset, DataLoader, Subset, TensorDataset
-=======
->>>>>>> net_trainer_approach
 from torchvision import transforms
 import cv2
 import numpy as np
@@ -136,23 +132,6 @@ class DatasetOptFlo1Frames(torch.utils.data.Dataset):
         # Select sample
         ID = self.list_IDs[index]
 
-        # Load data and get label
-<<<<<<< HEAD
-<<<<<<< HEAD
-        F = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
-        X = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(ID))
-        y = (self.labels[ID] + self.labels[ID - 1]) / 2
-        # y = self.labels[ID]
-=======
-        if self.test:
-            X1 = torch.load(path_tensor_opt_fl + test_path + "{:05d}.pt".format(ID))
-            X2 = torch.load(path_tensor_frames + test_path + "{:05d}.pt".format(ID))
-        else:
-            X1 = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(ID))
-            X2 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
-        y = self.labels[ID]
->>>>>>> net_trainer_approach
-=======
         if ID < 0:
             X1 = torch.load(path_tensor_opt_fl + test_path + "{:05d}.pt".format(-ID))
             X2 = torch.load(path_tensor_frames + test_path + "{:05d}.pt".format(-ID))
@@ -161,7 +140,7 @@ class DatasetOptFlo1Frames(torch.utils.data.Dataset):
             X1 = torch.load(path_tensor_opt_fl + "{:05d}.pt".format(ID))
             X2 = torch.load(path_tensor_frames + "{:05d}.pt".format(ID))
             y = self.labels[ID]
->>>>>>> net_trainer_approach
+
 
         return X1, X2, y, ID
 
@@ -265,11 +244,15 @@ def cut_bottom(frame, height):
 # #############################################################
 
 def save_both(save_path_frames, save_path_of, video_path,
-              save_as_png=False, save_png_fr=path_image_frames, save_png_of=path_image_opt_fl):
+              save_as_png=False, save_png_fr=path_image_frames,
+              save_png_of=path_image_opt_fl):
     """Iterate through video and save images and optical flow as tensors"""
-    for i, (prev_frame, curr_frame) in enumerate(tqdm(load_double_images(video_path), "Save Flow and Frame Tensors")):
-        curr_frame = sample_down(cut_bottom(curr_frame, picture_bottom_offset), picture_opt_fl_size)
-        prev_frame = sample_down(cut_bottom(prev_frame, picture_bottom_offset), picture_opt_fl_size)
+    for i, (prev_frame, curr_frame) in enumerate(tqdm(load_double_images(video_path),
+                                                      "Save Flow and Frame Tensors")):
+        curr_frame = sample_down(cut_bottom(curr_frame, picture_bottom_offset),
+                                 picture_opt_fl_size)
+        prev_frame = sample_down(cut_bottom(prev_frame, picture_bottom_offset),
+                                 picture_opt_fl_size)
 
         # SAVE FRAME
 
@@ -302,7 +285,8 @@ def save_both(save_path_frames, save_path_of, video_path,
 def save_frames_as_tensors(save_path, video_path, save_as_png=False,
                            save_png_path=path_image_frames):
     """load images, transform to tensors and add the label"""
-    for i, frame in enumerate(tqdm(load_single_images(video_path), "Save Frames as Tensors")):
+    for i, frame in enumerate(tqdm(load_single_images(video_path),
+                                   "Save Frames as Tensors")):
         frame = cut_bottom(frame, picture_bottom_offset)
         frame = sample_down(frame, picture_final_size)
 
@@ -317,18 +301,22 @@ def save_flow_as_tensors(save_path, video_path, save_as_png=False,
                          save_png_path=path_image_opt_fl, augmentation=False):
     # load images, transform to tensors and add the label
     for i, (prev_frame, curr_frame) in enumerate(tqdm(load_double_images(video_path), "Save Opt. Flow as Tensors")):
-        curr_frame = sample_down(cut_bottom(curr_frame, picture_bottom_offset), picture_opt_fl_size)
-        prev_frame = sample_down(cut_bottom(prev_frame, picture_bottom_offset), picture_opt_fl_size)
+        curr_frame = sample_down(cut_bottom(curr_frame, picture_bottom_offset), 
+                                 picture_opt_fl_size)
+        prev_frame = sample_down(cut_bottom(prev_frame, picture_bottom_offset),
+                                 picture_opt_fl_size)
         # if brightness and augmentation flag is true, run the augmentation
         # function
         if augmentation:
             contrast_factor = 0.35 + np.random.uniform()
             bright_factor = np.random.uniform(-5, 35)
-            curr_frame = augment_brightness(curr_frame, contrast_factor, bright_factor)
+            curr_frame = augment_brightness(curr_frame, contrast_factor,
+                                            bright_factor)
             
             contrast_factor = 0.35 + np.random.uniform()
             bright_factor = np.random.uniform(-5, 35)
-            prev_frame = augment_brightness(prev_frame, contrast_factor, bright_factor)
+            prev_frame = augment_brightness(prev_frame, contrast_factor,
+                                            bright_factor)
 
         rgb_flow = calculate_opt_flow(curr_frame, prev_frame)
         # print(rgb_flow)
@@ -380,16 +368,14 @@ def calculate_opt_flow(curr_frame, prev_frame):
 # #############################################################
 # TRAIN EVALUATION DICTIONARIES
 # #############################################################
-<<<<<<< HEAD
-def generate_train_eval_dict(data_size, test_split_ratio, new_split=True, \
+def generate_train_eval_dict(data_size, test_split_ratio, new_split=True,
                              block_size=100, offset=None):
     if new_split:
-        return(generate_train_eval_dict_original(data_size, test_split_ratio))
         #return(generate_train_eval_dict_new_splitting(data_size, test_split_ratio))
+        return(generate_train_eval_dict_original(data_size, test_split_ratio))
     else:
-        return(generate_train_eval_dict_old(data_size, test_split_ratio, block_size))
-=======
->>>>>>> net_trainer_approach
+        return(generate_train_eval_dict_original(data_size, test_split_ratio))
+
 
 
 
@@ -420,53 +406,26 @@ def generate_block_splitting(data_size, test_split_ratio, block_size):
     return partition
 
 
-situation_params = [("highway", 0, 8400), ("traffic jam", 8400, 15000), ("city", 15000, 20399)]
+situation_params = [("highway", 0, 8400), ("traffic jam", 8400, 15000),
+                    ("city", 15000, 20399)]
 
-<<<<<<< HEAD
-    # constants:
-    # Scene       | from minute to minute | frame to frame
-    # ------------------------------------------------------
-    # highway     | 0:00 to 7:00          | 0 to 8400
-    # stop&go     | 7:00 to 12:30         | 8401 to 15000
-    # city        | 12:30 to end          | 15001 to end
-    
-    # highway_end = int(np.floor(test_split_ratio*8400))
-    # trafficjam_end = int(np.floor(test_split_ratio*15000))
-    # last_split = int(np.floor(test_split_ratio*data_size))
-    
-    all_indices = np.linspace(1, data_size, data_size, dtype=int)
-    
-    # highway scenes
-    
-    highway_indices = all_indices[:8400]
-    np.random.shuffle(highway_indices)
-    
-    highway_end = int(np.size(highway_indices)*test_split_ratio)
-    
-    highway_train = highway_indices[:highway_end]
-    highway_test = highway_indices[highway_end:]
-    
-    # traffic jam scenes
-    trafficjam_indices = all_indices[8400:15000]
-    np.random.shuffle(trafficjam_indices)
-    
-    trafficjam_end = int(np.size(trafficjam_indices)*test_split_ratio)
-    
-    trafficjam_train = trafficjam_indices[:trafficjam_end]
-    trafficjam_test = trafficjam_indices[trafficjam_end:]
 
-    # city scenes
-    city_indices = all_indices[15000:]
-    np.random.shuffle(city_indices)
-    
-    city_end = int(np.size(city_indices)*test_split_ratio)
-=======
+# constants:
+# Scene       | from minute to minute | frame to frame
+# ------------------------------------------------------
+# highway     | 0:00 to 7:00          | 0 to 8400
+# stop&go     | 7:00 to 12:30         | 8401 to 15000
+# city        | 12:30 to end          | 15001 to end
+
+# highway_end = int(np.floor(test_split_ratio*8400))
+# trafficjam_end = int(np.floor(test_split_ratio*15000))
+# last_split = int(np.floor(test_split_ratio*data_size))
+
 
 def generate_situation_splitting(test_split_ratio, params=situation_params,
                                  shuffle=True, augmentation=False):
     train_indices = []
     test_indices = []
->>>>>>> net_trainer_approach
 
     for situation, start, stop in params:
         indices = np.linspace(start+1, stop, stop-start, dtype=int)
@@ -530,69 +489,4 @@ def augment_brightness(frame,contrast_factor,brigth_factor=0):
     frame_rgb = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
     return frame_rgb
 
-<<<<<<< HEAD
-if __name__ == "__main__":
-    # i1 = cv2.imread("./data/frames/frame1.png")
-    # i2 = cv2.imread("./data/frames/frame2.png")
-    # i2_cut_down = sample_down_half(i2[:-60,:,:])
-    # flow_field = calc_of(i1, i2)
-    # cv2.imwrite("../report/imgs/frame2_original.png",i2)
-    # cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
-    # cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
-    # save_flow_as_tensors(path_tensor_opt_fl, path_raw_video)
-    # save_frames_as_tensors(path_tensor_frames, path_raw_video)
-    # save_both(path_tensor_frames, path_tensor_opt_fl, path_raw_video)
-    # partition = generate_train_eval_dict_new_splitting(20399,0.8)
-    frame = cv2.imread("./data/frames/frame1.png")
-    # in expectation we decrease the contrast
-    contrast_factor = 0.5 + np.random.uniform()
-    bright_factor = np.random.uniform(-30,30)
-    frame_changed = augment_brightness(frame, contrast_factor,bright_factor)
-    cv2.imwrite("../augmentation9.png",frame_changed)
-    pass
-=======
-# #############################################################
-# Brightness augmentation
-# #############################################################
 
-def augment_brightness(frame, contrast_factor, bright_factor=0):
-    return cv2.addWeighted(frame, contrast_factor,
-                           frame, 0,
-                           bright_factor)
-    # function to add some noise into the image
-    hsv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    # bright_factor = 0.2 + np.random.uniform()
-    hsv_image[:, :, 2] = hsv_image[:, :, 2] * contrast_factor
-    frame_rgb = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
-    return frame_rgb
-
-
-
-# if __name__ == "__main__":
-#     # i1 = cv2.imread("./data/frames/frame1.png")
-#     # i2 = cv2.imread("./data/frames/frame2.png")
-#     # i2_cut_down = sample_down_half(i2[:-60,:,:])
-#     # flow_field = calc_of(i1, i2)
-#     # cv2.imwrite("../report/imgs/frame2_original.png",i2)
-#     # cv2.imwrite("../report/imgs/frame2_cut_sampled.png",i2_cut_down)
-#     # cv2.imwrite("../report/imgs/frame2_flow_field.png",flow_field)
-#     # save_flow_as_tensors(path_tensor_opt_fl, path_raw_video)
-#     # save_frames_as_tensors(path_tensor_frames, path_raw_video)
-#     # save_both(path_tensor_frames, path_tensor_opt_fl, path_raw_video)
-#     # partition = generate_train_eval_dict_new_splitting(20399,0.8)
-#     frame = cv2.imread("./data/frames/frame1.png")
-    
-#     cv2.imwrite("../original.png",frame)
-#     for i in range(0,10):
-#         contrast_factor = 0.35 + np.random.uniform()
-#         bright_factor = np.random.uniform(-5, 35)
-#         frame_changed = augment_brightness(frame, contrast_factor, bright_factor)
-#         cv2.imwrite("../augmentation{}.png".format(i), frame_changed)
-    
-#     pass
-
-#if __name__ == "__main__":
-    # save_flow_as_tensors(path_tensor_opt_fl, path_raw_video, save_as_png=False,
-    #                      augmentation=True)
-    #test = generate_hard_cut_off_splitting(0.8)
->>>>>>> net_trainer_approach
