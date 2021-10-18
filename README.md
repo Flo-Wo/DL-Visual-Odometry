@@ -4,7 +4,10 @@ using optical flow (Farneback pyramid method) and a siamese approach with two co
 frames as input.
 
 We used the [comma ai speedchallenge](https://github.com/commaai/speedchallenge) to gather data and trained our models
-on (different) splits of the test video.
+on (different) splits of the test video. See one of our result videos below:
+
+![results_siamese_10s_highway](https://user-images.githubusercontent.com/22920505/137796632-0b4b6908-1485-465e-a0ef-279ce3b918e5.gif)
+
 
 ## Abstract of the project
 Calculating the velocity of a moving camera relative to its surrounding, the so-called visual odometry 
